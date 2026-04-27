@@ -195,6 +195,10 @@ a modern browser.
 
 ## Design Principles
 
+The design layer integrates principles from Anthropic's official
+`frontend-design` skill to guide visual direction, typography, composition,
+color depth, and anti-generic quality checks.
+
 - Start with an argument, not a topic inventory.
 - Make slide 1 a distinct cover moment, not an ordinary content layout.
 - Use Magic Move for meaningful continuity, not decoration.
