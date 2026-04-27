@@ -155,6 +155,20 @@ state, image upload support, and Magic Move transition engine.
 
 ### Preview a deck
 
+Use the skill command for your agent environment:
+
+```text
+/magic-slide preview my-deck
+$magic-slide preview my-deck
+```
+
+Claude Code uses `/magic-slide`; Codex uses `$magic-slide`. The `preview`
+argument treats `my-deck` as a deck directory and opens `my-deck/index.html`.
+Passing an explicit `index.html` file also works. Preview starts the Magic Slide
+server through `scripts/serve.py`.
+
+The underlying script can also be called directly:
+
 ```bash
 python3 scripts/serve.py ./my-deck/index.html
 ```

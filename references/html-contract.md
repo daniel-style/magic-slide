@@ -19,8 +19,23 @@ These are the non-negotiable rules for generating slide HTML.
 
 - `data-id` — Unique identifier (e.g., "cover", "overview-1", "detail-models")
 - `data-transition` — Animation: "fade", "rise", "scale-in", "slide-up"
-- `data-stagger` — Stagger mode: "cascade", "zoom-in", "none"
+- `data-stagger` — Stagger mode: "cascade", "zoom-in", "fade-in", "fade-in-left", "fade-in-right", or "fade-in-down"
 - `data-bg` — Background: "dark", "white", "gradient-abstract"
+
+**Stagger default:** Every ordinary slide should use a real stagger mode.
+Do not generate `data-stagger="none"` as a convenience default. The injector
+normalizes accidental `none` values to `cascade` so decks keep their entrance
+motion. Only disable a whole slide's stagger when the user explicitly asks for
+no entrance animation, and mark that intent with
+`data-stagger-disabled="true" data-stagger="none"`.
+
+**Stagger target rule:** Headings, paragraphs, captions, and lead copy should
+stagger as whole block elements. They may contain inline spans for language
+variants, emphasis, or short styling hooks, but do not rely on ordinary inline
+spans as stagger targets because CSS transforms do not apply reliably to inline
+text. Large text blocks must have a visibly delayed entrance, not just a class
+name; the runtime treats them as `.ms-stagger-text` with a stronger rise so the
+first headline is still perceptible.
 
 **File structure:**
 - Each slide file contains ONLY a `<section>` element
@@ -152,6 +167,9 @@ Rules:
    <h1 data-magic-id="title" style="display:inline-block;">Title</h1>
    ```
    Why: Block elements stretch to full width, FLIP tracks wrong position
+   For one-line text plates or badge-like `div`s, use `display:inline-flex`
+   with stable text and no nested text children so the runtime can animate
+   geometry, font size, line height, and padding continuously.
 
 2. **Identical visible text on both slides**
    ```html

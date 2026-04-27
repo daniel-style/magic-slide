@@ -151,6 +151,38 @@ def sanitize_editor_state(html: str) -> str:
     return h
 
 
+def normalize_slide_stagger(html: str) -> str:
+    """Keep source decks from accidentally disabling runtime stagger effects."""
+
+    def _normalize(match):
+        tag = match.group(0)
+        disabled = re.search(
+            r'\bdata-stagger-disabled=(["\'])true\1',
+            tag,
+            flags=re.IGNORECASE,
+        )
+        if disabled:
+            return tag
+        if re.search(r'\bdata-stagger=(["\'])none\1', tag, flags=re.IGNORECASE):
+            return re.sub(
+                r'\bdata-stagger=(["\'])none\1',
+                'data-stagger="cascade"',
+                tag,
+                count=1,
+                flags=re.IGNORECASE,
+            )
+        if not re.search(r'\bdata-stagger=', tag, flags=re.IGNORECASE):
+            return re.sub(r'\s*/?>$', ' data-stagger="cascade">', tag, count=1)
+        return tag
+
+    return re.sub(
+        r'<section\b(?=[^>]*\bclass=(["\'])[^"\']*\bslide\b[^"\']*\1)[^>]*>',
+        _normalize,
+        html,
+        flags=re.IGNORECASE,
+    )
+
+
 SVG_STROKE_HINT_RE = re.compile(
     r'\b(route|connector|edge|line|flow|arc|curve|rail|trace|arrow|link)\b',
     re.IGNORECASE,
@@ -265,11 +297,12 @@ svg path[fill="none"],svg line,svg polyline{vector-effect:non-scaling-stroke}
 .counter{position:fixed;bottom:1rem;right:2rem;font-size:0.85rem;color:var(--subtext, #9ca3af);z-index:100;font-family:var(--font-mono, ui-monospace, monospace);font-variant-numeric:tabular-nums}
 
 /* Slide dock navigation */
-#slide-dock{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(calc(100% + 4px));display:flex;align-items:flex-end;gap:12px;padding:10px 20px 15px;background:rgba(10,12,22,0.72);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.08);border-bottom:none;border-radius:14px 14px 0 0;z-index:300;transition:transform 0.32s cubic-bezier(0.4,0,0.2,1)}
+#slide-dock{--dock-bg-left:0px;--dock-bg-right:0px;position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(calc(100% + 4px));display:flex;align-items:flex-end;gap:9px;padding:10px 18px 15px;background:transparent;border:0;z-index:300;isolation:isolate;transition:transform 0.32s cubic-bezier(0.4,0,0.2,1)}
+#slide-dock::before{content:'';position:absolute;top:0;bottom:0;left:var(--dock-bg-left);right:var(--dock-bg-right);background:rgba(10,12,22,0.72);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.08);border-bottom:none;border-radius:14px 14px 0 0;z-index:0;pointer-events:none;transition:left 0.12s cubic-bezier(0.22,1,0.36,1),right 0.12s cubic-bezier(0.22,1,0.36,1)}
 #slide-dock.dock-up{transform:translateX(-50%) translateY(0)}
-.dock-item{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,0.25);cursor:pointer;flex-shrink:0;transform:scale(1);transform-origin:bottom center;transition:transform 0.1s ease,background 0.15s}
+.dock-item{position:relative;z-index:1;width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,0.25);cursor:pointer;flex-shrink:0;transform:scale(1);transform-origin:bottom center;transition:transform 0.12s cubic-bezier(0.22,1,0.36,1),background 0.15s;will-change:transform}
 .dock-item.dock-on{background:var(--accent,#7fc8ff);box-shadow:none}
-.dock-preview-btn{width:20px;height:11px;border-radius:6px;background:rgba(255,255,255,0.25);cursor:pointer;flex-shrink:0;position:relative;transition:background 0.15s;margin-left:8px}
+.dock-preview-btn{position:relative;z-index:1;width:20px;height:11px;border-radius:6px;background:rgba(255,255,255,0.25);cursor:pointer;flex-shrink:0;transition:transform 0.12s cubic-bezier(0.22,1,0.36,1),background 0.15s;margin-left:8px;will-change:transform}
 .dock-preview-btn::before{content:'';position:absolute;inset:3px;border-radius:3px;border:1px solid rgba(255,255,255,0.4);transition:border-color 0.15s}
 .dock-preview-btn:hover,.dock-preview-btn.active{background:var(--accent,#7fc8ff)}
 .dock-preview-btn:hover::before,.dock-preview-btn.active::before{border-color:rgba(255,255,255,0.8)}
@@ -370,14 +403,15 @@ svg path[fill="none"],svg line,svg polyline{vector-effect:non-scaling-stroke}
 
 /* === Stagger entrance animations === */
 @keyframes ms-fade-in{from{opacity:0}to{opacity:var(--ms-stagger-final-opacity,1)}}
-@keyframes ms-fade-in-up{from{opacity:0;transform:translateY(30px)}to{opacity:var(--ms-stagger-final-opacity,1);transform:translateY(0)}}
-@keyframes ms-fade-in-down{from{opacity:0;transform:translateY(-30px)}to{opacity:var(--ms-stagger-final-opacity,1);transform:translateY(0)}}
-@keyframes ms-fade-in-left{from{opacity:0;transform:translateX(-30px)}to{opacity:var(--ms-stagger-final-opacity,1);transform:translateX(0)}}
-@keyframes ms-fade-in-right{from{opacity:0;transform:translateX(30px)}to{opacity:var(--ms-stagger-final-opacity,1);transform:translateX(0)}}
+@keyframes ms-fade-in-up{from{opacity:0;transform:translateY(var(--ms-stagger-y,30px))}to{opacity:var(--ms-stagger-final-opacity,1);transform:translateY(0)}}
+@keyframes ms-fade-in-down{from{opacity:0;transform:translateY(calc(var(--ms-stagger-y,30px) * -1))}to{opacity:var(--ms-stagger-final-opacity,1);transform:translateY(0)}}
+@keyframes ms-fade-in-left{from{opacity:0;transform:translateX(calc(var(--ms-stagger-x,30px) * -1))}to{opacity:var(--ms-stagger-final-opacity,1);transform:translateX(0)}}
+@keyframes ms-fade-in-right{from{opacity:0;transform:translateX(var(--ms-stagger-x,30px))}to{opacity:var(--ms-stagger-final-opacity,1);transform:translateX(0)}}
 @keyframes ms-zoom-in{from{opacity:0;transform:scale(0.8)}to{opacity:var(--ms-stagger-final-opacity,1);transform:scale(1)}}
 
 /* Apply to JS-marked stagger elements */
-.ms-stagger-item{animation:ms-fade-in-up 0.5s var(--ms-ease,cubic-bezier(0.25,1,0.5,1)) both;animation-delay:calc(var(--stagger-index,0) * 80ms)}
+.ms-stagger-item{animation:ms-fade-in-up var(--ms-stagger-duration,0.5s) var(--ms-ease,cubic-bezier(0.25,1,0.5,1)) both;animation-delay:calc(var(--ms-stagger-base-delay,110ms) + var(--stagger-index,0) * 80ms)}
+.ms-stagger-text{--ms-stagger-y:58px;--ms-stagger-duration:0.72s}
 .slide[data-stagger="fade-in"] .ms-stagger-item{animation-name:ms-fade-in}
 .slide[data-stagger="fade-in-down"] .ms-stagger-item{animation-name:ms-fade-in-down}
 .slide[data-stagger="fade-in-left"] .ms-stagger-item{animation-name:ms-fade-in-left}
@@ -587,9 +621,9 @@ function isMagicNoWrapLabel(el){
   if(!text||text.length>52)return false;
   if(el.matches('[data-magic-nowrap="true"]'))return true;
   if(el.matches('h1,h2,h3,h4,h5,h6,p,.heading-hero,.heading-xl,.heading-lg,.heading-md'))return false;
-  if(el.matches('.deck-mark,.small-mono,.kicker,.chip,.tag,.badge,.pill,.label,.eyebrow'))return true;
+  if(el.matches('.deck-mark,.small-mono,.kicker,.chip,.tag,.badge,.pill,.label,.eyebrow,.feature-plate'))return true;
   var cs=getComputedStyle(el);
-  if((cs.display==='inline-flex'||cs.display==='inline-block'||cs.display==='inline')&&text.length<=52&&/^(SPAN|SMALL|LI|BUTTON|A)$/.test(el.tagName))return true;
+  if((cs.display==='inline-flex'||cs.display==='inline-block'||cs.display==='inline')&&text.length<=52&&/^(SPAN|SMALL|LI|BUTTON|A|DIV)$/.test(el.tagName))return true;
   return /^(SPAN|SMALL|LI|BUTTON)$/.test(el.tagName)&&text.length<=36;
 }
 function stabilizeMagicText(root){
@@ -782,8 +816,8 @@ function fitSlideLayout(slide){
     }
   });
 }
-function snapStyles(el){var cs=getComputedStyle(el);var snap={display:cs.display,boxSizing:cs.boxSizing,alignItems:cs.alignItems,justifyContent:cs.justifyContent,gap:cs.gap,rowGap:cs.rowGap,columnGap:cs.columnGap,flexDirection:cs.flexDirection,flexWrap:cs.flexWrap,fontSize:cs.fontSize,fontWeight:cs.fontWeight,fontStyle:cs.fontStyle,fontFamily:cs.fontFamily,color:cs.color,letterSpacing:cs.letterSpacing,lineHeight:cs.lineHeight,background:cs.background,padding:cs.padding,borderRadius:cs.borderRadius,border:cs.border,boxShadow:cs.boxShadow,textAlign:cs.textAlign,textTransform:cs.textTransform,textDecoration:cs.textDecoration,textShadow:cs.textShadow,whiteSpace:cs.whiteSpace,wordBreak:cs.wordBreak,overflowWrap:cs.overflowWrap,textWrap:cs.textWrap,opacity:cs.opacity,children:[]};Array.from(el.children).forEach(function(ch){snap.children.push(snapStyles(ch))});return snap}
-function applySnap(el,s){el.style.display=s.display;el.style.boxSizing='border-box';el.style.alignItems=s.alignItems;el.style.justifyContent=s.justifyContent;el.style.gap=s.gap;el.style.rowGap=s.rowGap;el.style.columnGap=s.columnGap;el.style.flexDirection=s.flexDirection;el.style.flexWrap=s.flexWrap;el.style.fontSize=s.fontSize;el.style.fontWeight=s.fontWeight;el.style.fontStyle=s.fontStyle;el.style.fontFamily=s.fontFamily;el.style.color=s.color;el.style.letterSpacing=s.letterSpacing;el.style.lineHeight=s.lineHeight;el.style.background=s.background;el.style.padding=s.padding;el.style.borderRadius=s.borderRadius;el.style.border=s.border;el.style.boxShadow=s.boxShadow;el.style.textAlign=s.textAlign;el.style.textTransform=s.textTransform;el.style.textDecoration=s.textDecoration;el.style.textShadow=s.textShadow;el.style.whiteSpace=s.whiteSpace;el.style.wordBreak=s.wordBreak;el.style.overflowWrap=s.overflowWrap;el.style.textWrap=s.textWrap||'';el.style.opacity=s.opacity;if(s.children&&s.children.length>0){Array.from(el.children).forEach(function(ch,i){if(s.children[i])applySnap(ch,s.children[i])})}}
+function snapStyles(el){var cs=getComputedStyle(el);var snap={display:cs.display,boxSizing:cs.boxSizing,minWidth:cs.minWidth,minHeight:cs.minHeight,maxWidth:cs.maxWidth,maxHeight:cs.maxHeight,minInlineSize:cs.minInlineSize,maxInlineSize:cs.maxInlineSize,alignItems:cs.alignItems,justifyContent:cs.justifyContent,gap:cs.gap,rowGap:cs.rowGap,columnGap:cs.columnGap,flexDirection:cs.flexDirection,flexWrap:cs.flexWrap,fontSize:cs.fontSize,fontWeight:cs.fontWeight,fontStyle:cs.fontStyle,fontFamily:cs.fontFamily,color:cs.color,letterSpacing:cs.letterSpacing,lineHeight:cs.lineHeight,background:cs.background,padding:cs.padding,borderRadius:cs.borderRadius,border:cs.border,boxShadow:cs.boxShadow,textAlign:cs.textAlign,textTransform:cs.textTransform,textDecoration:cs.textDecoration,textShadow:cs.textShadow,whiteSpace:cs.whiteSpace,wordBreak:cs.wordBreak,overflowWrap:cs.overflowWrap,textWrap:cs.textWrap,opacity:cs.opacity,children:[]};Array.from(el.children).forEach(function(ch){snap.children.push(snapStyles(ch))});return snap}
+function applySnap(el,s){el.style.display=s.display;el.style.boxSizing='border-box';el.style.minWidth=s.minWidth;el.style.minHeight=s.minHeight;el.style.maxWidth=s.maxWidth;el.style.maxHeight=s.maxHeight;el.style.minInlineSize=s.minInlineSize;el.style.maxInlineSize=s.maxInlineSize;el.style.alignItems=s.alignItems;el.style.justifyContent=s.justifyContent;el.style.gap=s.gap;el.style.rowGap=s.rowGap;el.style.columnGap=s.columnGap;el.style.flexDirection=s.flexDirection;el.style.flexWrap=s.flexWrap;el.style.fontSize=s.fontSize;el.style.fontWeight=s.fontWeight;el.style.fontStyle=s.fontStyle;el.style.fontFamily=s.fontFamily;el.style.color=s.color;el.style.letterSpacing=s.letterSpacing;el.style.lineHeight=s.lineHeight;el.style.background=s.background;el.style.padding=s.padding;el.style.borderRadius=s.borderRadius;el.style.border=s.border;el.style.boxShadow=s.boxShadow;el.style.textAlign=s.textAlign;el.style.textTransform=s.textTransform;el.style.textDecoration=s.textDecoration;el.style.textShadow=s.textShadow;el.style.whiteSpace=s.whiteSpace;el.style.wordBreak=s.wordBreak;el.style.overflowWrap=s.overflowWrap;el.style.textWrap=s.textWrap||'';el.style.opacity=s.opacity;if(s.children&&s.children.length>0){Array.from(el.children).forEach(function(ch,i){if(s.children[i])applySnap(ch,s.children[i])})}}
 function cssPx(v,scale){
   var n=parseFloat(v);
   return Number.isFinite(n)?(n*scale)+'px':v;
@@ -805,6 +839,7 @@ function visualLabelSnap(el,rect){
     letterSpacing:cssPx(cs.letterSpacing,sc.x),lineHeight:cssPx(cs.lineHeight,sc.y),
     background:cs.background,boxShadow:cs.boxShadow,textAlign:cs.textAlign,textTransform:cs.textTransform,textDecoration:cs.textDecoration,textShadow:cs.textShadow,
     whiteSpace:'nowrap',wordBreak:'normal',overflowWrap:'normal',textWrap:cs.textWrap,opacity:cs.opacity,
+    minWidth:cssPx(cs.minWidth,sc.x),minHeight:cssPx(cs.minHeight,sc.y),maxWidth:cssPx(cs.maxWidth,sc.x),maxHeight:cssPx(cs.maxHeight,sc.y),minInlineSize:cssPx(cs.minInlineSize,sc.x),maxInlineSize:cssPx(cs.maxInlineSize,sc.x),
     paddingTop:cssPx(cs.paddingTop,sc.y),paddingRight:cssPx(cs.paddingRight,sc.x),paddingBottom:cssPx(cs.paddingBottom,sc.y),paddingLeft:cssPx(cs.paddingLeft,sc.x),
     borderTopWidth:cssPx(cs.borderTopWidth,avg),borderRightWidth:cssPx(cs.borderRightWidth,avg),borderBottomWidth:cssPx(cs.borderBottomWidth,avg),borderLeftWidth:cssPx(cs.borderLeftWidth,avg),
     borderTopStyle:cs.borderTopStyle,borderRightStyle:cs.borderRightStyle,borderBottomStyle:cs.borderBottomStyle,borderLeftStyle:cs.borderLeftStyle,
@@ -817,7 +852,7 @@ function applyVisualLabelSnap(el,s){
   Object.keys(s).forEach(function(k){el.style[k]=s[k]});
 }
 function visualLabelTransition(dur,ease){
-  return ['left','top','width','height','font-size','letter-spacing','line-height','padding-top','padding-right','padding-bottom','padding-left','border-top-width','border-right-width','border-bottom-width','border-left-width'].map(function(p){return p+' '+dur+'ms '+ease}).join(',');
+  return ['left','top','width','height','min-width','min-height','max-width','max-height','font-size','letter-spacing','line-height','padding-top','padding-right','padding-bottom','padding-left','border-top-width','border-right-width','border-bottom-width','border-left-width'].map(function(p){return p+' '+dur+'ms '+ease}).join(',');
 }
 function magicLayoutBox(el,tr){
   var ow=el&&el.offsetWidth?el.offsetWidth:0;
@@ -932,7 +967,8 @@ function go(from,to){
 
   // Shared stagger marking function — returns stagger count for cleanup timing
   function applyStagger(slide){
-    if(slide.getAttribute('data-stagger')==='none'&&sharedIds.length>0)return 0;
+    var staggerMode=(slide.getAttribute('data-stagger')||'cascade').toLowerCase();
+    if(staggerMode==='none'||staggerMode==='off')return 0;
     var toContent=getSlideContent(slide);
     var staggerIndex=0;
     // During FLIP transitions, build a set of "already visible" content from FROM slide
@@ -962,10 +998,15 @@ function go(from,to){
         return sharedIds.indexOf(node.getAttribute('data-magic-id'))!==-1;
       });
     }
+    function isTextBlock(el){
+      if(!el||!el.matches)return false;
+      return el.matches('h1,h2,h3,h4,h5,h6,p,blockquote,figcaption,.lead,.section-title,.hero-copy');
+    }
     function markLeaf(el){
       if(sharedIds.length>0&&fromTexts[el.tagName+'|'+el.textContent.trim()])return;
       el.style.setProperty('--ms-stagger-final-opacity',getComputedStyle(el).opacity||'1');
       el.classList.add('ms-stagger-item');
+      if(isTextBlock(el))el.classList.add('ms-stagger-text');
       el.style.setProperty('--stagger-index',staggerIndex);
       staggerIndex++;
     }
@@ -974,6 +1015,14 @@ function go(from,to){
         if(ch.hasAttribute('data-magic-id'))return;
         if(ch.classList.contains('bg'))return;
         if(ch.hasAttribute('data-stagger-skip'))return;
+
+        // Text blocks often contain inline language spans. Animate the block,
+        // not the inline span, because transform does not apply to normal
+        // inline text nodes and the stagger becomes visually invisible.
+        if(isTextBlock(ch)&&!hasSharedMagicDescendants(ch)){
+          markLeaf(ch);
+          return;
+        }
 
         // Layout containers (flex/grid): check if this is a FLIP transition or card grid
         if(isLayoutContainer(ch)){
@@ -1043,6 +1092,7 @@ function go(from,to){
       toSlide.style.zIndex='';toSlide.style.transition='';toSlide.style.animation='';
       toSlide.querySelectorAll('.ms-stagger-item').forEach(function(el){
         el.classList.remove('ms-stagger-item');
+        el.classList.remove('ms-stagger-text');
         el.style.removeProperty('--ms-stagger-final-opacity');
       });
       animating=false;
@@ -1171,6 +1221,7 @@ function go(from,to){
   setTimeout(function(){
     toSlide.querySelectorAll('.ms-stagger-item').forEach(function(el){
       el.classList.remove('ms-stagger-item');
+      el.classList.remove('ms-stagger-text');
       el.style.removeProperty('--ms-stagger-final-opacity');
       });
       animating=false;
@@ -1392,48 +1443,113 @@ fitSlideLayout(slides[cur]);
       }
     }
   })();
-  var _raf=null,_lmx=0;
-  function mag(mx){
+  function setDockRest(){
+    dock.style.setProperty('--dock-bg-left','0px');
+    dock.style.setProperty('--dock-bg-right','0px');
+    dockItems.forEach(function(d){
+      if(d.classList.contains('dock-on')){
+        d.style.transform='translate3d(0,0,0) scale(1.5)';
+      }else{
+        d.style.transform='translate3d(0,0,0) scale(1)';
+      }
+    });
+    if(previewBtn)previewBtn.style.transform='translate3d(0,0,0) scale(1)';
+  }
+  var _raf=null,_lmx=0,_lmy=0;
+  function mag(mx,my){
     _lmx=mx;
+    _lmy=my;
     if(_raf)return;
     _raf=requestAnimationFrame(function(){
       _raf=null;
-      var bestD=null,bestDist=Infinity;
-      dockItems.forEach(function(d){
-        var r=d.getBoundingClientRect(),cx=r.left+r.width/2,dist=Math.abs(_lmx-cx),n=dockItems.length,R=n>15?60:100,M=n>15?2.2:3.5;
-        var t=dist<R?Math.cos(dist/R*Math.PI/2):0;
-        if(d.classList.contains('dock-on')){
-          d.style.transform='scale(1.6)';
-        }else{
-          d.style.transform='scale('+(1+(M-1)*t*t).toFixed(3)+')';
-        }
-        if(dist<bestDist){bestDist=dist;bestD=d;}
+      if(_lmy<window.innerHeight-56){
+        setDockRest();
+        if(tip)tip.style.opacity='0';
+        hideDockPreview();
+        return;
+      }
+      var layoutItems=dockItems.slice();
+      if(previewBtn)layoutItems.push(previewBtn);
+      var bestD=null,bestDist=Infinity,bestIdx=0;
+      var n=dockItems.length,layoutN=layoutItems.length,activeMin=1.5,maxScale=n>15?2.15:2.6;
+      var centers=[],scales=[],baseSizes=[],gaps=[];
+      var dockRect=dock.getBoundingClientRect();
+      layoutItems.forEach(function(d,i){
+        var base=d.offsetWidth||11,cx=dockRect.left+d.offsetLeft+base/2;
+        var dist=Math.abs(_lmx-cx);
+        centers[i]=cx;
+        scales[i]=1;
+        baseSizes[i]=base;
+        if(i<n&&dist<bestDist){bestDist=dist;bestD=d;bestIdx=i;}
       });
-      if(bestD&&tip){
+      var pitch=n>1?Math.max(1,Math.abs(centers[Math.min(n-1,bestIdx+1)]-centers[Math.max(0,bestIdx-1)])/(bestIdx>0&&bestIdx<n-1?2:1)):24;
+      var radius=pitch*2.35,previewHitRadius=Math.max(14,pitch*0.52);
+      if(bestDist>radius){
+        setDockRest();
+        if(tip)tip.style.opacity='0';
+        hideDockPreview();
+        return;
+      }
+      dockItems.forEach(function(d,i){
+        var dist=Math.abs(_lmx-centers[i]);
+        if(dist<radius){
+          var wave=Math.cos(dist/radius*Math.PI/2);
+          var eased=Math.pow(Math.max(0,wave),1.35);
+          scales[i]=1+(maxScale-1)*eased;
+        }
+        if(d.classList.contains('dock-on'))scales[i]=Math.max(activeMin,scales[i]);
+      });
+      for(var gi=0;gi<layoutN-1;gi++){
+        gaps[gi]=Math.max(3,centers[gi+1]-centers[gi]-(baseSizes[gi]+baseSizes[gi+1])/2);
+      }
+      var baseLeft=centers[0]-baseSizes[0]/2;
+      var baseRight=centers[layoutN-1]+baseSizes[layoutN-1]/2;
+      var baseWidth=Math.max(1,baseRight-baseLeft);
+      var scaledWidth=0;
+      for(var wi=0;wi<layoutN;wi++){
+        scaledWidth+=baseSizes[wi]*scales[wi];
+        if(wi<layoutN-1)scaledWidth+=gaps[wi];
+      }
+      var anchor=Math.max(0,Math.min(1,(_lmx-baseLeft)/baseWidth));
+      var targetLeft=baseLeft-(scaledWidth-baseWidth)*anchor;
+      var cursor=targetLeft,visualLeft=Infinity,visualRight=-Infinity;
+      layoutItems.forEach(function(d,i){
+        var width=baseSizes[i]*scales[i];
+        var targetCenter=cursor+width/2;
+        var dx=targetCenter-centers[i];
+        d.style.transform='translateX('+dx.toFixed(1)+'px) scale('+scales[i].toFixed(3)+')';
+        visualLeft=Math.min(visualLeft,cursor);
+        visualRight=Math.max(visualRight,cursor+width);
+        cursor+=width+(i<layoutN-1?gaps[i]:0);
+      });
+      var bgPad=10;
+      var leftOutset=Math.max(0,dockRect.left-visualLeft+bgPad);
+      var rightOutset=Math.max(0,visualRight-dockRect.right+bgPad);
+      dock.style.setProperty('--dock-bg-left',(-leftOutset).toFixed(1)+'px');
+      dock.style.setProperty('--dock-bg-right',(-rightOutset).toFixed(1)+'px');
+      if(bestD&&bestDist<=previewHitRadius&&tip){
         var r=bestD.getBoundingClientRect();
         tip.style.left=(r.left+r.width/2)+'px';
         tip.textContent=(parseInt(bestD.dataset.idx)+1)+' · '+bestD.dataset.label;
         tip.style.opacity='0';
         scheduleDockPreview(bestD);
+      }else{
+        if(tip)tip.style.opacity='0';
+        hideDockPreview();
       }
     });
   }
   function reset(){
-    dockItems.forEach(function(d){
-      if(d.classList.contains('dock-on')){
-        d.style.transform='scale(1.6)';
-      }else{
-        d.style.transform='scale(1)';
-      }
-    });
+    setDockRest();
     if(tip)tip.style.opacity='0';
     hideDockPreview();
   }
+  setDockRest();
   if(navP)navP.addEventListener('click',function(e){e.stopPropagation();if(_ct){clearTimeout(_ct);_ct=null;}go(cur,cur-1)});
   if(navN)navN.addEventListener('click',function(e){e.stopPropagation();if(_ct){clearTimeout(_ct);_ct=null;}go(cur,cur+1)});
   document.addEventListener('mousemove',function(e){
     var x=e.clientX,y=e.clientY,W=window.innerWidth,H=window.innerHeight;
-    if(y>H-80){dock.classList.add('dock-up');mag(x);}
+    if(y>H-80){dock.classList.add('dock-up');mag(x,y);}
     else{dock.classList.remove('dock-up');reset();}
     if(navP)navP.classList.toggle('nav-show',x<100);
     if(navN)navN.classList.toggle('nav-show',x>W-100);
@@ -2591,6 +2707,7 @@ def inject(html: str, lang: str = 'zh') -> str:
     # runtime reinjection. Normalize that malformed pattern before we write out
     # the final HTML so uploadable images continue to render correctly.
     modified = re.sub(r'(<img\b[^>]*\bsrc="[^"]+)""', r'\1"', modified)
+    modified = normalize_slide_stagger(modified)
     modified = harden_inline_svg(modified)
 
     # 1. Inject Lucide CDN in <head> (first occurrence only)

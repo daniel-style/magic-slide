@@ -1,11 +1,33 @@
 ---
 name: magic-slide
-description: Generate a self-contained HTML presentation with Keynote-style Magic Move transitions. Use when the user wants to create a slideshow, presentation, or slide deck from a topic or outline. Trigger phrases include "make a presentation", "create slides", "build a slideshow", "magic slide", or any request to turn content into a slide deck.
+description: Generate a self-contained HTML presentation with Keynote-style Magic Move transitions. Use when the user wants to create a slideshow, presentation, or slide deck from a topic or outline, or invokes magic-slide preview to start the preview server.
+argument-hint: "[preview <topic> | presentation request]"
 ---
 
 # Magic Slide
 
 Generate polished HTML presentations with smooth Keynote-style "Magic Move" transitions — elements that appear on multiple slides animate fluidly between their positions.
+
+## Skill Command Arguments
+
+The user invoked this skill with: `$ARGUMENTS`
+
+When invoked as `/magic-slide preview [topic]` in Claude Code or
+`$magic-slide preview [topic]` in Codex, run the preview fast path:
+
+1. Treat the argument after `preview` as the topic/deck directory. If omitted,
+   use `.`. Preview the `index.html` inside that directory. If the user passes
+   an explicit `.html` file, preview that file directly.
+2. Locate this skill directory if needed:
+   `SKILL_DIR=$(find ~ -type d -name "magic-slide-skill" 2>/dev/null | head -1)`
+3. Start the preview server with the existing script:
+   `python3 "$SKILL_DIR/scripts/serve.py" "$DECK_PATH"`
+4. Keep the server process running and give the user the displayed URL.
+5. Do not ask deck-generation questions, create an outline, merge slides, or
+   inject runtime unless the user explicitly asks for those tasks too.
+
+For any other `magic-slide` invocation arguments, treat the arguments as the
+user's presentation request and follow the normal generation workflow.
 
 ## CRITICAL: Script Execution Rules
 
@@ -51,6 +73,8 @@ a separate prototype unless the user explicitly asks for that slower workflow.
 
 **NON-NEGOTIABLE DELIVERY RULE:** After generating or updating a deck, do not finish until `python3 "$SKILL_DIR/scripts/serve.py" {topic}/index.html` is running and you have given the user the preview URL. Opening the HTML file directly is not enough: edit mode, save, image replacement, and close/shutdown controls require the Magic Slide preview server. Never substitute `python3 -m http.server`, `npx serve`, or a file URL for the skill server.
 
+**NON-NEGOTIABLE UPDATE RULE:** When the user continues in chat after a deck has been generated and asks for changes, edit the modular source files first: `{topic}/sources/style.css`, `{topic}/sources/slide-XX.html`, and any source-local helpers. Then re-run `merge-slides.py`, re-run `inject-runtime.py`, and refresh or restart the Magic Slide preview server. Do not edit `{topic}/index.html` directly for agent-driven follow-up changes unless the user explicitly asks to patch the merged HTML, or the change comes from the browser edit mode Save flow.
+
 **Brief Lite is not optional.** It is the quality guardrail that prevents
 generic or frightening template output. Keep it concise. Only use the slower
 prototype gate when the user asks for high-touch design exploration, a risky
@@ -75,20 +99,23 @@ Legacy optional workflow files:
 
 ## Post-Generation Editing
 
-Users can edit the presentation in two ways:
+Users can edit the presentation in two ways, but agent-driven follow-up work
+must preserve the source-of-truth files.
 
 **Editing requires the preview server.** Before mentioning edit mode, ensure the deck is being served through `scripts/serve.py` and give the user the server URL. If the server is not running, start it first.
 
-**1. Edit modular sources** (recommended for major changes):
+**1. Edit modular sources** (default for all agent changes):
 - Edit `{topic}/sources/slide-XX.html` or `style.css`
 - Re-run merge and inject scripts
 - Refresh browser
 
-**2. Edit merged HTML** (quick fixes):
+**2. Edit merged HTML** (only for explicit quick fixes or browser edit mode):
 - Press 'e' in browser to enter edit mode
 - Click any text to edit inline
 - Click "Save" to write changes back to `index.html`
-- Changes persist in merged file only (not in sources)
+- The preview server attempts to sync browser-saved changes back to `sources/`
+- If editing `index.html` directly outside the browser Save flow, warn that the
+  modular sources may become stale and prefer `sources/` instead
 
 ## File Structure
 
@@ -131,8 +158,8 @@ Read these files as needed during generation:
 5. **Cover is a special moment** — Slide 1 must feel like an opening image,
    poster, title sequence, or product reveal. It should be simpler, more
    spacious, and visually distinct from slide 2 and ordinary content pages.
-6. **Fast iteration** — If something's wrong, revise CSS and affected slides quickly.
-7. **Manual fixes OK** — User can edit HTML directly if needed.
+6. **Fast iteration** — If something's wrong, revise CSS and affected source slides quickly, then merge/inject again.
+7. **Merged HTML is an artifact** — Treat `{topic}/index.html` as generated output. Direct HTML edits are only for explicit one-off patches or the browser edit mode Save flow.
 
 **Quality bar:** Every deck should feel distinctive and intentional, not like the first thing that came to mind. If another topic could use the same design unchanged, the design is too generic.
 

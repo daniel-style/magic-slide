@@ -50,7 +50,21 @@ Within that content root:
 - Elements WITHOUT `data-magic-id` → enter with staggered delay
 - Elements WITH `data-magic-id` → FLIP animated
 - Layout wrappers are traversed recursively so nested cards, list rows, and timeline items can stagger individually
+- Text blocks such as headings and paragraphs stagger as whole blocks, even
+  when they contain inline language spans. Do not push stagger classes down to
+  ordinary inline spans; transforms on inline text are visually unreliable.
+- Text-block stagger needs to be perceptible at presentation scale. The runtime
+  gives stagger items a small base delay after the slide swap starts, and gives
+  heading/lead text blocks a longer, larger rise than ordinary UI chips or
+  cards so the first large text item does not disappear into the page
+  transition.
 - Containers that hold shared Magic Move elements are protected from duplicate animation where needed
+
+Slide-level `data-stagger="none"` is reserved for explicit no-animation
+requests. During injection, accidental `none` values are normalized to
+`cascade` unless the slide also declares `data-stagger-disabled="true"`.
+This protects generated decks from losing all non-magic entrance motion when
+Magic Move shared elements are present.
 
 ### z-index management during transition
 
@@ -64,11 +78,22 @@ The runtime must not replace a clone's entire inline `style` string. Magic-id te
 
 This prevents a label from wrapping during the animated clone phase and snapping back to one line when the real TO element is revealed.
 
+The snapshot also includes size constraints (`min-width`, `min-height`,
+`max-width`, `max-height`, and inline-size equivalents). FLIP clones are moved
+to `body`, so selectors that depend on the slide ancestry no longer match.
+Without these computed constraints, a clone can fall back to a generic card or
+plate `min-height` and then visibly shrink or grow when the real target element
+is revealed. In the no-wrap label path, these constraints are scaled to the
+visual rect just like font size, line height, and padding, so clones inside
+runtime-scaled slide wrappers still match the target at cleanup.
+
 Short, chrome-like text marks such as `.deck-mark`, `.small-mono`, tags,
-badges, and inline-flex labels use the no-wrap label path. Their animated clone
-keeps `white-space: nowrap` and animates fixed geometry instead of reflowing as
-a normal text block, so a one-line mark does not wrap mid-flight and then snap
-back on cleanup.
+badges, `.feature-plate`, and simple inline-flex/inline-block labels use the
+no-wrap label path. Their animated clone keeps `white-space: nowrap` and
+animates fixed geometry, font size, line height, padding, and border widths
+instead of relying on a single transform scale. This keeps one-line marks from
+wrapping or snapping to a different text metric when the clone is replaced by
+the real target element on cleanup.
 
 When a slide wrapper has been scaled by runtime fit logic, the runtime lays out each clone using the TO element's unscaled `offsetWidth` / `offsetHeight`, then animates to the visual `getBoundingClientRect()` scale. This keeps text layout based on the same width budget as the real element instead of forcing unscaled typography into a smaller transformed rect.
 

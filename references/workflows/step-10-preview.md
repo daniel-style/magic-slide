@@ -65,4 +65,38 @@ Tell the user:
 
 ## Post-Generation Editing
 
-Users can edit the presentation in two ways:
+Users can edit the presentation in two ways, but source files are the default
+source of truth for agent-driven follow-up changes.
+
+### Chat follow-up changes
+
+When the user asks for changes in the conversation after a deck has already
+been generated:
+
+1. Edit `{topic}/sources/style.css`, `{topic}/sources/slide-XX.html`, and any
+   relevant source-local helpers first.
+2. Re-run merge:
+   `python3 "$SKILL_DIR/scripts/merge-slides.py" {topic}/sources/ --lang {language}`
+3. Re-run runtime injection:
+   `python3 "$SKILL_DIR/scripts/inject-runtime.py" {topic}/index.html --lang {language}`
+4. Refresh or restart the Magic Slide preview server and give the user the URL.
+
+Do not patch `{topic}/index.html` directly for normal follow-up edits. The
+merged HTML is generated output. Direct edits are allowed only when the user
+explicitly asks to patch the merged file, or when the change comes from browser
+edit mode Save.
+
+### Browser edit mode
+
+Browser edit mode is for quick text/image changes while the preview server is
+running:
+
+- Press 'e' in browser to enter edit mode
+- Click any text to edit inline
+- Click "Save" to write changes back to `index.html`
+- The preview server attempts to sync browser-saved slide changes back to
+  `sources/`
+
+If browser-saved changes cannot be synced to `sources/`, treat `index.html` and
+`sources/` as diverged: either run `scripts/extract-slides.py` to resync the
+slide fragments, or make the same change in `sources/` and re-run merge/inject.

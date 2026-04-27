@@ -82,6 +82,12 @@ running and the user has the displayed URL. The in-browser editor depends on
 `scripts/serve.py`; opening the HTML file directly disables server-backed Save,
 image replacement, and close/shutdown behavior.
 
+For chat follow-up edits after a deck has been generated, treat `sources/` as
+the source of truth: edit `[topic]/sources/style.css`,
+`[topic]/sources/slide-XX.html`, or source-local helpers, then re-run merge and
+inject. Do not patch `[topic]/index.html` directly unless the user explicitly
+asks for a merged-HTML patch or the change comes from browser edit mode Save.
+
 ## File Structure
 
 ```
@@ -143,6 +149,9 @@ See `references/design-system.md` for complete list.
 
 ## Layout And SVG Reliability
 
+- Do not generate `data-stagger="none"` as a default. Use `cascade` for most
+  slides and `zoom-in` for covers/reveal beats. Slide-level `none` requires an
+  explicit no-animation request and `data-stagger-disabled="true"`.
 - Sparse slides should be vertically centered unless deliberately dense or top-aligned.
 - Large split-layout headings need real width budgets (`minmax(0, ...)`, `min-width:0`, capped `clamp()` sizes) so they do not cover diagrams or cards.
 - Source notes require reserved footer space.
@@ -151,21 +160,24 @@ See `references/design-system.md` for complete list.
 
 ## Post-Generation Editing
 
-Users can edit the presentation in two ways:
+Users can edit the presentation in two ways, but agent-driven follow-up changes
+must preserve the modular source files.
 
 Editing requires the preview server from `scripts/serve.py`. Start it before
 telling users to press `e` or use Save.
 
-**1. Edit modular sources** (recommended for major changes):
+**1. Edit modular sources** (default for all agent changes):
 - Edit `[topic]/sources/slide-XX.html` or `style.css`
 - Re-run merge and inject scripts
 - Refresh browser
 
-**2. Edit merged HTML** (quick fixes):
+**2. Edit merged HTML** (only for explicit quick fixes or browser edit mode):
 - Press 'e' in browser to enter edit mode
 - Click any text to edit inline
 - Click "Save" to write changes back to `index.html`
-- Changes persist in merged file only (not in sources)
+- The preview server attempts to sync browser-saved changes back to `sources/`
+- If editing `index.html` directly outside browser Save, warn that modular
+  sources may become stale and prefer `sources/` instead
 
 ## Dependencies
 

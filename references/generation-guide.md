@@ -317,6 +317,10 @@ Required:
 
 - Root element is `<section class="slide">`, not `<div>`.
 - Attributes: `data-id`, `data-transition`, `data-stagger`, `data-bg`.
+- Use `data-stagger="cascade"` for most slides and `data-stagger="zoom-in"`
+  for covers or reveal moments. Do not output `data-stagger="none"` unless the
+  user explicitly requested no entrance animation; in that rare case also add
+  `data-stagger-disabled="true"` so the injector knows it was intentional.
 - `.slide-content` wrapper is present.
 - File names are `slide-01.html`, `slide-02.html`, etc.
 - No DOCTYPE, `html`, `head`, `body`, or script tags in slide fragments.
