@@ -178,7 +178,8 @@ python3 scripts/websearch.py "latest market data for renewable energy storage"
 
 ## Configuration
 
-PipeLLM features require an API key. Set one of:
+PipeLLM features require an API key from [PipeLLM](https://www.pipellm.ai/).
+Set one of:
 
 ```bash
 export PIPELLM_API_KEY="your-key"
