@@ -218,7 +218,3 @@ Before delivery, verify:
 - Navigation, overview mode, progress, and edit mode work in the preview server.
 - The deck has a specific visual world that could not be reused unchanged for a
   completely different topic.
-
-## License
-
-No license has been specified yet.
