@@ -2,6 +2,4 @@
 !/.gitignore
 __pycache__/
 *.pyc
-/[A-Z][A-Z][A-Z][A-Z][A-Z][A-Z].md
 !/README.md
-FIXES.md
