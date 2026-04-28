@@ -19,6 +19,12 @@ It is designed for presentations that need to feel intentional rather than
 template-driven: narrative outlines, distinctive visual systems, smooth motion,
 editable source files, and a portable final HTML deck.
 
+## Installation
+
+```bash
+npx skills add daniel-style/magic-slide
+```
+
 ## Highlights
 
 ### Magic Move Transitions
