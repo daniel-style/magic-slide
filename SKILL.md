@@ -1,12 +1,12 @@
 ---
 name: magic-slide
-description: Generate a self-contained HTML presentation with Keynote-style Magic Move transitions. Use when the user wants to create a slideshow, presentation, or slide deck from a topic or outline, or invokes magic-slide preview to start the preview server.
+description: Generate a self-contained HTML presentation with Magic Move transitions. Use when the user wants to create a slideshow, presentation, or slide deck from a topic or outline, or invokes magic-slide preview to start the preview server.
 argument-hint: "[preview <topic> | presentation request]"
 ---
 
 # Magic Slide
 
-Generate polished HTML presentations with smooth Keynote-style "Magic Move" transitions — elements that appear on multiple slides animate fluidly between their positions.
+Generate polished HTML presentations with smooth Magic Move transitions — elements that appear on multiple slides animate fluidly between their positions.
 
 ## Skill Command Arguments
 

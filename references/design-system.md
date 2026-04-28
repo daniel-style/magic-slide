@@ -14,7 +14,7 @@ Answer these questions:
 
 1. **Purpose:** What is the deck trying to make the audience understand, feel,
    or decide?
-2. **Audience and setting:** Who watches it, and in what context: keynote,
+2. **Audience and setting:** Who watches it, and in what context: conference,
    boardroom, classroom, investor memo, product walkthrough, internal review?
 3. **Tone:** Pick a clear direction: brutally minimal, editorial, industrial,
    playful, luxurious, academic, operational, documentary, raw, cinematic,

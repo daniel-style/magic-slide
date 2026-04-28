@@ -4,7 +4,7 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 
 ## Project Overview
 
-Magic Slide is a Codex skill that generates polished, self-contained HTML presentations with Keynote-style Magic Move transitions. The skill uses a structured workflow with user checkpoints at search and outline stages.
+Magic Slide is a Codex skill that generates polished, self-contained HTML presentations with Magic Move transitions. The skill uses a structured workflow with user checkpoints at search and outline stages.
 
 ## Core Architecture
 

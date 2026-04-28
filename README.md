@@ -12,7 +12,7 @@
 ![Magic Slide promotional artwork](./assets/readme/magic-slide-promo.png)
 
 Magic Slide is a toolkit for building polished, self-contained HTML presentations
-with Keynote-style Magic Move transitions, integrated PipeLLM image generation,
+with Magic Move transitions, integrated PipeLLM image generation,
 and high-quality web search for research-backed decks.
 
 It is designed for presentations that need to feel intentional rather than
