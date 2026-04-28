@@ -1,5 +1,16 @@
 # Magic Slide
 
+<p align="center">
+  <img src="./assets/readme/magic-slide-logo.svg" alt="Magic Slide logo" width="88">
+</p>
+
+<p align="center">
+  <strong>Official website and live demo:</strong>
+  <a href="https://www.magicslide.show/">magicslide.show</a>
+</p>
+
+![Magic Slide promotional artwork](./assets/readme/magic-slide-promo.jpg)
+
 Magic Slide is a toolkit for building polished, self-contained HTML presentations
 with Keynote-style Magic Move transitions, integrated PipeLLM image generation,
 and high-quality web search for research-backed decks.
@@ -212,7 +223,9 @@ a modern browser.
 
 The design layer integrates principles from Anthropic's official
 `frontend-design` skill to guide visual direction, typography, composition,
-color depth, and anti-generic quality checks.
+color depth, and anti-generic quality checks. The source design guidance is
+based on Anthropic's public skill:
+[anthropics/skills: frontend-design](https://github.com/anthropics/skills/tree/main/skills/frontend-design).
 
 - Start with an argument, not a topic inventory.
 - Make slide 1 a distinct cover moment, not an ordinary content layout.
