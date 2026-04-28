@@ -466,7 +466,7 @@ def make_runtime_html(ui: dict) -> str:
 <div id="ms-toolbar" aria-label="Preview controls">
   <div id="ms-deck-badge"></div>
   <button id="ms-save-btn" type="button"><span class="ms-save-text">{save}</span><span class="ms-dirty-dot"></span></button>
-  <button id="ms-edit-btn" type="button"><span>{edit}</span></button>
+  <button id="ms-edit-btn" type="button" title="{edit} (E)"><span>{edit}</span></button>
   <button id="ms-close-btn" type="button">{close}</button>
 </div>
 <div id="ms-rich-toolbar" aria-hidden="true">
@@ -2519,6 +2519,12 @@ fitSlideLayout(slides[cur]);
       if(e.key==='Enter'){e.preventDefault();e.target.blur();}
     }
 
+    function isTextEntryTarget(target){
+      if(!target)return false;
+      if(target.isContentEditable||target.closest('[contenteditable="true"]'))return true;
+      return !!target.closest('input,textarea,select');
+    }
+
     function toggleEditMode(){
       editMode=!editMode;
       document.body.classList.toggle('ms-edit-mode',editMode);
@@ -2551,6 +2557,14 @@ fitSlideLayout(slides[cur]);
     }
 
     editBtn.addEventListener('click',function(e){e.stopPropagation();if(_ct){clearTimeout(_ct);_ct=null;}toggleEditMode();});
+
+    document.addEventListener('keydown',function(e){
+      if(e.code!=='KeyE'||e.ctrlKey||e.metaKey||e.altKey||isTextEntryTarget(e.target))return;
+      e.preventDefault();
+      e.stopPropagation();
+      if(_ct){clearTimeout(_ct);_ct=null;}
+      toggleEditMode();
+    },true);
 
     document.addEventListener('selectionchange',captureSelection);
 
