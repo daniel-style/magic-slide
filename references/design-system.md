@@ -244,6 +244,9 @@ Rules:
 - It may use a hero wordmark, oversized title, full-bleed product/object/image,
   strong typographic crop, single symbolic diagram, dramatic whitespace, or
   one memorable material surface.
+- The cover title should feel like a poster line: short, memorable, and
+  non-sentence-like. Put explanatory scope in a small subtitle, chips, or the
+  first content slide; see `html-contract.md` for the verifiable copy limits.
 - Default to a no-image cover. The safest high-end cover is a premium
   minimalist CSS material field: restrained gradients, subtle pattern or
   texture, strong typography, and generous whitespace. It must look grand,

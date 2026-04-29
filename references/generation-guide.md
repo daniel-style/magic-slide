@@ -72,7 +72,8 @@ the user asks to see a sample first or the visual direction is unusually risky.
 1. **One slide, one idea.** Split content that cannot fit cleanly.
 2. **One primary layout primitive per slide.** Choose it before writing HTML.
 3. **Slide 1 is a distinct cover moment.** It should be simpler, larger, and
-   more memorable than ordinary content slides.
+   more memorable than ordinary content slides, with concise title-like cover
+   copy.
 4. **Visible hierarchy.** Each slide needs a clear focal element and supporting
    context.
 5. **Purposeful variety.** Repetition is allowed only when it creates a
@@ -92,7 +93,8 @@ symbolic system map.
 Use `design-system.md` for the cover's visual role and `images.md` for cover
 image policy. Use `html-contract.md` for the verifiable cover checklist. The
 generation task here is only to decide the cover role before ordinary slide
-families are written.
+families are written, including the short display title and where any longer
+scope wording moves.
 
 ## Layout Reliability
 
@@ -221,6 +223,8 @@ After generating the full deck:
 - Check the cover against `layout-guide.md`: decorative linework, nodes, traces,
   grids, and pseudo-elements must not cross or compete with the title,
   subtitle, wordmark, or chip row.
+- Check the cover against `html-contract.md`: the H1 must be concise, and the
+  subtitle must not become a mini abstract.
 - Check inline SVG against the visual quality contract, not only the black-blob
   safety rules: diagrams need hierarchy, aligned labels, line rhythm, and
   enough structure to read as finished graphics.

@@ -105,6 +105,16 @@ Rules:
 - `slide-01.html` must use a dedicated cover/display composition.
 - The cover must be visually distinct from slide 2 in layout skeleton, scale,
   density, and focal element.
+- The cover H1 must be concise enough to read like a poster title, not a
+  descriptive sentence. Default to 1-5 English words or 2-12 CJK characters,
+  and keep it to at most two lines at the final display size.
+- Distill long topic phrases into a short cover title, then move qualifiers to
+  a terse subtitle, small chips, or slide 2. For example, use `Agent
+  Infrastructure` as the H1 instead of `Agent Infrastructure for Production AI
+  Systems`.
+- Cover subtitle copy is optional and must stay brief: one short clause, not a
+  deck abstract, table of contents, or comma-separated inventory. Avoid copy
+  such as `A 40-slide brief on...` on the cover.
 - Default cover background is no-image. Use a premium minimalist CSS material
   field on the root `.slide`: restrained gradients, subtle pattern or texture,
   strong typography, and whitespace. It must read as grand, simple, and
@@ -371,6 +381,8 @@ Before delivery, check:
       light/dark mode, and inverse-tone slides are named exceptions with a
       distinct display role
 - [ ] Slide 1 is visually distinct from slide 2 and does not reuse ordinary content-slide skeletons
+- [ ] Slide 1 H1 is a concise cover title, not a sentence-like topic
+      description, and the subtitle is not a mini abstract
 - [ ] Slide 1 defaults to a no-image CSS material field unless the user explicitly requested cover imagery
 - [ ] Cover subject image, if present, is not an uploadable wrapper, inset panel, accidental skinny crop, or low-information object strip
 - [ ] Palette does not read as gray fog; dark slides, accent blocks, and text all have clear contrast

@@ -19,6 +19,7 @@ Read:
 Before writing files, make a concise internal plan based on Brief Lite:
 - Chosen visual world and avoided generic tropes
 - Dedicated cover composition and why it differs from slide 2
+- Cover copy split: concise H1 plus any terse subtitle/chips needed for scope
 - Primary deck tone mode and named inverse-tone exceptions, if any
 - Slide family/primitives
 - Type/color/material logic

@@ -16,16 +16,16 @@ For layout principles and guidelines, see [layout-guide.md](../layout-guide.md).
       Main Title
     </h1>
     <p style="font-size: clamp(1rem, 1.8vw, 2rem); opacity: 0.7; text-align: center;">
-      Subtitle or description
+      Short subtitle
     </p>
   </div>
 </section>
 ```
 
 **Key points:**
-- Large title (3-5rem)
+- Large, concise title (3-5rem), not a full topic sentence
 - Centered text
-- Optional subtitle
+- Optional terse subtitle
 - Minimal content
 
 ### 2. Section Header Slide

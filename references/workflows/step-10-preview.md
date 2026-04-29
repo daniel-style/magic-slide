@@ -47,8 +47,8 @@ with an absolute path.
 - Layout balance follows the production plan and `layout-guide.md`; ordinary
   slides should not look stranded near the top or padded out by a source note
 - Strong cover: simple, spacious, memorable, and visibly different from
-  ordinary content slides; decorative layers frame the title instead of
-  crossing or weakening it
+  ordinary content slides; the title is concise, and decorative layers frame it
+  instead of crossing or weakening it
 - Clean palette: no muddy gray wash, accidental fog overlay, or weak accent
   block
 - Smooth pacing and flow

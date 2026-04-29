@@ -17,7 +17,7 @@ remain reserved for final deliverables (`index.html` and `assets/`) plus the
 **Chapter arc:** [how the story turns from beginning to end] ← REQUIRED, NOT OPTIONAL
 **Closing idea:** [the non-generic idea the final slide should land] ← REQUIRED, NOT OPTIONAL
 
-## Slide 1: [Slide Title]
+## Slide 1: [Concise Cover Title]
 - Content point 1
 - Content point 2
 
@@ -38,7 +38,11 @@ remain reserved for final deliverables (`index.html` and `assets/`) plus the
 
 4. **Closing idea** - You MUST specify a non-generic idea for the final slide. Bad: "The future is bright." Good: "To understand NVIDIA, stop asking 'which GPU is fastest?' and ask 'who controls the operating system of intelligence infrastructure?'"
 
-5. **Each slide must advance the argument** - Not just list information. If a slide only says "this also exists", merge it or sharpen it.
+5. **Slide 1 title is cover copy** - Keep it short and title-like. Do not use
+   the full topic sentence as the cover H1; `html-contract.md` owns the
+   detailed cover copy rules.
+
+6. **Each slide must advance the argument** - Not just list information. If a slide only says "this also exists", merge it or sharpen it.
 
 The outline must be an argument, not a topic inventory. For company, technology, finance, or product decks, avoid a flat encyclopedia sequence such as history, products, market, partnerships, future. Each slide should either advance the thesis, provide evidence, create contrast, answer a risk/question, or resolve the story.
 

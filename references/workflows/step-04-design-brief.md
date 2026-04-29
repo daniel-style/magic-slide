@@ -44,6 +44,9 @@ Rules:
 - Cover promise must make slide 1 a distinct opening image: name its focal
   object, scale move, material/image/typographic treatment, and how it differs
   from ordinary content slides.
+- Cover promise must include a concise display-title plan; the cover H1 should
+  be title-like, while scope qualifiers belong in a terse subtitle, chips, or
+  the next slide. See `html-contract.md`.
 - If the cover uses linework, particles, nodes, traces, or pseudo-diagrams,
   Cover promise must name the quiet text zone; see `layout-guide.md`.
 - Default cover promise must be no-image: a premium minimalist CSS material
@@ -80,6 +83,7 @@ Before writing CSS, reject the brief and revise it if it depends on:
 - Circuit-board, Matrix, cyber tunnel, abstract network, glowing grid, or
   "AI brain" wallpaper.
 - A huge title over a generic generated tech background.
+- A cover H1 that reads like a sentence, abstract, or full topic description.
 - A cover whose main impact depends on a generated/photo background image when
   the user did not explicitly ask for cover imagery.
 - A cover that reuses the same two-column, card-grid, memo-panel, table, or
