@@ -26,6 +26,9 @@ with an absolute path.
 **Objective checks:**
 1. All slides render without console-breaking errors.
 2. `html-contract.md` passes: slide structure, root backgrounds, SVG, file names, and checklist items.
+   Include the deck tone mode check: ordinary slides must stay in the primary
+   light/dark mode, and inverse-tone slides must be named exceptions with a
+   distinct display role.
 3. `layout-guide.md` passes: no overflow, clipped text, collisions, unplanned top-heavy layouts, or source-note collisions.
    Treat cramped card rows with word-by-word wrapping as a failure when nearby
    horizontal space is empty; revise the source layout to use the available
@@ -37,6 +40,8 @@ with an absolute path.
 
 **Subjective review:**
 - Visual consistency across all slides
+- Consistent light/dark tone across ordinary slides, with any inverse-tone
+  moments reading as intentional story beats rather than random alternation
 - Clear hierarchy and readability
 - Distinctive aesthetic (not generic)
 - Layout balance follows the production plan and `layout-guide.md`; ordinary

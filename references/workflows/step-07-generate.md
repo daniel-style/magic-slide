@@ -19,6 +19,7 @@ Read:
 Before writing files, make a concise internal plan based on Brief Lite:
 - Chosen visual world and avoided generic tropes
 - Dedicated cover composition and why it differs from slide 2
+- Primary deck tone mode and named inverse-tone exceptions, if any
 - Slide family/primitives
 - Type/color/material logic
 - Footer/source-note strategy
@@ -43,6 +44,8 @@ notes, or intermediate files created during generation must also live under
 - Use the same CSS variables and classes
 - Follow the same layout patterns
 - Maintain the same visual language
+- Keep ordinary slides in the primary deck tone. Generate inverse-tone slides
+  only when they were named in Brief Lite or the internal production plan.
 - Continue Magic Move motifs where applicable
 
 **Avoid repetition:**
@@ -59,7 +62,7 @@ notes, or intermediate files created during generation must also live under
   word-by-word. Use the slide width, convert cramped card rows into full-width
   evidence bands, or split the slide.
 - Apply `html-contract.md` for slide structure, root backgrounds, SVG, file
-  naming, and final verification.
+  naming, deck tone mode, and final verification.
 - Apply `images.md` before generating or placing images, including cover-image
   and uploadable-wrapper policy.
 - Apply `flip-engine.md` for Magic Move continuity and `data-magic-id` usage.

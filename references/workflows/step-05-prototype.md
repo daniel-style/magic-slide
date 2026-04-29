@@ -16,7 +16,7 @@ Choose 3-5 slides from the outline that represent different risks:
 
 Create only the selected `{topic}/sources/slide-XX.html` files plus
 `{topic}/sources/style.css`. Follow:
-- `html-contract.md` for structure and SVG rules
+- `html-contract.md` for structure, deck tone mode, root backgrounds, and SVG rules
 - `layout-guide.md` for fit, centering, and overlap rules
 - `flip-engine.md` for Magic Move rules
 - Brief Lite

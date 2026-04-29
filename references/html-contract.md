@@ -20,7 +20,9 @@ These are the non-negotiable rules for generating slide HTML.
 - `data-id` — Unique identifier (e.g., "cover", "overview-1", "detail-models")
 - `data-transition` — Animation: "fade", "rise", "scale-in", "slide-up"
 - `data-stagger` — Stagger mode: "cascade", "zoom-in", "fade-in", "fade-in-left", "fade-in-right", or "fade-in-down"
-- `data-bg` — Background: "dark", "white", "gradient-abstract"
+- `data-bg` — Perceived background tone: "dark", "light", "white", or a
+  specific treatment such as "gradient-abstract". Use "light" or "white" for
+  bright/paper/canvas fields and "dark" for dark fields.
 
 **Stagger default:** Every ordinary slide should use a real stagger mode.
 Do not generate `data-stagger="none"` as a convenience default. The injector
@@ -71,6 +73,29 @@ Rules:
   thumbnails.
 - Do not use body background or overview-item fallback color as a substitute for
   a real slide background.
+
+## Deck Tone Mode Contract
+
+Every deck must choose one primary tone mode before slide HTML is written:
+`primary-tone: dark` or `primary-tone: light`.
+
+Rules:
+- The primary tone applies to the cover and all ordinary content slides by
+  default. Do not alternate dark and light slides just to add variety.
+- If no inverse-tone exceptions are named in Brief Lite or the internal
+  production plan, every slide's root background and `data-bg` must follow the
+  primary tone.
+- Inverse-tone slides are allowed only as named exceptions with a story role:
+  cover/opening display, chapter break, quote/manifesto pause, warning/risk
+  interrupt, full-bleed visual beat, product/object reveal, or closing display
+  moment.
+- An inverse-tone exception must be visibly different in composition from
+  ordinary evidence slides. A normal card/list/table slide with swapped colors
+  reads as accidental and must be converted back to the primary tone.
+- Neighboring slides must make the tone shift feel intentional through title,
+  transition, chapter marker, Magic Move continuity, or another clear cue.
+- `data-bg` must describe the rendered tone of the root `.slide`, not the body
+  fallback or an inset panel. Overview thumbnails are part of the check.
 
 ## Cover Contract
 
@@ -319,15 +344,19 @@ placement, and overflow/collision policy.
    - Fix: use dark ink on light/paper fields and reserve white or cream text
      for dark surfaces only
 
-7. **Viewport-sized card headings**
+7. **Random light/dark switching**
+   - Fix: return ordinary slides to the deck's primary tone; keep inverse-tone
+     slides only when they are named story/display exceptions
+
+8. **Viewport-sized card headings**
    - Fix: put `container-type:inline-size` on the card/timeline cell and size
      the heading with `cqw` or a lower max font size
 
-8. **Squeezing card rows into a narrow column while the slide has empty width**
+9. **Squeezing card rows into a narrow column while the slide has empty width**
    - Fix: move the card group into a full-width evidence band, widen the layout
      track, reduce the card count, or split the slide
 
-9. **SVG route renders as a black blob**
+10. **SVG route renders as a black blob**
    - Fix: add `fill="none"` and fallback stroke attributes to the source SVG path
    - Avoid: complex masks/filters/blend modes or decorative filled path blobs
 
@@ -338,6 +367,9 @@ Before delivery, check:
 - [ ] All slides use `<section>`, not `<div>`
 - [ ] All slides have required attributes
 - [ ] Root `.slide` backgrounds visibly cover the full viewport in slide view and overview thumbnails
+- [ ] Deck tone mode is consistent: ordinary slides follow the primary
+      light/dark mode, and inverse-tone slides are named exceptions with a
+      distinct display role
 - [ ] Slide 1 is visually distinct from slide 2 and does not reuse ordinary content-slide skeletons
 - [ ] Slide 1 defaults to a no-image CSS material field unless the user explicitly requested cover imagery
 - [ ] Cover subject image, if present, is not an uploadable wrapper, inset panel, accidental skinny crop, or low-information object strip

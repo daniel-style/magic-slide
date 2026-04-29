@@ -196,10 +196,11 @@ Build color from the visual world:
   archival neutral, product-bright, etc. Avoid palettes whose main impression
   is simply "grayish" unless a deliberately austere, concrete, or archival
   direction demands it.
-- Define the theme rhythm: whether the deck is mostly light, mostly dark, or a
-  deliberate alternation. Do not mix isolated inverse-theme slides unless they
-  are planned story beats with clear neighboring context and a visibly different
-  display role, not ordinary content slides with swapped colors.
+- Define the deck's primary tone mode: light or dark. Default to one consistent
+  mode across the deck; use inverse-tone slides only as planned story beats with
+  clear neighboring context and a visibly different display role, not ordinary
+  content slides with swapped colors. `html-contract.md` owns the detailed tone
+  contract.
 - Say where accent color is allowed: section markers, data emphasis, source
   notes, diagrams, labels, or focal calls.
 - Say where accent color is forbidden: decorative borders, every card, every
@@ -220,8 +221,8 @@ Build color from the visual world:
 
 ### Palette Hygiene Review
 
-Before finalizing CSS, inspect the cover plus at least one light slide, one
-dark slide, and one accent slide. Ask:
+Before finalizing CSS, inspect the cover, at least two ordinary slides in the
+primary tone, and every planned inverse-tone or accent slide. Ask:
 
 - Does the dominant field have a clear hue/temperature, or does it read as gray
   fog?

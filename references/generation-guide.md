@@ -114,16 +114,10 @@ is the authority for root slide backgrounds, required structure, SVG, and
 verification. Keep this guide focused on the planning pass, then consult those
 references while authoring.
 
-Choose the deck's background and theme system before scaling the deck. Do not
-drop isolated inverse-theme pages into the middle of the deck just by inverting
-the normal content template: light pages in a mostly dark deck are just as
-disruptive as dark pages in a mostly light deck. Contrast pages are allowed
-when they are special display moments: chapter breaks, full-bleed visual beats,
-quote/manifesto pauses, warning/risk interrupts, or deliberate dramatic
-reveals. They should differ in role and composition from ordinary evidence
-slides, and neighboring slides should make the shift feel intentional. A
-30-slide deck should not have one-off theme reversals that read as accidental
-copies of the same layout with a different background.
+Choose the deck's primary tone mode before scaling the deck. Brief Lite and the
+internal production plan must name the primary light/dark mode and any
+inverse-tone exceptions. Use `html-contract.md` as the authority for root
+backgrounds, `data-bg`, and when inverse-tone slides are allowed.
 
 Avoid repeated visible skeletons. In a 30-slide deck:
 
@@ -217,6 +211,9 @@ After generating the full deck:
 
 - Read beginning, middle, and end slide fragments.
 - Check all slides use the required structure and file names.
+- Check the deck tone mode: ordinary slides follow the primary light/dark mode,
+  and every inverse-tone slide is a named exception with a distinct display
+  role.
 - Check Magic Move continuity against `flip-engine.md`.
 - Check branded marks against `html-contract.md`: official logo or text-only,
   no fabricated symbols, no arbitrary pseudo-elements that read as logo

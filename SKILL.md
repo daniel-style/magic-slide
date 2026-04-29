@@ -106,7 +106,7 @@ end structured questions with a copyable response template; see
 1. **Step 1: Gather requirements** — Ask ALL 4 question groups: topic/audience-lens, aesthetic style, **language** (REQUIRED - never infer from user's message language), images
 2. **Step 2: Web search** — Ask user if they want online search (optional). If they say yes, run `scripts/websearch.py` first; built-in agent search is only a fallback after the script fails or returns no usable results.
 3. **Step 3: Generate outline** — Create `{topic}/sources/outline.md` with MANDATORY elements: thesis spine, audience/lens, chapter arc, closing idea. Get user confirmation (required checkpoint)
-4. **Step 4: Write Brief Lite** — Output a compact design brief before CSS/HTML: visual world, rejected tropes, cover promise, type/color/material logic, slide families
+4. **Step 4: Write Brief Lite** — Output a compact design brief before CSS/HTML: visual world, rejected tropes, cover promise, tone mode, type/color/material logic, slide families
 5. **Step 5: Generate production sources** — Create `style.css` and all `slide-XX.html` files directly from the confirmed outline and Brief Lite
 6. **Step 6: Merge slides** — Combine modular sources into single HTML
 7. **Step 7: Inject runtime** — Run the existing injector unchanged; preserve injected behavior/results unless the user explicitly asks otherwise
@@ -188,14 +188,14 @@ rules in this file or workflow steps.
 - [design-system.md](references/design-system.md) — aesthetic direction and anti-template guardrails
 - [generation-guide.md](references/generation-guide.md) — production planning and generation strategy
 - [layout-guide.md](references/layout-guide.md) — layout primitives, overflow, vertical balance, and source-note placement
-- [html-contract.md](references/html-contract.md) — required slide structure, SVG contract, file naming, and verification checklist
+- [html-contract.md](references/html-contract.md) — required slide structure, deck tone mode, root backgrounds, SVG contract, file naming, and verification checklist
 - [flip-engine.md](references/flip-engine.md) — Magic Move / `data-magic-id` planning and reliability rules
 - [images.md](references/images.md) — generated image use, uploadable wrappers, and cover-image policy
 
 ## Design Philosophy
 
 1. **Outline must be an argument, not a topic list** — Every slide advances a thesis, not just "this also exists"
-2. **Brief Lite first** — Commit to a topic-specific visual world before writing CSS. Keep it concise, but output it so the design promise is visible.
+2. **Brief Lite first** — Commit to a topic-specific visual world and primary light/dark tone before writing CSS. Keep it concise, but output it so the design promise is visible.
 3. **Generate once, inspect once** — Produce the full deck after outline and Brief Lite, then use final QA to catch objective failures.
 4. **Objective QA for objective failures** — Use tools for syntax, overflow, text contrast/readability, images, SVG rendering, and Magic Move, not subjective taste scoring.
 5. **Cover is a special moment** — Slide 1 must be a distinct opening

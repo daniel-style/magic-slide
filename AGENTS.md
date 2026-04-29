@@ -117,7 +117,7 @@ Keep the topic root clean: only `index.html`, `assets/`, and `sources/`.
 - `references/design-system.md` — Aesthetic principles and design guidelines (from Anthropic's frontend-design skill)
 - `references/generation-guide.md` — Generation instructions, Design Commitment Checklist, patterns
 - `references/layout-guide.md` — Standard layout patterns and structure
-- `references/html-contract.md` — Non-negotiable HTML/FLIP rules
+- `references/html-contract.md` — Non-negotiable HTML/FLIP rules, including deck tone mode and root backgrounds
 - `references/flip-engine.md` — FLIP animation internals
 - `references/images.md` — Image generation guidelines
 
@@ -134,7 +134,7 @@ and use short pointers elsewhere:
 - Visual direction and anti-template rules: `references/design-system.md`
 - Generation strategy: `references/generation-guide.md`
 - Layout, overflow, source notes, and vertical balance: `references/layout-guide.md`
-- HTML structure, SVG, file naming, and verification checklist: `references/html-contract.md`
+- HTML structure, deck tone mode, SVG, file naming, and verification checklist: `references/html-contract.md`
 - Magic Move / `data-magic-id`: `references/flip-engine.md`
 - Images, uploadable wrappers, and cover-image policy: `references/images.md`
 
@@ -150,9 +150,10 @@ workflow steps, or this `AGENTS.md`.
 1. Aesthetic direction (Brutalist/Luxury/Playful/Editorial/etc.)
 2. Typography strategy (Why this pairing? Is it overused?)
 3. Color depth system (primary + soft + hot + muted variants)
-4. Visual layers (base + atmosphere + texture)
-5. Spatial composition (asymmetric/grid-breaking/overlapping)
-6. Uniqueness check (Is this generic? First thing that comes to mind?)
+4. Deck tone mode (primary light/dark + named inverse exceptions, if any)
+5. Visual layers (base + atmosphere + texture)
+6. Spatial composition (asymmetric/grid-breaking/overlapping)
+7. Uniqueness check (Is this generic? First thing that comes to mind?)
 
 Keep Brief Lite concise. Do not output the old long design brief unless the user
 asks for high-touch design exploration.
