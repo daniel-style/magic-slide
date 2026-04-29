@@ -80,6 +80,13 @@ Rules:
 - `slide-01.html` must use a dedicated cover/display composition.
 - The cover must be visually distinct from slide 2 in layout skeleton, scale,
   density, and focal element.
+- Default cover background is no-image. Use a premium minimalist CSS material
+  field on the root `.slide`: restrained gradients, subtle pattern or texture,
+  strong typography, and whitespace. It must read as grand, simple, and
+  high-end in the first second.
+- Do not use a generated/photo cover background unless the user explicitly
+  asked for cover imagery or the topic requires a recognizable product/place/
+  object on slide 1.
 - Avoid repeated cards, ordinary memo grids, dense tables, or the same
   two-column layout used in subsequent slides.
 - The cover may share one semantic Magic Move element with slide 2, such as the
@@ -90,6 +97,10 @@ Rules:
 - If the cover uses a subject image, it must be full-bleed, a wide hero panel,
   a mostly visible product/object, or an abstract material field. Do not crop a
   landscape image into a tall skinny strip or arbitrary object sliver.
+- Never implement the apparent cover background as an uploadable image wrapper,
+  inset panel, or document-flow image. Cover imagery, when explicitly allowed,
+  must be owned by the root `.slide` background or a full-bleed absolutely
+  positioned decorative layer behind `.slide-content`.
 
 ## Color Contrast Contract
 
@@ -161,58 +172,11 @@ Rules:
       stroke-linejoin="round" />
 ```
 
-## Magic Move (data-magic-id)
+## Magic Move Contract
 
-**When to use:**
-- Same semantic entity appears on consecutive slides
-- Visible text is identical, or the same image/card reappears with mostly stable content
-- Position, size, emphasis, or crop changes enough to produce a noticeable move
-- Tag changes are allowed when the concept is clearly the same (for example `li` -> `h2`, chip -> heading, stat -> hero number)
-
-**Default bias:**
-- If two consecutive slides discuss the same concept, actively look for at least one stable shared element
-- Overview/detail or focus sequences often benefit from multiple shared ids
-- If nothing genuinely persists, leave magic-id out instead of forcing a fake match
-
-**Critical requirements:**
-1. **Text elements MUST have `display:inline-block`**
-   ```html
-   <h1 data-magic-id="title" style="display:inline-block;">Title</h1>
-   ```
-   Why: Block elements stretch to full width, FLIP tracks wrong position
-   For one-line text plates or badge-like `div`s, use `display:inline-flex`
-   with stable text and no nested text children so the runtime can animate
-   geometry, font size, line height, and padding continuously.
-
-2. **Identical visible text on both slides**
-   ```html
-   <!-- Slide 1 -->
-   <h1 data-magic-id="title" style="display:inline-block;">LangChain</h1>
-   
-   <!-- Slide 2 -->
-   <h2 data-magic-id="title" style="display:inline-block;">LangChain</h2>
-   ```
-
-3. **Use the smallest stable shared element**
-   - If a whole card changes too much, put `data-magic-id` on its title, number, chip, or image instead
-   - Reuse the wrapper only when the wrapper itself is genuinely the same object on both slides
-
-4. **No decorative elements**
-   - Don't use magic-id on: empty divs, lines, backgrounds, watermarks
-   - Only semantic content: text, numbers, images, or cards with stable content
-
-**Bad examples:**
-```html
-<!-- ✗ WRONG: Missing display:inline-block -->
-<h1 data-magic-id="title">Title</h1>
-
-<!-- ✗ WRONG: Different text -->
-<h2 data-magic-id="section">Overview</h2>  <!-- Slide 1 -->
-<h2 data-magic-id="section">Details</h2>   <!-- Slide 2 -->
-
-<!-- ✗ WRONG: Decorative element -->
-<div data-magic-id="bg-line" style="position:absolute; width:100%; height:2px;"></div>
-```
+Use `flip-engine.md` as the authority for `data-magic-id` planning and FLIP
+runtime behavior. The HTML contract only verifies that Magic Move anchors are
+used intentionally and do not appear on decorative-only elements.
 
 ## Style Requirements
 
@@ -256,7 +220,7 @@ Rules:
   justify-content: center;
   align-items: stretch;
   width: 100%;
-  max-width: 1280px;
+  max-width: 1680px;
   margin: 0 auto;
   padding: clamp(2.5rem, 5vw, 5rem);
   min-height: 100vh;
@@ -264,8 +228,8 @@ Rules:
 }
 ```
 
-Use a separate centering class or slide-level override when a specific slide is
-intentionally centered.
+Use `layout-guide.md` for centering, dense-slide exceptions, source-note
+placement, and overflow/collision policy.
 
 ## What NOT to Include
 
@@ -285,33 +249,31 @@ intentionally centered.
 1. **Using `<div class="slide">` instead of `<section class="slide">`**
    - Fix: Change root element to `<section>`
 
-2. **Forgetting `display:inline-block` on text magic-id**
-   - Fix: Add `style="display:inline-block;"` to element
+2. **Using unreliable Magic Move anchors**
+   - Fix: Apply the rules in `flip-engine.md`
 
-3. **Using magic-id for different text**
-   - Fix: Only use when text is identical
-
-4. **Skipping magic-id even though adjacent slides clearly share the same concept**
-   - Fix: Reuse the stable title, label, card heading, image, or number instead of starting from scratch
-
-5. **Missing required attributes**
+3. **Missing required attributes**
    - Fix: Add data-id, data-transition, data-stagger, data-bg
 
-6. **Creating class soup**
+4. **Creating class soup**
    - Fix: Use semantic deck-specific classes only when they describe real slide roles; otherwise use focused inline styles or existing simple classes.
 
-7. **Clipping text inside a card or column**
+5. **Clipping text inside a card or column**
    - Fix: author a real fit using container width, `min-width:0`, `max-inline-size`, wrapping, container query units, or a lower max `clamp()` value until the full text is visible
 
-8. **Low-contrast text on a light surface**
+6. **Low-contrast text on a light surface**
    - Fix: use dark ink on light/paper fields and reserve white or cream text
      for dark surfaces only
 
-9. **Viewport-sized card headings**
+7. **Viewport-sized card headings**
    - Fix: put `container-type:inline-size` on the card/timeline cell and size
      the heading with `cqw` or a lower max font size
 
-10. **SVG route renders as a black blob**
+8. **Squeezing card rows into a narrow column while the slide has empty width**
+   - Fix: move the card group into a full-width evidence band, widen the layout
+     track, reduce the card count, or split the slide
+
+9. **SVG route renders as a black blob**
    - Fix: add `fill="none"` and fallback stroke attributes to the source SVG path
    - Avoid: complex masks/filters/blend modes or decorative filled path blobs
 
@@ -323,17 +285,15 @@ Before delivery, check:
 - [ ] All slides have required attributes
 - [ ] Root `.slide` backgrounds visibly cover the full viewport in slide view and overview thumbnails
 - [ ] Slide 1 is visually distinct from slide 2 and does not reuse ordinary content-slide skeletons
-- [ ] Cover subject image, if present, is not an accidental skinny crop or low-information object strip
+- [ ] Slide 1 defaults to a no-image CSS material field unless the user explicitly requested cover imagery
+- [ ] Cover subject image, if present, is not an uploadable wrapper, inset panel, accidental skinny crop, or low-information object strip
 - [ ] Palette does not read as gray fog; dark slides, accent blocks, and text all have clear contrast
 - [ ] No white/cream/pale-gray or low-opacity text appears on a light/paper field
 - [ ] Content text uses opacity/alpha high enough to stay readable; hierarchy is mostly color/token based, not transparency based
-- [ ] Text magic-id elements have `display:inline-block`
-- [ ] Magic-id only for genuine repeated content on consecutive slides
-- [ ] Most adjacent slides with overlapping concepts share at least one meaningful magic-id
+- [ ] Magic Move anchors satisfy `flip-engine.md`
 - [ ] style.css has :root variables and animations
 - [ ] Files named slide-01.html, slide-02.html, etc.
-- [ ] All text is fully visible inside its intended container
-- [ ] Card, panel, timeline, and grid-cell headings are container-sized or wrap cleanly; none collide with neighboring cards
-- [ ] Sparse slides are vertically centered unless deliberately dense/top-aligned
-- [ ] No title, card, diagram, or source note overlaps another content region
+- [ ] Layout, text-fit, vertical-balance, source-note, and overlap checks satisfy `layout-guide.md`
+- [ ] Card groups use available slide width and do not compress paragraph cards
+      into unreadably narrow columns while nearby horizontal space is empty
 - [ ] Inline SVG connector paths include `fill="none"` and fallback stroke attributes

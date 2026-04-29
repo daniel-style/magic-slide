@@ -123,6 +123,25 @@ Keep the topic root clean: only `index.html`, `assets/`, and `sources/`.
 
 **All detailed rules (content density, HTML structure, magic-id usage, layout patterns, font sizing, etc.) are in these reference files. SKILL.md loads them during generation.**
 
+## Runtime Prompt Maintenance
+
+When changing skill instructions, avoid creating multiple full copies of the
+same runtime rule. Keep each detailed rule in its authoritative reference file
+and use short pointers elsewhere:
+
+- Workflow/checkpoints: `SKILL.md` and `references/workflows/`
+- Brief Lite format: `references/workflows/step-04-design-brief.md`
+- Visual direction and anti-template rules: `references/design-system.md`
+- Generation strategy: `references/generation-guide.md`
+- Layout, overflow, source notes, and vertical balance: `references/layout-guide.md`
+- HTML structure, SVG, file naming, and verification checklist: `references/html-contract.md`
+- Magic Move / `data-magic-id`: `references/flip-engine.md`
+- Images, uploadable wrappers, and cover-image policy: `references/images.md`
+
+If a rule needs to be mentioned outside its owner file, write a one-sentence
+reminder plus a reference link. Do not paste the full rule into `SKILL.md`,
+workflow steps, or this `AGENTS.md`.
+
 ## Design System Enforcement
 
 **CRITICAL:** The design-system.md contains principles from Anthropic's official frontend-design skill. These MUST be enforced during generation.
@@ -157,6 +176,8 @@ See `references/design-system.md` for complete list.
   explicit no-animation request and `data-stagger-disabled="true"`.
 - Sparse slides should be vertically centered unless deliberately dense or top-aligned.
 - Large split-layout headings need real width budgets (`minmax(0, ...)`, `min-width:0`, capped `clamp()` sizes) so they do not cover diagrams or cards.
+- Card groups must use available slide width before shrinking text; see the
+  usable-width/card-group rule in `references/layout-guide.md`.
 - Source notes require reserved footer space.
 - Inline SVG connector paths must include `fill="none"` and fallback stroke attributes directly on the path.
 - Avoid complex SVG filters, masks, blend modes, `foreignObject`, and decorative filled path blobs.

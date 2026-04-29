@@ -19,52 +19,9 @@ Before coding, output the Brief Lite required by
 context and speed, but make it visible in the conversation so the visual promise
 can be checked before generation.
 
-The brief must cover:
-
-- Audience, setting, and the one-sentence thesis.
-- Chosen visual world and one rejected generic trope.
-- Typography, color, material, and depth logic.
-- Palette hygiene: how the dominant field avoids gray fog, how accent blocks
-  keep contrast, and which overlays/tints are forbidden.
-- Readability hygiene: which text colors are legal on light, dark, muted, and
-  accent surfaces, and how card titles shrink or wrap before they collide.
-- The slide families/primitives the deck will use.
-- The recurring detail system: source notes, captions, rails, callouts, diagram
-  labels, data treatments, or image crops.
-- Cover composition promise, including how slide 1 will be visually distinct
-  from slide 2 and from ordinary content slides.
-- Cover image promise when images are used: whether the image is full-bleed,
-  wide hero art, isolated product/object, or abstract material, and how it will
-  avoid accidental skinny crops.
-- Magic Move motifs that can persist across adjacent slides.
-
-If the visual world could be reused unchanged for another topic, it is too
-generic. Revise it before writing CSS, but keep the revision concise.
-
-If the brief's visual drama mainly comes from a dark field, neon green/cyan,
-circuit-board lines, glowing grids, abstract networks, or a generated "AI
-infrastructure" wallpaper, reject it unless the user explicitly asked for that
-look. For infrastructure and investor decks, calm specificity usually beats
-ominous futurism.
-
-If the color system mainly depends on low-saturation blue/green/gray gradients,
-broad translucent white fog, gray text on colored panels, or colored blocks
-with same-hue dark text, reject it and choose a cleaner material system before
-writing CSS.
-
-If the brief would place white, cream, pale-gray, or low-opacity text on a
-light/paper field, reject it before writing CSS. Light fields need dark ink for
-headings and readable muted ink for body copy; pale text is allowed only on
-deliberately dark surfaces.
-
-If the cover promise could be implemented as a normal title-plus-cards or
-two-column content slide, reject it. Slide 1 needs a display idea before the
-deck enters its working layouts.
-
-If the cover depends on a subject image, reject any plan that places a landscape
-image inside a tall narrow column or crops it into a low-information vertical
-strip. The cover image must read as full-bleed hero art, a wide hero panel, a
-mostly visible product/object, or an abstract material field.
+`step-04-design-brief.md` is the authority for the brief's exact fields and
+hard-stop checks. `design-system.md` is the authority for visual differentiation
+and anti-template warnings. Do not duplicate those detailed rules here.
 
 ## Outline Is An Argument, Not An Encyclopedia
 
@@ -132,24 +89,10 @@ deck's normal slide families. The cover should be a title sequence frame,
 poster, product reveal, book cover, exhibition wall, hero image, or simplified
 symbolic system map.
 
-Avoid cover structures that look like ordinary content slides:
-- title left + card grid right
-- normal two-column explanation
-- dense product map
-- memo grid / table / metrics row
-- the same system diagram that appears again later
-- skinny cropped image column beside a title
-
-Safer cover patterns:
-- large title/wordmark with one iconic object or diagram fragment
-- full-bleed image/material surface with text over it
-- wide hero image panel whose subject is readable and not arbitrarily cropped
-- oversized typographic crop plus a small subtitle/source mark
-- one simplified symbolic diagram with generous whitespace
-- dramatic single metric or quote only when it is the deck's thesis
-
-When the cover and slide 2 are shown together in overview thumbnails, they must
-read as different roles. Similar colors are fine; similar skeletons are not.
+Use `design-system.md` for the cover's visual role and `images.md` for cover
+image policy. Use `html-contract.md` for the verifiable cover checklist. The
+generation task here is only to decide the cover role before ordinary slide
+families are written.
 
 ## Layout Reliability
 
@@ -165,127 +108,11 @@ For every slide:
 
 If a slide needs two root layouts at once, split it into two slides.
 
-### Full-Bleed Background Reliability
-
-The root `.slide` is the page. Its background must cover the entire viewport in
-normal view, exported screenshots, and overview thumbnails. Do not simulate a
-background with a colored `.slide-content`, `.stage`, large card, or centered
-panel; that creates visible borders when the runtime scales slides into
-thumbnail iframes.
-
-Use this pattern:
-
-```css
-.slide {
-  position: relative;
-  isolation: isolate;
-  background:
-    linear-gradient(...),
-    var(--field);
-  background-size: cover;
-}
-
-.slide::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.slide-content {
-  position: relative;
-  z-index: 1;
-}
-```
-
-QA must include the overview grid. If a slide appears as an inset rectangle,
-paper frame, unintentional border, or small washed panel inside the thumbnail,
-the slide is broken; move the background to `.slide` and regenerate CSS.
-
-### Palette Reliability
-
-Treat muddy color as a generated-deck failure. A palette can be restrained, but
-it still needs clear temperature, contrast, and color roles.
-
-Rules:
-- Avoid large translucent white or gray overlays on dark slides unless they are
-  a visible material texture. They often turn dark fields into cloudy
-  gray-green screenshots.
-- Never use white/cream/pale-gray headings, body text, card labels, or captions
-  on light, paper, canvas, blueprint, or pale-tint backgrounds. Use dark ink on
-  light fields and light ink on dark fields.
-- Avoid setting real content below `opacity:0.72` or
-  `color:rgba(..., < 0.72)`. Use a darker/lighter color token for hierarchy
-  instead of making text translucent.
-- Do not put dark same-hue text on saturated accent rectangles. Use light text
-  on strong accents, or dark text on pale tints.
-- Keep neutrals tinted toward the visual world instead of default gray. Warm
-  paper, cool blueprint, ink-dark, and archival neutral are different fields;
-  generic gray is not an art direction.
-- Give each accent a job: route/control, state, chapter, risk, product surface,
-  or focal call.
-- Check the cover, a normal evidence slide, and an accent slide in rendered
-  screenshots. If the screenshot looks foggy or dirty at a glance, revise CSS
-  variables and overlay layers first.
-
-For grid or flex columns that contain large titles, constrain text to the
-column, not just to a character count. A safe pattern is
-`minmax(0, ...)` on the track, `min-width:0` on the child, and
-`max-inline-size:min(100%, 18ch)` on title blocks. Otherwise a display heading
-can overflow its grid cell and visually collide with cards or diagrams.
-
-### Sparse Slide Centering
-
-Slides with little content should feel intentionally centered, not stranded near
-the top. If the main content has one title/subtitle pair, one small diagram, or
-one short list:
-
-- Do not add `slide-dense`, `slide-top`, or a `justify-content:flex-start`
-  override.
-- Keep the main `.stage` or primary layout container vertically centered inside
-  `.slide-content`.
-- If a source note is needed, reserve footer space with padding, but keep the
-  primary content centered in the remaining visual field.
-- Runtime may add `.ms-sparse-balance` to repair accidental top alignment, but
-  source slides should still be authored centered. If runtime adds
-  `.ms-fit-top` or `.ms-fit-scale`, treat it as a layout bug, not a successful
-  rescue.
-
-### Collision Budget
-
-Before writing each two-column or diagram slide, estimate whether the largest
-heading can fit its column without covering the visual side.
-
-- If a heading is longer than four display lines, reduce the max font size,
-  widen the text column, or split the slide.
-- Cap large split-layout headings with `max-inline-size:min(100%, 12ch-18ch)`
-  and choose a `clamp()` max from the actual column width.
-- Do not place large headings and right-side panels with negative margins,
-  absolute positioning, or oversized transforms unless both elements have a
-  tested width/height budget.
-- Keep footer/source notes outside the main collision area. An absolute source
-  note must have reserved bottom padding in `.slide-content`.
-
-### Diagram/SVG Reliability
-
-Prefer HTML/CSS diagrams, simple boxes, lines, and labels over elaborate inline
-SVG. Inline SVG is allowed only for simple, deterministic diagrams.
-
-For every inline SVG:
-
-- Add explicit presentation attributes on SVG primitives instead of relying only
-  on CSS classes. Open paths used as connectors must include `fill="none"`.
-- Give connector paths a real fallback stroke, such as
-  `stroke="currentColor"`, plus `stroke-width`, `stroke-linecap`, and
-  `stroke-linejoin`.
-- Avoid filters, masks, blend modes, `foreignObject`, huge paths, and unlabeled
-  decorative blobs. These are frequent causes of black fills, clipping, or slow
-  previews.
-- Do not animate or assign `data-magic-id` to decorative SVG paths. Use Magic
-  Move on labels, cards, numbers, or meaningful diagram nodes instead.
-- If an SVG route, connector, arc, or edge renders as a black filled shape,
-  the slide is broken. Add `fill="none"` to the source path and regenerate.
+`layout-guide.md` is the authority for primitives, text fit, overflow,
+collision budgets, vertical balance, and source-note placement. `html-contract.md`
+is the authority for root slide backgrounds, required structure, SVG, and
+verification. Keep this guide focused on the planning pass, then consult those
+references while authoring.
 
 Choose the deck's background and theme system before scaling the deck. Do not
 drop isolated inverse-theme pages into the middle of the deck just by inverting
@@ -310,52 +137,13 @@ Avoid repeated visible skeletons. In a 30-slide deck:
 
 ## Text Fit
 
-Clipped text is a broken slide.
-
-Rules:
-
-- Size text from the container it lives in, not from the viewport alone. In
-  cards, timeline steps, phase boxes, lanes, and comparison cells, add
-  `container-type:inline-size` and use `cqw` or a conservative `clamp()` max for
-  large headings.
-- Use `min-width:0` on flex/grid children that contain text.
-- For wrapping text, use `max-inline-size`, line-height, and
-  `overflow-wrap:break-word`.
-- For one-line text, allocate a container width first, then choose a `clamp()`
-  maximum that fits that width.
-- For large values inside cards or panels, consider `container-type:inline-size`
-  and `cqw` units so type scales from the container.
-- Long card titles such as phase names, product names, company names, and
-  workflow labels must either wrap cleanly or use
-  `font-size:clamp(..., <container-query>, <safe max>)`; never let them remain
-  at display scale inside a multi-column grid.
-- Never use `overflow:hidden`, `overflow:clip`, a mask, or low opacity to hide
-  excess text. If a glyph, digit, unit, or punctuation mark is cropped or
-  collides with a neighbor, redesign the slide.
+Clipped text is a broken slide. Use `layout-guide.md` for sizing, wrapping,
+container-width budgets, and overflow policy.
 
 ## Required Slide Structure
 
-Each slide file contains only one section:
-
-```html
-<section class="slide" data-id="unique-id" data-transition="fade" data-stagger="cascade" data-bg="dark">
-  <div class="slide-content">
-    <!-- content -->
-  </div>
-</section>
-```
-
-Required:
-
-- Root element is `<section class="slide">`, not `<div>`.
-- Attributes: `data-id`, `data-transition`, `data-stagger`, `data-bg`.
-- Use `data-stagger="cascade"` for most slides and `data-stagger="zoom-in"`
-  for covers or reveal moments. Do not output `data-stagger="none"` unless the
-  user explicitly requested no entrance animation; in that rare case also add
-  `data-stagger-disabled="true"` so the injector knows it was intentional.
-- `.slide-content` wrapper is present.
-- File names are `slide-01.html`, `slide-02.html`, etc.
-- No DOCTYPE, `html`, `head`, `body`, or script tags in slide fragments.
+Follow `html-contract.md` for the exact slide-fragment structure, required
+attributes, stagger policy, file naming, and prohibited elements.
 
 ## Style System
 
@@ -384,7 +172,9 @@ role that belongs to the deck.
 
 ## Images
 
-Read `references/images.md` before generating or placing images.
+Read `references/images.md` before generating or placing images. It is the
+authority for generated image prompts, uploadable wrappers, background-image
+policy, and cover-image handling.
 
 ## File Hygiene
 
@@ -408,42 +198,15 @@ General rules:
 - Use descriptive English filenames.
 - Use `../assets/...` from slide fragments under `sources/`; the merge script
   normalizes these to `./assets/...` in the final `index.html`.
-- All content images should use the uploadable image wrapper required by
-  `images.md`.
-- Background images are reserved for cover or closing slides unless the user
-  explicitly requests otherwise.
-- Middle slides should use content images, diagrams, or CSS composition rather
-  than full background images.
+- Follow `images.md` for content-image wrappers and background-image policy.
 
 ## Magic Move Strategy
 
 Before coding all slides, map adjacent slide pairs.
 
-Prefer shared elements that are genuinely semantic:
-
-- Deck title or section label.
-- Agenda item becoming a section heading.
-- Card title, chip, metric label, or key number.
-- Reused image with a changed crop or scale.
-- Stable panel or diagram element.
-
-Rules:
-
-- Text elements with `data-magic-id` must have `display:inline-block`.
-- Visible text must be identical across the shared elements.
-- Use the smallest stable child when the whole block changes.
-- Do not use `data-magic-id` on decorative lines, empty divs, backgrounds, or
-  fake duplicates.
-- For decks longer than 12 slides, most adjacent pairs should have at least one
-  meaningful shared anchor unless there is a hard chapter break. A 30-slide
-  Magic Slide deck should normally be planned as continuous chains of deck
-  labels, section labels, lens chips, metrics, images, or concepts, not as 30
-  isolated pages.
-
-Before full generation, write a compact continuity map. It can be informal, but
-it must cover every adjacent pair: `1->2 deck title/lens chips`, `2->3 section
-label`, `3->4 none: hard chapter break`, and so on. Use this map while writing
-the HTML, then verify the actual IDs after generation.
+Use `flip-engine.md` as the authority for `data-magic-id` rules and runtime
+behavior. Before full generation, write a compact continuity map that covers
+each adjacent pair, then verify the actual IDs after generation.
 
 ## Objective QA
 
@@ -451,14 +214,15 @@ After generating the full deck:
 
 - Read beginning, middle, and end slide fragments.
 - Check all slides use the required structure and file names.
-- Check Magic Move ids are genuine and adjacent where intended.
+- Check Magic Move continuity against `flip-engine.md`.
 - Merge slides with `merge-slides.py`.
 - Inject runtime with `inject-runtime.py`.
 - Preview with `serve.py`.
 - Run browser or manual viewport checks on every slide at a normal 16:9 viewport
   and a smaller 16:9 viewport, such as `1440x900` and `1024x576`.
 - Check for overflow, clipped text, broken images, dead zones, unbalanced
-  columns, and runtime fit issues.
+  columns, and runtime fit issues using `step-10-preview.md` as the delivery
+  checklist.
 - If any slide receives `.ms-fit-scale` or `.ms-fit-top`, treat it as a layout
   failure and revise the source slide. Runtime fit is an alarm, not a pass.
 - If images were requested, verify the final deck has actual assets and rendered

@@ -24,29 +24,23 @@ with an absolute path.
 ### 10b. Final QA checklist
 
 **Objective checks:**
-1. All slides render without errors
-2. No content overflow on any slide
-3. Root slide backgrounds cover the whole viewport in normal view and overview thumbnails
-4. Slide 1 reads as a distinct cover/opening image, not the same skeleton as slide 2
-5. Cover subject images are not accidental skinny crops, product slivers, or low-information vertical strips
-6. Palette does not look gray, foggy, or washed out in the cover, one light slide, one dark slide, and one accent slide
-7. No white/cream/pale-gray or low-opacity real text appears on light/paper/canvas slides
-8. Accent blocks/badges have clear foreground contrast and do not use dark same-hue text on saturated color
-9. Card, timeline, phase, lane, and comparison headings wrap or shrink inside their own containers; no label crosses into a neighboring card
-10. Sparse slides are vertically centered unless deliberately dense/top-aligned
-11. No headings, cards, diagrams, or source notes overlap
-12. Inline SVG diagrams have no black filled connector blobs
-13. Magic Move transitions work smoothly
-14. All images load correctly
-15. Navigation works (arrows, space, click)
-16. Progress bar updates correctly
-17. Slide counter shows correct numbers
-18. Edit mode works (press 'e')
+1. All slides render without console-breaking errors.
+2. `html-contract.md` passes: slide structure, root backgrounds, SVG, file names, and checklist items.
+3. `layout-guide.md` passes: no overflow, clipped text, collisions, unplanned top-heavy layouts, or source-note collisions.
+   Treat cramped card rows with word-by-word wrapping as a failure when nearby
+   horizontal space is empty; revise the source layout to use the available
+   width or split the slide.
+4. `design-system.md` passes: visual world is specific, palette/readability are clean, and the cover is a distinct opening composition.
+5. `images.md` passes when images are used: assets load, content images are integrated, and cover imagery follows policy.
+6. `flip-engine.md` passes: Magic Move ids are semantic, adjacent, and animate smoothly.
+7. Runtime controls work: arrows, space, click navigation, progress bar, slide counter, and edit mode.
 
 **Subjective review:**
 - Visual consistency across all slides
 - Clear hierarchy and readability
 - Distinctive aesthetic (not generic)
+- Layout balance follows the production plan and `layout-guide.md`; ordinary
+  slides should not look stranded near the top or padded out by a source note
 - Strong cover: simple, spacious, memorable, and visibly different from
   ordinary content slides
 - Clean palette: no muddy gray wash, accidental fog overlay, or weak accent

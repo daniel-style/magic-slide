@@ -144,14 +144,16 @@ all process artifacts belong inside `{topic}/sources/`.
 
 ## Key Reference Files
 
-Read these files as needed during generation:
+Read these files as needed during generation. Treat them as the single
+authoritative source for their topic; do not reconstruct long versions of their
+rules in this file or workflow steps.
 
-- [design-system.md](references/design-system.md) — Aesthetic principles and design guidelines (skim in Step 4)
-- [generation-guide.md](references/generation-guide.md) — Generation instructions and patterns (read in Step 4)
-- [layout-guide.md](references/layout-guide.md) — Standard layout patterns and structure (read in Step 4)
-- [html-contract.md](references/html-contract.md) — Non-negotiable HTML/FLIP/SVG rules (read in Step 4)
-- [flip-engine.md](references/flip-engine.md) — FLIP animation internals (read in Step 4 when using Magic Move heavily)
-- [images.md](references/images.md) — Image generation guidelines (read in Step 4 if needed)
+- [design-system.md](references/design-system.md) — aesthetic direction and anti-template guardrails
+- [generation-guide.md](references/generation-guide.md) — production planning and generation strategy
+- [layout-guide.md](references/layout-guide.md) — layout primitives, overflow, vertical balance, and source-note placement
+- [html-contract.md](references/html-contract.md) — required slide structure, SVG contract, file naming, and verification checklist
+- [flip-engine.md](references/flip-engine.md) — Magic Move / `data-magic-id` planning and reliability rules
+- [images.md](references/images.md) — generated image use, uploadable wrappers, and cover-image policy
 
 ## Design Philosophy
 
@@ -159,23 +161,19 @@ Read these files as needed during generation:
 2. **Brief Lite first** — Commit to a topic-specific visual world before writing CSS. Keep it concise, but output it so the design promise is visible.
 3. **Generate once, inspect once** — Produce the full deck after outline and Brief Lite, then use final QA to catch objective failures.
 4. **Objective QA for objective failures** — Use tools for syntax, overflow, text contrast/readability, images, SVG rendering, and Magic Move, not subjective taste scoring.
-5. **Cover is a special moment** — Slide 1 must feel like an opening image,
-   poster, title sequence, or product reveal. It should be simpler, more
-   spacious, and visually distinct from slide 2 and ordinary content pages.
-   If it uses a subject image, that image must be full-bleed hero art, a wide
-   hero panel, a mostly visible object/product, or abstract material. Never use
-   a skinny accidental crop or low-information vertical object strip as the
-   cover visual.
+5. **Cover is a special moment** — Slide 1 must be a distinct opening
+   composition. Use `design-system.md`, `images.md`, and `html-contract.md` for
+   the detailed cover rules.
 6. **Fast iteration** — If something's wrong, revise CSS and affected source slides quickly, then merge/inject again.
 7. **Merged HTML is an artifact** — Treat `{topic}/index.html` as generated output. Direct HTML edits are only for explicit one-off patches or the browser edit mode Save flow.
+8. **Layout reliability is mandatory** — Follow `layout-guide.md` for
+   primitives, overflow, vertical balance, and source-note placement.
 
 **Quality bar:** Every deck should feel distinctive and intentional, not like the first thing that came to mind. If another topic could use the same design unchanged, the design is too generic.
 
 **Readability bar:** Treat unreadable text as a broken deck, not a taste issue.
-Light/paper/canvas slides need dark ink; dark slides need light ink; real
-content text should not depend on pale colors or opacity below `0.72`. Card,
-timeline, phase, lane, and comparison headings must wrap or shrink inside their
-own containers before delivery.
+Use `html-contract.md`, `layout-guide.md`, and `design-system.md` for the
+detailed text contrast and text-fit rules.
 
 ## Output Quality
 

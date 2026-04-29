@@ -22,8 +22,13 @@ Before writing files, make a concise internal plan based on Brief Lite:
 - Slide family/primitives
 - Type/color/material logic
 - Footer/source-note strategy
+- Width allocation for card groups, comparison cells, and evidence bands,
+  especially where a split layout would otherwise squeeze cards into one column
 - Magic Move continuity map
 - Slides that need diagrams, images, dense text, or split treatment
+- Slides, if any, that truly need top alignment, with a reason. Default every
+  slide to vertically centered content; only dense matrices/tables/timelines
+  should opt into top alignment.
 
 Keep this plan compact. It is an authoring aid, not a conversation checkpoint.
 
@@ -46,44 +51,18 @@ notes, or intermediate files created during generation must also live under
 - Mix content densities and visual treatments
 
 **Avoid known failure modes:**
-- Do not use black/dark + neon green/cyan + circuit-board/network wallpaper as
-  the default visual language for AI, infrastructure, or developer-tool decks.
-  That reads as generic and can feel frightening.
-- Do not let one brand color wash over every surface. Accent colors need jobs:
-  status, route, risk, highlight, or section state.
-- Do not generate muddy palettes: low-saturation blue/green/gray fields,
-  broad translucent white fog over dark slides, weak colored badges, or gray
-  text on saturated accent blocks.
-- Do not put white, cream, pale-gray, or low-opacity text on light/paper/canvas
-  slides. Light fields require dark ink; pale text belongs only on dark fields.
-- Do not use opacity below `0.72` or rgba/hsla alpha below `0.72` for real
-  content text. If secondary copy needs hierarchy, choose a readable muted token.
-- The cover must fulfill the Brief Lite cover promise. A huge title over a
-  generic tech background fails.
-- If the cover uses a subject image, frame it as full-bleed hero art, a wide
-  hero panel, a mostly visible product/object, or an abstract material field.
-  Do not place a landscape image in a tall narrow column with `object-fit:cover`
-  where it becomes a random vertical strip.
-- The cover must not reuse the same skeleton as ordinary content slides. Avoid
-  title-left/card-grid-right, memo grids, dense tables, and normal two-column
-  evidence layouts on slide 1 unless the user explicitly asked for a utilitarian
-  report cover.
-- Do not place sparse content near the top. Use `.slide-dense` only for slides
-  whose main content genuinely needs top alignment because it nearly fills the
-  viewport.
-- Do not let headings, diagrams, cards, or source notes overlap. Split the slide
-  or reduce the max heading size instead.
-- In cards, timeline cells, phase boxes, lanes, and comparison panels, size
-  headings from the component width with `container-type:inline-size` and `cqw`
-  or a conservative max. Long labels must wrap or shrink before they collide
-  with neighboring cards.
-- Do not hide card overflow with `overflow:hidden`, clipping, masks, fades, or
-  low opacity. Visible overflow means the slide is over budget and must be
-  redesigned.
-- For inline SVG connectors, add explicit `fill="none"` and fallback stroke
-  attributes on every open path.
-- Avoid complex SVG filters, masks, blend modes, `foreignObject`, and decorative
-  filled blobs.
+- Apply `design-system.md` for anti-template, palette, typography, and cover
+  concept guardrails.
+- Apply `layout-guide.md` for primitives, text fit, collision budgets, vertical
+  balance, and source-note placement.
+- Do not leave large horizontal dead zones while text cards overflow or wrap
+  word-by-word. Use the slide width, convert cramped card rows into full-width
+  evidence bands, or split the slide.
+- Apply `html-contract.md` for slide structure, root backgrounds, SVG, file
+  naming, and final verification.
+- Apply `images.md` before generating or placing images, including cover-image
+  and uploadable-wrapper policy.
+- Apply `flip-engine.md` for Magic Move continuity and `data-magic-id` usage.
 
 ### 5d. Handle images (if requested)
 
