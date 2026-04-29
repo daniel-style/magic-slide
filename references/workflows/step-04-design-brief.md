@@ -43,11 +43,17 @@ Rules:
 - Cover promise must make slide 1 a distinct opening image: name its focal
   object, scale move, material/image/typographic treatment, and how it differs
   from ordinary content slides.
+- If the cover uses an image, Cover promise must say how the image is framed:
+  full-bleed, wide hero panel, mostly visible object/product, or abstract
+  material. Do not allow a skinny cropped image strip as the cover visual.
 - Type/color/material must assign jobs to colors; do not let one brand color
   dominate every surface.
 - Type/color/material must include a palette hygiene promise: the dominant field
   hue or material, the high-contrast accent treatment, and what prevents the
   deck from becoming gray, foggy, or washed out.
+- Type/color/material must include a readability promise: dark ink on light
+  fields, light ink on dark fields, no pale/low-opacity real text, and
+  container-sized card titles where labels may be long.
 - Slide families must include at least four roles, such as thesis hero,
   evidence/data, system diagram, risk map, integration map, timeline, quote, or
   closing.
@@ -61,10 +67,13 @@ Before writing CSS, reject the brief and revise it if it depends on:
 - A huge title over a generic generated tech background.
 - A cover that reuses the same two-column, card-grid, memo-panel, table, or
   ordinary system-diagram layout as the content slides.
+- A cover that places a landscape/generated subject image in a tall skinny
+  column, creating a random vertical crop or low-information object slice.
 - Brand-color wallpaper where every chip, rail, heading, and image wash uses
   the same color.
 - Low-saturation gray/blue/green wash as the whole visual idea, especially with
   translucent white fog over dark slides or gray text on colored focal blocks.
+- White, cream, pale-gray, or translucent text on a light/paper/canvas field.
 - Condensed all-caps display type plus ominous dark gradients unless the user
   explicitly requested a scary/dystopian mood.
 

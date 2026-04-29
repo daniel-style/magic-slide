@@ -87,6 +87,9 @@ Rules:
   change role after the opening.
 - The cover should have one primary focal object: hero title, product/object
   image, iconic diagram, typographic crop, or strong material field.
+- If the cover uses a subject image, it must be full-bleed, a wide hero panel,
+  a mostly visible product/object, or an abstract material field. Do not crop a
+  landscape image into a tall skinny strip or arbitrary object sliver.
 
 ## Color Contrast Contract
 
@@ -99,6 +102,11 @@ Rules:
   (`--accent` or a clearly named equivalent such as `--blue`).
 - Dark theme slides must keep their field clear: avoid broad white/gray
   translucent overlays that desaturate the whole slide into fog.
+- Light, paper, canvas, blueprint, and pale-tint slides must use dark ink for
+  headings and readable muted ink for secondary text. Do not use white, cream,
+  pale-gray, or low-opacity text on a light field.
+- Real content text must not depend on opacity below `0.72` or rgba/hsla alpha
+  below `0.72` for hierarchy. Pick a legible color token instead.
 - Accent blocks, badges, and route labels must use high-contrast foregrounds.
   Do not put dark same-hue text on a saturated blue/green/orange/red block.
 - Neutral surfaces should be hue-tinted or material-specific. Generic gray
@@ -111,11 +119,16 @@ All visible text must be readable in full. Do not allow a card, panel, button, c
 
 Rules:
 - Author the fit in CSS/HTML. Do not rely on runtime detection or hidden overflow to rescue text.
+- Size card, panel, timeline, and grid-cell text from the container width, not
+  only the viewport. Use `container-type:inline-size` on the component and
+  `cqw` or a conservative `clamp()` for large labels.
 - For wrapping text, use `max-inline-size`, appropriate `line-height`, and `overflow-wrap:break-word`.
 - For non-wrapping text, first allocate a container width, then choose a font-size `clamp()` that fits that width.
 - For card-contained text, prefer `container-type:inline-size` on the card and container query units (`cqw`) in the text size.
 - Use `min-width:0` on flex/grid children containing text.
 - If the full text cannot fit, reduce the max font size, widen the container, allow wrapping, or split the slide.
+- Do not hide text overflow with `overflow:hidden`, `overflow:clip`, masks, or
+  fades. If content needs hiding to look tidy, the slide is over budget.
 
 ## SVG Contract
 
@@ -290,7 +303,15 @@ intentionally centered.
 7. **Clipping text inside a card or column**
    - Fix: author a real fit using container width, `min-width:0`, `max-inline-size`, wrapping, container query units, or a lower max `clamp()` value until the full text is visible
 
-8. **SVG route renders as a black blob**
+8. **Low-contrast text on a light surface**
+   - Fix: use dark ink on light/paper fields and reserve white or cream text
+     for dark surfaces only
+
+9. **Viewport-sized card headings**
+   - Fix: put `container-type:inline-size` on the card/timeline cell and size
+     the heading with `cqw` or a lower max font size
+
+10. **SVG route renders as a black blob**
    - Fix: add `fill="none"` and fallback stroke attributes to the source SVG path
    - Avoid: complex masks/filters/blend modes or decorative filled path blobs
 
@@ -302,13 +323,17 @@ Before delivery, check:
 - [ ] All slides have required attributes
 - [ ] Root `.slide` backgrounds visibly cover the full viewport in slide view and overview thumbnails
 - [ ] Slide 1 is visually distinct from slide 2 and does not reuse ordinary content-slide skeletons
+- [ ] Cover subject image, if present, is not an accidental skinny crop or low-information object strip
 - [ ] Palette does not read as gray fog; dark slides, accent blocks, and text all have clear contrast
+- [ ] No white/cream/pale-gray or low-opacity text appears on a light/paper field
+- [ ] Content text uses opacity/alpha high enough to stay readable; hierarchy is mostly color/token based, not transparency based
 - [ ] Text magic-id elements have `display:inline-block`
 - [ ] Magic-id only for genuine repeated content on consecutive slides
 - [ ] Most adjacent slides with overlapping concepts share at least one meaningful magic-id
 - [ ] style.css has :root variables and animations
 - [ ] Files named slide-01.html, slide-02.html, etc.
 - [ ] All text is fully visible inside its intended container
+- [ ] Card, panel, timeline, and grid-cell headings are container-sized or wrap cleanly; none collide with neighboring cards
 - [ ] Sparse slides are vertically centered unless deliberately dense/top-aligned
 - [ ] No title, card, diagram, or source note overlaps another content region
 - [ ] Inline SVG connector paths include `fill="none"` and fallback stroke attributes

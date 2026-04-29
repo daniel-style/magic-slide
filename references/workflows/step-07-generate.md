@@ -54,8 +54,16 @@ notes, or intermediate files created during generation must also live under
 - Do not generate muddy palettes: low-saturation blue/green/gray fields,
   broad translucent white fog over dark slides, weak colored badges, or gray
   text on saturated accent blocks.
+- Do not put white, cream, pale-gray, or low-opacity text on light/paper/canvas
+  slides. Light fields require dark ink; pale text belongs only on dark fields.
+- Do not use opacity below `0.72` or rgba/hsla alpha below `0.72` for real
+  content text. If secondary copy needs hierarchy, choose a readable muted token.
 - The cover must fulfill the Brief Lite cover promise. A huge title over a
   generic tech background fails.
+- If the cover uses a subject image, frame it as full-bleed hero art, a wide
+  hero panel, a mostly visible product/object, or an abstract material field.
+  Do not place a landscape image in a tall narrow column with `object-fit:cover`
+  where it becomes a random vertical strip.
 - The cover must not reuse the same skeleton as ordinary content slides. Avoid
   title-left/card-grid-right, memo grids, dense tables, and normal two-column
   evidence layouts on slide 1 unless the user explicitly asked for a utilitarian
@@ -65,6 +73,13 @@ notes, or intermediate files created during generation must also live under
   viewport.
 - Do not let headings, diagrams, cards, or source notes overlap. Split the slide
   or reduce the max heading size instead.
+- In cards, timeline cells, phase boxes, lanes, and comparison panels, size
+  headings from the component width with `container-type:inline-size` and `cqw`
+  or a conservative max. Long labels must wrap or shrink before they collide
+  with neighboring cards.
+- Do not hide card overflow with `overflow:hidden`, clipping, masks, fades, or
+  low opacity. Visible overflow means the slide is over budget and must be
+  redesigned.
 - For inline SVG connectors, add explicit `fill="none"` and fallback stroke
   attributes on every open path.
 - Avoid complex SVG filters, masks, blend modes, `foreignObject`, and decorative

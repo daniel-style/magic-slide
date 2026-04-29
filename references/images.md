@@ -58,6 +58,42 @@ The `.bg::after` overlay gradient is injected by default. Text always sits on th
 - Photographic elements, realistic textures
 - Anything that competes with the title text for attention
 
+## Cover subject images — must read as intentional hero art
+
+If the cover uses a real or generated subject image instead of an abstract
+background, the image treatment must feel like a deliberate cover composition.
+Never place a narrow cropped strip, accidental product slice, anonymous hardware
+edge, or arbitrary object fragment beside the title. A viewer should understand
+why that image is on the cover within one second.
+
+Allowed cover image treatments:
+- Full-bleed image with a strong overlay and text on the quiet side.
+- Wide hero panel, usually `16:9`, `4:3`, or a deliberate panoramic crop, where
+  the subject remains readable.
+- Large isolated object/product crop with the important object mostly visible,
+  not a thin vertical slice.
+- Abstract material field generated specifically for the cover, with no
+  recognizable subject competing with the title.
+
+Avoid:
+- Tall narrow image columns created by putting a landscape image into a skinny
+  `height:70vh` container with `object-fit:cover`.
+- Crops that show only a door edge, server rack sliver, laptop corner, cable
+  strip, face fragment, or other low-information slice.
+- Raw rectangular photos dropped next to a title without feathering, overlay,
+  masking, or a clear relationship to the layout.
+- Cover images that overlap the title unless the overlap is the central design
+  idea and the text remains fully readable.
+
+Cover image QA:
+- Inspect the rendered cover at desktop and mobile sizes.
+- If the subject is cropped so tightly that it reads as a random texture or
+  vertical stripe, change the container aspect ratio, use `object-fit:contain`,
+  regenerate the image, or remove the image and use a typographic/material
+  cover.
+- If the cover image looks like an ordinary split-layout content slide, revise
+  the cover composition before generating the rest of the deck.
+
 ### Content slide backgrounds
 
 **Content slides (all middle slides) NEVER use background images.** Use solid colors or gradients only, defined in `style.css` or inline styles.

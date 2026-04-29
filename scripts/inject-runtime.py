@@ -260,7 +260,7 @@ COMMON_CSS = """
 /* Reset & Base — fallback values ensure text is always visible even if generated
    uses non-standard CSS variable names (e.g. --text-primary instead of --text) */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-body{background-color:var(--bg, #0a0c16);color:var(--text, #e8eaf0);font-family:var(--font-body, system-ui, -apple-system, sans-serif);overflow:hidden;color-scheme:dark;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}
+body{background-color:var(--bg, var(--field, #0a0c16));color:var(--text, var(--ink, var(--fg, var(--foreground, #e8eaf0))));font-family:var(--font-body, system-ui, -apple-system, sans-serif);overflow:hidden;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}
 #deck{position:relative;width:100vw;height:100vh;overflow:hidden}
 
 /* Slide visibility & positioning (FLIP engine requirement) */
@@ -277,10 +277,11 @@ svg path[fill="none"],svg line,svg polyline{vector-effect:non-scaling-stroke}
 .ms-nowrap,.ms-cjk-token{display:inline-block;white-space:nowrap}
 .kicker[data-magic-id],.chip[data-magic-id],.tag[data-magic-id],.badge[data-magic-id],.pill[data-magic-id],.label[data-magic-id],.eyebrow[data-magic-id]{white-space:nowrap!important;inline-size:max-content;max-inline-size:none;flex-shrink:0}
 .ms-cjk-balance{text-wrap:balance}
-.card,.stat-item,.compare-panel,.metric-poster{min-width:0;overflow:hidden;container-type:inline-size}
+.card,.stat-item,.compare-panel,.metric-poster,.time-card,.timeline-card,.phase-card,.step-card,.lane-card{min-width:0;overflow:visible;container-type:inline-size}
 .card-title{max-inline-size:100%;font-size:clamp(1.45rem,2.2vw,2.45rem);font-size:clamp(1.45rem,18cqw,2.45rem);line-height:1.02;overflow-wrap:break-word;word-break:normal;text-wrap:balance}
 .card-subtitle{max-inline-size:100%;font-size:clamp(.92rem,1.15vw,1.2rem);font-size:clamp(.92rem,9cqw,1.2rem);line-height:1.15;overflow-wrap:break-word;word-break:normal}
 .card-body,.card-desc{max-inline-size:100%;font-size:clamp(.95rem,1.25vw,1.25rem);font-size:clamp(.95rem,9cqw,1.25rem);line-height:1.42;overflow-wrap:break-word;word-break:normal}
+.time-card .year,.timeline-card .year,.phase-card .phase-title,.step-card .step-title,.lane-card .lane-title{max-inline-size:100%;font-size:clamp(1.6rem,20cqw,3.25rem);line-height:.94;overflow-wrap:break-word;word-break:normal;text-wrap:balance}
 .card .stat-value,.stat-item .stat-value,.compare-panel .stat-value,.metric-poster .stat-value{max-width:100%;font-size:clamp(2.4rem,4.6vw,5.2rem);font-size:clamp(2.4rem,30cqw,5.2rem);line-height:.9;letter-spacing:-.04em;overflow-wrap:normal;word-break:keep-all;white-space:nowrap}
 .stat-value+.stat-label{display:block;margin-top:.75rem}
 .stat-item .stat-label,.card .stat-label,.compare-panel .stat-label,.metric-poster .stat-label{max-inline-size:100%;font-size:clamp(.82rem,1.05vw,1.08rem);font-size:clamp(.82rem,8cqw,1.08rem);line-height:1.22;overflow-wrap:break-word;word-break:normal}
@@ -294,7 +295,7 @@ svg path[fill="none"],svg line,svg polyline{vector-effect:non-scaling-stroke}
 
 /* Progress bar & counter */
 .progress{position:fixed;bottom:0;left:0;height:3px;background:var(--accent, #3ba3ff);z-index:100;transition:width 0.2s ease}
-.counter{position:fixed;bottom:1rem;right:2rem;font-size:0.85rem;color:var(--subtext, #9ca3af);z-index:100;font-family:var(--font-mono, ui-monospace, monospace);font-variant-numeric:tabular-nums}
+.counter{position:fixed;bottom:1rem;right:2rem;font-size:0.85rem;color:var(--subtext, var(--muted, #9ca3af));z-index:100;font-family:var(--font-mono, ui-monospace, monospace);font-variant-numeric:tabular-nums}
 
 /* Slide dock navigation */
 #slide-dock{--dock-bg-left:0px;--dock-bg-right:0px;position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(calc(100% + 4px));display:flex;align-items:flex-end;gap:9px;padding:10px 18px 15px;background:transparent;border:0;z-index:300;isolation:isolate;transition:transform 0.32s cubic-bezier(0.4,0,0.2,1)}

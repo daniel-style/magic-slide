@@ -60,6 +60,10 @@ The project includes `scripts/websearch.py` for PipeLLM-backed web research. It
 is intended for decks where current facts, market context, product details, or
 source-backed claims matter.
 
+When a user agrees to web search, Magic Slide should run `scripts/websearch.py`
+first. Agent-provided/default web search tools are fallback paths only after the
+PipeLLM script cannot produce usable results.
+
 The search path is treated as a first-class part of deck quality: use it to
 sharpen the thesis, improve evidence slides, and avoid generic summaries. Search
 results should be converted into a clear argument, not pasted into slides as a

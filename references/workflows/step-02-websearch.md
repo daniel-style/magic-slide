@@ -2,6 +2,13 @@
 
 **CRITICAL:** Do NOT search automatically. Always ask the user first.
 
+**Search priority rule:** If the user agrees to web search, you MUST first run
+the skill's PipeLLM script, `scripts/websearch.py`, for the generated search
+queries. Do not use the agent's built-in/default web search as the first search
+path. Built-in agent search is a fallback only after `websearch.py` is missing,
+cannot be executed, authentication/network/API errors prevent usable results, or
+all script searches return no usable organic results.
+
 ### MUST Use AskUserQuestion Tool
 
 **CRITICAL:** You MUST use the AskUserQuestion tool to ask about web search. Text-based interaction is ONLY a fallback if the tool is unavailable.
@@ -37,6 +44,8 @@ if answers[...] == "Yes":
         shell=True, capture_output=True, text=True
     )
     SKILL_DIR = skill_dir_result.stdout.strip()
+    if not SKILL_DIR:
+        raise RuntimeError("Could not locate magic-slide-skill; cannot run scripts/websearch.py")
     
     # Generate multiple search queries for comprehensive coverage
     search_queries = [
@@ -47,6 +56,8 @@ if answers[...] == "Yes":
     ]
     
     # Execute searches in parallel using multiple Bash calls
+    # This script-first path is mandatory after the user agrees to search.
+    # Do not substitute the agent's built-in/default web search here.
     search_results = []
     for query in search_queries:
         result = Bash(
@@ -72,8 +83,9 @@ if answers[...] == "Yes":
     
     if not unique_results:
         # Search was requested but produced no usable results. Try another
-        # available search tool. If none exists, tell the user search failed and
-        # ask whether to proceed without current sources.
+        # available search tool only after this script-first attempt. If none
+        # exists, tell the user search failed and ask whether to proceed without
+        # current sources.
         raise RuntimeError("Web search requested but no usable results were collected")
 
     # Format search context for outline generation
@@ -88,7 +100,11 @@ if answers[...] == "Yes":
 
 **ONLY use this if AskUserQuestion tool is not available or fails.**
 
-Ask the user in plain text whether they want web search for their topic. If yes, find the skill directory and use `$SKILL_DIR/scripts/websearch.py` via Bash for each query in parallel, then incorporate combined results into the outline.
+Ask the user in plain text whether they want web search for their topic. If yes, find the skill directory and use `$SKILL_DIR/scripts/websearch.py` via Bash for each query in parallel, then incorporate combined results into the outline. The same script-first priority applies in fallback interaction mode: do not use built-in/default agent search until the script path has been attempted and failed.
 
-If web search was requested and every query fails, pause before outlining. Either use another available search capability or ask the user to approve proceeding without current sources. For modern companies, products, laws, prices, statistics, or news, do not replace failed search with unsourced memory without explicit user approval.
-
+If web search was requested and every `websearch.py` query fails, then and only
+then use another available search capability such as the agent's built-in web
+search. If no fallback search is available or fallback search also fails, pause
+before outlining and ask the user to approve proceeding without current sources.
+For modern companies, products, laws, prices, statistics, or news, do not replace
+failed search with unsourced memory without explicit user approval.

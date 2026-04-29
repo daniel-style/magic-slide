@@ -26,11 +26,16 @@ The brief must cover:
 - Typography, color, material, and depth logic.
 - Palette hygiene: how the dominant field avoids gray fog, how accent blocks
   keep contrast, and which overlays/tints are forbidden.
+- Readability hygiene: which text colors are legal on light, dark, muted, and
+  accent surfaces, and how card titles shrink or wrap before they collide.
 - The slide families/primitives the deck will use.
 - The recurring detail system: source notes, captions, rails, callouts, diagram
   labels, data treatments, or image crops.
 - Cover composition promise, including how slide 1 will be visually distinct
   from slide 2 and from ordinary content slides.
+- Cover image promise when images are used: whether the image is full-bleed,
+  wide hero art, isolated product/object, or abstract material, and how it will
+  avoid accidental skinny crops.
 - Magic Move motifs that can persist across adjacent slides.
 
 If the visual world could be reused unchanged for another topic, it is too
@@ -47,9 +52,19 @@ broad translucent white fog, gray text on colored panels, or colored blocks
 with same-hue dark text, reject it and choose a cleaner material system before
 writing CSS.
 
+If the brief would place white, cream, pale-gray, or low-opacity text on a
+light/paper field, reject it before writing CSS. Light fields need dark ink for
+headings and readable muted ink for body copy; pale text is allowed only on
+deliberately dark surfaces.
+
 If the cover promise could be implemented as a normal title-plus-cards or
 two-column content slide, reject it. Slide 1 needs a display idea before the
 deck enters its working layouts.
+
+If the cover depends on a subject image, reject any plan that places a landscape
+image inside a tall narrow column or crops it into a low-information vertical
+strip. The cover image must read as full-bleed hero art, a wide hero panel, a
+mostly visible product/object, or an abstract material field.
 
 ## Outline Is An Argument, Not An Encyclopedia
 
@@ -123,10 +138,12 @@ Avoid cover structures that look like ordinary content slides:
 - dense product map
 - memo grid / table / metrics row
 - the same system diagram that appears again later
+- skinny cropped image column beside a title
 
 Safer cover patterns:
 - large title/wordmark with one iconic object or diagram fragment
 - full-bleed image/material surface with text over it
+- wide hero image panel whose subject is readable and not arbitrarily cropped
 - oversized typographic crop plus a small subtitle/source mark
 - one simplified symbolic diagram with generous whitespace
 - dramatic single metric or quote only when it is the deck's thesis
@@ -195,6 +212,12 @@ Rules:
 - Avoid large translucent white or gray overlays on dark slides unless they are
   a visible material texture. They often turn dark fields into cloudy
   gray-green screenshots.
+- Never use white/cream/pale-gray headings, body text, card labels, or captions
+  on light, paper, canvas, blueprint, or pale-tint backgrounds. Use dark ink on
+  light fields and light ink on dark fields.
+- Avoid setting real content below `opacity:0.72` or
+  `color:rgba(..., < 0.72)`. Use a darker/lighter color token for hierarchy
+  instead of making text translucent.
 - Do not put dark same-hue text on saturated accent rectangles. Use light text
   on strong accents, or dark text on pale tints.
 - Keep neutrals tinted toward the visual world instead of default gray. Warm
@@ -291,6 +314,10 @@ Clipped text is a broken slide.
 
 Rules:
 
+- Size text from the container it lives in, not from the viewport alone. In
+  cards, timeline steps, phase boxes, lanes, and comparison cells, add
+  `container-type:inline-size` and use `cqw` or a conservative `clamp()` max for
+  large headings.
 - Use `min-width:0` on flex/grid children that contain text.
 - For wrapping text, use `max-inline-size`, line-height, and
   `overflow-wrap:break-word`.
@@ -298,8 +325,13 @@ Rules:
   maximum that fits that width.
 - For large values inside cards or panels, consider `container-type:inline-size`
   and `cqw` units so type scales from the container.
-- Never use `overflow:hidden` to hide excess text. If a glyph, digit, unit, or
-  punctuation mark is cropped, redesign the slide.
+- Long card titles such as phase names, product names, company names, and
+  workflow labels must either wrap cleanly or use
+  `font-size:clamp(..., <container-query>, <safe max>)`; never let them remain
+  at display scale inside a multi-column grid.
+- Never use `overflow:hidden`, `overflow:clip`, a mask, or low opacity to hide
+  excess text. If a glyph, digit, unit, or punctuation mark is cropped or
+  collides with a neighbor, redesign the slide.
 
 ## Required Slide Structure
 

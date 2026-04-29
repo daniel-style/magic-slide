@@ -28,17 +28,20 @@ with an absolute path.
 2. No content overflow on any slide
 3. Root slide backgrounds cover the whole viewport in normal view and overview thumbnails
 4. Slide 1 reads as a distinct cover/opening image, not the same skeleton as slide 2
-5. Palette does not look gray, foggy, or washed out in the cover, one light slide, one dark slide, and one accent slide
-6. Accent blocks/badges have clear foreground contrast and do not use dark same-hue text on saturated color
-7. Sparse slides are vertically centered unless deliberately dense/top-aligned
-8. No headings, cards, diagrams, or source notes overlap
-9. Inline SVG diagrams have no black filled connector blobs
-10. Magic Move transitions work smoothly
-11. All images load correctly
-12. Navigation works (arrows, space, click)
-13. Progress bar updates correctly
-14. Slide counter shows correct numbers
-15. Edit mode works (press 'e')
+5. Cover subject images are not accidental skinny crops, product slivers, or low-information vertical strips
+6. Palette does not look gray, foggy, or washed out in the cover, one light slide, one dark slide, and one accent slide
+7. No white/cream/pale-gray or low-opacity real text appears on light/paper/canvas slides
+8. Accent blocks/badges have clear foreground contrast and do not use dark same-hue text on saturated color
+9. Card, timeline, phase, lane, and comparison headings wrap or shrink inside their own containers; no label crosses into a neighboring card
+10. Sparse slides are vertically centered unless deliberately dense/top-aligned
+11. No headings, cards, diagrams, or source notes overlap
+12. Inline SVG diagrams have no black filled connector blobs
+13. Magic Move transitions work smoothly
+14. All images load correctly
+15. Navigation works (arrows, space, click)
+16. Progress bar updates correctly
+17. Slide counter shows correct numbers
+18. Edit mode works (press 'e')
 
 **Subjective review:**
 - Visual consistency across all slides

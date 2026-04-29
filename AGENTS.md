@@ -12,7 +12,9 @@ Magic Slide is a Codex skill that generates polished, self-contained HTML presen
 
 **Multi-phase workflow with user confirmation:**
 1. Ask user about topic, aesthetic style, language, images
-2. Ask if user wants web search (optional)
+2. Ask if user wants web search (optional). If yes, run `scripts/websearch.py`
+   first; agent/default web search is only a fallback after the script path
+   fails or returns no usable results.
 3. Generate outline and get user confirmation (REQUIRED)
 4. Write Brief Lite in the conversation before coding
 5. Read reference files, make a compact internal style/layout plan, and generate all modular HTML sources directly
@@ -53,7 +55,8 @@ All scripts are in `scripts/` directory:
 
 ```
 1. Ask about web search (AskUserQuestion)
-2. If user chooses yes, use scripts/websearch.py (PipeLLM WebSearch API)
+2. If user chooses yes, use scripts/websearch.py (PipeLLM WebSearch API) before
+   any agent/default web search fallback
 3. Generate sources/outline.md and confirm with user (AskUserQuestion - REQUIRED)
 4. Write Brief Lite in the conversation
 5. Read reference files (generation-guide.md, layout-guide.md, html-contract.md, design-system.md, flip-engine.md as needed)
