@@ -157,6 +157,9 @@ Include:
 - The deck-specific components actually needed by the story.
 - Motion keyframes used by slide transitions and non-Magic Move entrances.
 - Responsive text and container rules.
+- Official brand/logo handling when the topic has a real brand: use verified
+  assets from the supplied URL or a text-only label; never invent pseudo-logos
+  or decorative marks beside a brand name.
 
 Avoid:
 
@@ -215,6 +218,12 @@ After generating the full deck:
 - Read beginning, middle, and end slide fragments.
 - Check all slides use the required structure and file names.
 - Check Magic Move continuity against `flip-engine.md`.
+- Check branded marks against `html-contract.md`: official logo or text-only,
+  no fabricated symbols, no arbitrary pseudo-elements that read as logo
+  fragments.
+- Check inline SVG against the visual quality contract, not only the black-blob
+  safety rules: diagrams need hierarchy, aligned labels, line rhythm, and
+  enough structure to read as finished graphics.
 - Merge slides with `merge-slides.py`.
 - Inject runtime with `inject-runtime.py`.
 - Preview with `serve.py`.

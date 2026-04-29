@@ -161,6 +161,57 @@ Rules:
 - Do not put `data-magic-id` on decorative SVG paths. Use Magic Move on the
   diagram's labels, cards, nodes, or surrounding panels instead.
 
+### SVG Visual Quality Contract
+
+SVG diagrams must look like finished editorial or engineering graphics, not
+placeholder wireframes. A diagram made of a few unstyled circles, default-thick
+curves, and orphan labels is a failed slide even when the SVG is syntactically
+valid.
+
+Rules:
+- Start with a named visual role: request lifecycle, routing map, protocol
+  translator, audit trace, dependency stack, risk surface, or another concrete
+  diagram type.
+- Build at least three visible hierarchy layers: a quiet background field or
+  grid, labelled nodes/cards, and purposeful routes/annotations. Do not leave a
+  large plain rectangle containing only two or three shapes.
+- Use restrained but intentional line rhythm: primary routes, secondary routes,
+  node outlines, and evidence markers should have different weights, opacity,
+  or color jobs.
+- Align labels and nodes to an obvious grid. Avoid random floating labels,
+  disconnected circles, and curves whose geometry does not explain the story.
+- Prefer HTML labels/cards over SVG `<text>` when the labels need to remain
+  editable, responsive, or Magic Move targets.
+- If a simple diagram can only be expressed as "three circles connected by
+  lines", replace it with a richer HTML/CSS system map or add real structure:
+  lanes, stages, route types, state markers, legends, or evidence bands.
+- Inspect rendered diagrams at slide size and thumbnail size. If it reads like
+  a rough sketch or debug visualization, revise the source SVG before delivery.
+
+## Brand And Logo Contract
+
+For named companies, products, venues, or branded objects, do not invent a logo,
+icon, monogram, prefix mark, or decorative pseudo-logo. A made-up stroke beside
+a brand name is worse than no logo because it implies an official mark.
+
+Rules:
+- First look for an official logo/wordmark from the provided URL, page metadata,
+  header image, favicon, documentation, or press/brand assets.
+- If an official asset is available, use that asset for repeated deck marks or
+  brand headers. Preserve its proportions and do not redraw it from memory.
+- If no official asset is available, use a clean text-only brand label. Do not
+  fabricate a symbol, partial icon, or decorative line that could be mistaken
+  for a logo.
+- If a drawn substitute is unavoidable, it must be explicitly derived from the
+  verified official mark and should be treated as an approximation, not a new
+  brand identity.
+- Repeated slide marks should be official-logo or text-only. Avoid CSS
+  pseudo-elements such as arbitrary strokes, hooks, brackets, or glyph fragments
+  next to a brand name unless they are part of the verified identity.
+- QA the cover plus at least one ordinary content slide. If the brand mark
+  reads as a random fragment or unofficial logo, remove it or replace it with
+  the official asset.
+
 **Good SVG connector:**
 ```html
 <path class="route-blue"
