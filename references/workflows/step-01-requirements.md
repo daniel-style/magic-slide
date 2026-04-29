@@ -119,3 +119,15 @@ include_images = answers["Include AI-generated images?"] == "Yes"
 
 Ask all 4 questions in plain text, waiting for each answer before proceeding. Do not assume defaults without explicit user confirmation.
 
+Follow [text-question-templates.md](text-question-templates.md). End the
+plain-text question with a copyable template; localize the lead-in and field
+labels to the user's conversation language. English example:
+
+```text
+You can copy this template and fill it in:
+
+Topic:
+Style: [Auto / Minimal & Refined / Bold & Dramatic / Playful & Creative / Luxury & Elegant / Brutalist & Raw / Organic & Natural / custom]
+Language: [English / Chinese / Japanese / Spanish / French / other]
+Images: [No / Yes]
+```

@@ -100,7 +100,17 @@ if answers[...] == "Yes":
 
 **ONLY use this if AskUserQuestion tool is not available or fails.**
 
-Ask the user in plain text whether they want web search for their topic. If yes, find the skill directory and use `$SKILL_DIR/scripts/websearch.py` via Bash for each query in parallel, then incorporate combined results into the outline. The same script-first priority applies in fallback interaction mode: do not use built-in/default agent search until the script path has been attempted and failed.
+Ask the user in plain text whether they want web search for their topic. Follow
+[text-question-templates.md](text-question-templates.md) and end with a
+copyable template. English example:
+
+```text
+You can copy this template and fill it in:
+
+Web search: [No / Yes]
+```
+
+If yes, find the skill directory and use `$SKILL_DIR/scripts/websearch.py` via Bash for each query in parallel, then incorporate combined results into the outline. The same script-first priority applies in fallback interaction mode: do not use built-in/default agent search until the script path has been attempted and failed.
 
 If web search was requested and every `websearch.py` query fails, then and only
 then use another available search capability such as the agent's built-in web
