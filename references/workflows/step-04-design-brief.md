@@ -43,6 +43,8 @@ Rules:
 - Cover promise must make slide 1 a distinct opening image: name its focal
   object, scale move, material/image/typographic treatment, and how it differs
   from ordinary content slides.
+- If the cover uses linework, particles, nodes, traces, or pseudo-diagrams,
+  Cover promise must name the quiet text zone; see `layout-guide.md`.
 - Default cover promise must be no-image: a premium minimalist CSS material
   field built from restrained gradients, subtle pattern or texture, typography,
   and whitespace. It must read as grand, calm, simple, and high-end at first

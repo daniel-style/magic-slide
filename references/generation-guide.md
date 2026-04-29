@@ -221,6 +221,9 @@ After generating the full deck:
 - Check branded marks against `html-contract.md`: official logo or text-only,
   no fabricated symbols, no arbitrary pseudo-elements that read as logo
   fragments.
+- Check the cover against `layout-guide.md`: decorative linework, nodes, traces,
+  grids, and pseudo-elements must not cross or compete with the title,
+  subtitle, wordmark, or chip row.
 - Check inline SVG against the visual quality contract, not only the black-blob
   safety rules: diagrams need hierarchy, aligned labels, line rhythm, and
   enough structure to read as finished graphics.

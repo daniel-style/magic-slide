@@ -363,6 +363,29 @@ Rules:
 - Do not rely on `overflow:hidden` to hide a collision. Hidden overlap is still
   a broken slide.
 
+### Cover Text Safety Zone
+
+Cover decoration is only successful when it frames the title block instead of
+competing with it. A cover with route lines, dots, traces, or pseudo-diagrams
+crossing the hero copy is a readability failure even if every element fits.
+
+Rules:
+- Before placing decorative lines, particles, nodes, grids, SVG traces, or
+  pseudo-elements on a cover, define a quiet text safety zone around the title,
+  subtitle, logo/wordmark, and chip or CTA row.
+- High-contrast decoration must not pass through, touch, underline, or visually
+  slice through cover text. Keep it outside the safety zone by at least
+  `clamp(1.5rem, 3vw, 4rem)`.
+- If a background treatment sits behind text, it must be low-contrast and
+  non-directional: grain, soft texture, or a broad material wash. Do not put
+  linework, routes, arrows, nodes, or sharp geometric marks behind letterforms.
+- Use at most one decorative system on a cover, such as a material field,
+  faint grid, route motif, or particle map. If the title needs a panel or fog
+  overlay to stay readable, remove or move the decoration instead.
+- Inspect the cover at full slide size and in overview thumbnail size. If the
+  decoration is noticed before the title or makes the subtitle harder to read,
+  move it to the edges/corners, lower its contrast, or delete it.
+
 ## Common Layout Mistakes
 
 ### ❌ WRONG: Empty left, crowded right (horizontal split)

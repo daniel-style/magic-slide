@@ -248,6 +248,9 @@ Rules:
   texture, strong typography, and generous whitespace. It must look grand,
   simple, and high-end in the first second, not like a generated image was
   placed behind text.
+- Decorative layers may frame the hero, but must not cross or compete with the
+  title block. Use the Cover Text Safety Zone in `layout-guide.md` whenever the
+  cover includes linework, traces, nodes, particles, or pseudo-diagrams.
 - Use a cover background/subject image only when the user explicitly asks for
   cover imagery or the topic requires a recognizable product/place/object on
   slide 1.

@@ -94,6 +94,9 @@ Rules:
   change role after the opening.
 - The cover should have one primary focal object: hero title, product/object
   image, iconic diagram, typographic crop, or strong material field.
+- Decorative cover layers must satisfy the Cover Text Safety Zone in
+  `layout-guide.md`: no visible route, trace, dot, pseudo-element, or diagram
+  mark may cut through the title, subtitle, wordmark, or chip row.
 - If the cover uses a subject image, it must be full-bleed, a wide hero panel,
   a mostly visible product/object, or an abstract material field. Do not crop a
   landscape image into a tall skinny strip or arbitrary object sliver.
