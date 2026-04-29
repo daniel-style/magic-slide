@@ -12,10 +12,10 @@ Read:
 - `generation-guide.md`
 - `layout-guide.md`
 - `html-contract.md`
+- `flip-engine.md`
 - `{topic}/sources/outline.md`
 
-Read `flip-engine.md` only when Magic Move continuity is central, and
-`images.md` only when images are requested.
+Read `images.md` only when images are requested.
 
 ### 4b. Output Brief Lite Before CSS/HTML
 
@@ -75,6 +75,12 @@ Rules:
 - Slide families must include at least four roles, such as thesis hero,
   evidence/data, system diagram, risk map, integration map, timeline, quote, or
   closing.
+- Magic Move motif must name the recurring anchor system and at least three
+  adjacent transition beats for normal-length decks. Include any intentional
+  hard cuts so they are story decisions, not accidental missed animations.
+  Example beats: cover wordmark -> working header, agenda chip -> chapter
+  heading, small metric -> hero stat, system node -> zoomed diagram, evidence
+  card -> expanded case.
 
 ### 4c. Hard Stop Anti-Template Check
 

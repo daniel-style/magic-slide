@@ -11,7 +11,7 @@ Read:
 - `layout-guide.md`
 - `html-contract.md`
 - `design-system.md` for aesthetic guardrails and anti-template warnings
-- `flip-engine.md` only as needed for Magic Move continuity
+- `flip-engine.md` for Magic Move continuity and `data-magic-id` reliability
 - `images.md` only if images are requested
 
 ### 5b. Make a compact internal production plan
@@ -26,13 +26,18 @@ Before writing files, make a concise internal plan based on Brief Lite:
 - Footer/source-note strategy
 - Width allocation for card groups, comparison cells, and evidence bands,
   especially where a split layout would otherwise squeeze cards into one column
-- Magic Move continuity map
+- Magic Move continuity map for every adjacent slide pair: planned
+  `data-magic-id` names, exact visible text, source/target element type, and
+  intentional hard cuts
 - Slides that need diagrams, images, dense text, or split treatment
 - Slides, if any, that truly need top alignment, with a reason. Default every
   slide to vertically centered content; only dense matrices/tables/timelines
   should opt into top alignment.
 
 Keep this plan compact. It is an authoring aid, not a conversation checkpoint.
+Do not treat this as a QA checklist after generation. If the map is weak before
+HTML exists, revise the slide sequence or treatment first; that is much cheaper
+than rebuilding a finished deck.
 
 ### 5c. Generate all source files
 
@@ -47,7 +52,15 @@ notes, or intermediate files created during generation must also live under
 - Maintain the same visual language
 - Keep ordinary slides in the primary deck tone. Generate inverse-tone slides
   only when they were named in Brief Lite or the internal production plan.
-- Continue Magic Move motifs where applicable
+- Build the Magic Move spine from the outline instead of sprinkling ids after
+  the deck is done. Most adjacent pairs with continuous subject matter should
+  share at least one semantic anchor, and overview/detail or zoom-in sequences
+  should often share 2-4 anchors. Use hard cuts only for clear chapter breaks,
+  tone shifts, or visual resets.
+- Prefer semantic recurring elements: short deck marks, chapter labels,
+  agenda/list items, product/entity names, key numbers, dates, image frames,
+  diagram nodes, and card titles. Do not use decorative blobs, ghost marks, or
+  invented duplicates as Magic Move targets.
 
 **Avoid repetition:**
 - Vary layout primitives across slides
@@ -67,6 +80,11 @@ notes, or intermediate files created during generation must also live under
 - Apply `images.md` before generating or placing images, including cover-image
   and uploadable-wrapper policy.
 - Apply `flip-engine.md` for Magic Move continuity and `data-magic-id` usage.
+- If the confirmed outline does not provide enough legitimate shared anchors,
+  revise the slide treatment before writing HTML: turn a flat list into an
+  index-to-detail sequence, split an overloaded slide into setup/detail, or
+  carry a chapter marker or key number forward. Keep visible text identical for
+  shared ids.
 
 ### 5d. Handle images (if requested)
 

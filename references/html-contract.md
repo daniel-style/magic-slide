@@ -265,7 +265,10 @@ Rules:
 
 Use `flip-engine.md` as the authority for `data-magic-id` planning and FLIP
 runtime behavior. The HTML contract only verifies that Magic Move anchors are
-used intentionally and do not appear on decorative-only elements.
+used intentionally and do not appear on decorative-only elements. Normal-length
+decks should expose a real continuity spine across adjacent slides; if most
+transitions have no shared ids, revisit the outline or slide treatment rather
+than adding decorative placeholders.
 
 ## Style Requirements
 
@@ -388,7 +391,8 @@ Before delivery, check:
 - [ ] Palette does not read as gray fog; dark slides, accent blocks, and text all have clear contrast
 - [ ] No white/cream/pale-gray or low-opacity text appears on a light/paper field
 - [ ] Content text uses opacity/alpha high enough to stay readable; hierarchy is mostly color/token based, not transparency based
-- [ ] Magic Move anchors satisfy `flip-engine.md`
+- [ ] Magic Move anchors satisfy `flip-engine.md`, including semantic adjacent
+      continuity, identical visible text, and no decorative-only placeholders
 - [ ] style.css has :root variables and animations
 - [ ] Files named slide-01.html, slide-02.html, etc.
 - [ ] Layout, text-fit, vertical-balance, source-note, and overlap checks satisfy `layout-guide.md`

@@ -6,7 +6,7 @@ argument-hint: "[preview <topic> | presentation request]"
 
 # Magic Slide
 
-Generate polished HTML presentations with smooth Magic Move transitions — elements that appear on multiple slides animate fluidly between their positions.
+Generate polished HTML presentations with smooth Magic Move transitions — elements that appear on multiple slides animate fluidly between their positions. Treat Magic Move as a story-planning constraint, not an afterthought: arrange the outline so meaningful labels, numbers, cards, images, or section markers can persist across adjacent slides.
 
 ## Skill Command Arguments
 
@@ -105,9 +105,9 @@ confirmation; see `references/workflows/text-question-templates.md`.
 
 1. **Step 1: Gather requirements** — Ask ALL 4 question groups: topic/audience-lens, aesthetic style, **language** (REQUIRED - never infer from user's message language), images
 2. **Step 2: Web search** — Ask user if they want online search (optional). If they say yes, run `scripts/websearch.py` first; built-in agent search is only a fallback after the script fails or returns no usable results.
-3. **Step 3: Generate outline** — Create `{topic}/sources/outline.md` with MANDATORY elements: thesis spine, audience/lens, chapter arc, closing idea. Get user confirmation (required checkpoint)
-4. **Step 4: Write Brief Lite** — Output a compact design brief before CSS/HTML: visual world, rejected tropes, cover promise, tone mode, type/color/material logic, slide families
-5. **Step 5: Generate production sources** — Create `style.css` and all `slide-XX.html` files directly from the confirmed outline and Brief Lite
+3. **Step 3: Generate outline** — Create `{topic}/sources/outline.md` with MANDATORY elements: thesis spine, audience/lens, chapter arc, closing idea, and Magic Move spine. Get user confirmation (required checkpoint)
+4. **Step 4: Write Brief Lite** — Output a compact design brief before CSS/HTML: visual world, rejected tropes, cover promise, tone mode, type/color/material logic, slide families, Magic Move motif and transition beats
+5. **Step 5: Generate production sources** — Create `style.css` and all `slide-XX.html` files directly from the confirmed outline and Brief Lite, after making a continuity map for adjacent slide pairs
 6. **Step 6: Merge slides** — Combine modular sources into single HTML
 7. **Step 7: Inject runtime** — Run the existing injector unchanged; preserve injected behavior/results unless the user explicitly asks otherwise
 8. **Step 8: Preview & final QA** — ALWAYS launch the skill preview server with `scripts/serve.py`, keep it running, and fix objective failures before delivery
@@ -196,14 +196,15 @@ rules in this file or workflow steps.
 
 1. **Outline must be an argument, not a topic list** — Every slide advances a thesis, not just "this also exists"
 2. **Brief Lite first** — Commit to a topic-specific visual world and primary light/dark tone before writing CSS. Keep it concise, but output it so the design promise is visible.
-3. **Generate once, inspect once** — Produce the full deck after outline and Brief Lite, then use final QA to catch objective failures.
-4. **Objective QA for objective failures** — Use tools for syntax, overflow, text contrast/readability, images, SVG rendering, and Magic Move, not subjective taste scoring.
-5. **Cover is a special moment** — Slide 1 must be a distinct opening
+3. **Magic Move is planned early** — The outline should create overview/detail, chapter-marker, and recurring-anchor opportunities before HTML exists. Do not rely on decorative duplicates to manufacture motion late.
+4. **Generate once, inspect once** — Produce the full deck after outline and Brief Lite, then use final QA to catch objective failures.
+5. **Objective QA for objective failures** — Use tools for syntax, overflow, text contrast/readability, images, SVG rendering, and Magic Move, not subjective taste scoring.
+6. **Cover is a special moment** — Slide 1 must be a distinct opening
    composition with concise cover copy. Use `design-system.md`, `images.md`,
    and `html-contract.md` for the detailed cover rules.
-6. **Fast iteration** — If something's wrong, revise CSS and affected source slides quickly, then merge/inject again.
-7. **Merged HTML is an artifact** — Treat `{topic}/index.html` as generated output. Direct HTML edits are only for explicit one-off patches or the browser edit mode Save flow.
-8. **Layout reliability is mandatory** — Follow `layout-guide.md` for
+7. **Fast iteration** — If something's wrong, revise CSS and affected source slides quickly, then merge/inject again.
+8. **Merged HTML is an artifact** — Treat `{topic}/index.html` as generated output. Direct HTML edits are only for explicit one-off patches or the browser edit mode Save flow.
+9. **Layout reliability is mandatory** — Follow `layout-guide.md` for
    primitives, overflow, vertical balance, and source-note placement.
 
 **Quality bar:** Every deck should feel distinctive and intentional, not like the first thing that came to mind. If another topic could use the same design unchanged, the design is too generic.

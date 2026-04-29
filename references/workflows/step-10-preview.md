@@ -36,6 +36,9 @@ with an absolute path.
 4. `design-system.md` passes: visual world is specific, palette/readability are clean, and the cover is a distinct opening composition.
 5. `images.md` passes when images are used: assets load, content images are integrated, and cover imagery follows policy.
 6. `flip-engine.md` passes: Magic Move ids are semantic, adjacent, and animate smoothly.
+   Compare the rendered deck against the continuity map created before HTML;
+   final QA should catch implementation misses, not invent the Magic Move
+   structure after the deck is already built.
 7. Runtime controls work: arrows, space, click navigation, progress bar, slide counter, and edit mode.
 
 **Subjective review:**

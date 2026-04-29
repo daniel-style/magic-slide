@@ -78,8 +78,8 @@ the user asks to see a sample first or the visual direction is unusually risky.
    context.
 5. **Purposeful variety.** Repetition is allowed only when it creates a
    deliberate sequence.
-6. **Magic Move continuity.** Reuse semantic elements across adjacent slides
-   when the story naturally continues.
+6. **Magic Move continuity.** Plan semantic elements across adjacent slides
+   before writing HTML, then reuse them when the story naturally continues.
 7. **Text fits by design.** Do not rely on runtime rescue, hidden overflow, or
    manual browser edits.
 
@@ -201,11 +201,39 @@ General rules:
 
 ## Magic Move Strategy
 
-Before coding all slides, map adjacent slide pairs.
+Before coding all slides, map adjacent slide pairs. This is an editorial pass,
+not a post-generation audit. If the map is thin, revise the outline, slide
+order, or slide treatment before generating HTML.
 
 Use `flip-engine.md` as the authority for `data-magic-id` rules and runtime
 behavior. Before full generation, write a compact continuity map that covers
-each adjacent pair, then verify the actual IDs after generation.
+each adjacent pair, then carry that map into the HTML as you write each
+affected slide pair.
+
+The continuity map should include:
+
+- The adjacent pair, such as `slide-03 -> slide-04`.
+- Planned id names, exact visible text, and element type on both sides.
+- The motion role: travel, shrink, expand, zoom into detail, remain as deck
+  mark, or carry chapter context.
+- Any intentional hard cut, with a story reason.
+
+Default density target:
+
+- In decks with five or more slides, most adjacent pairs should share at least
+  one meaningful Magic Move anchor unless they are intentional hard cuts.
+- Overview/detail, agenda/section, system-map/zoom, timeline/detail, and
+  metric/setup sequences should usually share 2-4 anchors.
+- A deck where only the cover title moves once is underusing the skill. Fix
+  the outline or slide treatment before polishing CSS.
+- Never add decorative duplicates, hidden ghosts, or fake repeated labels just
+  to satisfy density. The fix is content arrangement: stable labels, chapter
+  markers, card titles, key numbers, images, and diagram nodes that are truly
+  the same thing.
+- Hard stop before HTML: if the continuity map mostly says "none" or repeats
+  only a tiny global deck mark, do not proceed. Re-sequence the content into
+  index-to-detail, setup-to-reveal, map-to-zoom, or compare-to-case beats until
+  the Magic Move opportunities are real.
 
 ## Objective QA
 
@@ -228,6 +256,10 @@ After generating the full deck:
 - Check inline SVG against the visual quality contract, not only the black-blob
   safety rules: diagrams need hierarchy, aligned labels, line rhythm, and
   enough structure to read as finished graphics.
+- During source review, compare the generated `data-magic-id` anchors against
+  the pre-code continuity map. Fix local omissions in the affected source
+  slides; do not use final QA as the first moment to invent the Magic Move
+  structure.
 - Merge slides with `merge-slides.py`.
 - Inject runtime with `inject-runtime.py`.
 - Preview with `serve.py`.

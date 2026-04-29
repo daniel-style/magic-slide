@@ -15,8 +15,8 @@ Magic Slide is a Codex skill that generates polished, self-contained HTML presen
 2. Ask if user wants web search (optional). If yes, run `scripts/websearch.py`
    first; agent/default web search is only a fallback after the script path
    fails or returns no usable results.
-3. Generate outline and get user confirmation (REQUIRED)
-4. Write Brief Lite in the conversation before coding
+3. Generate outline with a Magic Move spine and get user confirmation (REQUIRED)
+4. Write Brief Lite, including Magic Move motif/transition beats, in the conversation before coding
 5. Read reference files, make a compact internal style/layout plan, and generate all modular HTML sources directly
 6. Merge slides into single HTML
 7. Inject FLIP engine and runtime
@@ -57,9 +57,9 @@ All scripts are in `scripts/` directory:
 1. Ask about web search (AskUserQuestion)
 2. If user chooses yes, use scripts/websearch.py (PipeLLM WebSearch API) before
    any agent/default web search fallback
-3. Generate sources/outline.md and confirm with user (AskUserQuestion - REQUIRED)
-4. Write Brief Lite in the conversation
-5. Read reference files (generation-guide.md, layout-guide.md, html-contract.md, design-system.md, flip-engine.md as needed)
+3. Generate sources/outline.md with Magic Move spine and confirm with user (AskUserQuestion - REQUIRED)
+4. Write Brief Lite with Magic Move motif/transition beats in the conversation
+5. Read reference files (generation-guide.md, layout-guide.md, html-contract.md, design-system.md, flip-engine.md; images.md when needed)
 6. Read sources/outline.md
 7. Generate a compact internal style/layout plan, then create sources/ files directly (style.css, slide-01.html, slide-02.html, ...)
 8. merge-slides.py combines them into index.html

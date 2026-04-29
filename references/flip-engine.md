@@ -140,6 +140,14 @@ function getMagic(slide) {
 
 Treat Magic Move as part of the narrative structure, not just a title trick. Before writing adjacent slides, quickly map which elements should persist.
 
+Plan this before HTML, ideally while writing or refining the outline. A strong
+Magic Slide deck usually contains a visible continuity spine: a short deck mark
+or chapter label that travels, overview items that expand into detail slides,
+small numbers that become hero stats, system nodes that become zoomed diagrams,
+or evidence cards that become case-study layouts. If the planned deck has no
+natural shared elements, improve the content sequence before trying to patch
+motion into finished slides.
+
 Long display titles are usually poor Magic Move anchors when the target is a
 small deck mark or navigation label. Let the hero title wrap and behave like
 normal slide typography; put `data-magic-id` on a shorter stable mark, chip,
@@ -155,7 +163,13 @@ overflow risk.
 
 **Practical density guidance:**
 - Most adjacent slides with overlapping subject matter should share at least 1 meaningful element
+- For decks with 5+ slides, aim for Magic Move on a majority of adjacent pairs unless the outline has explicit hard cuts
 - Overview/detail or zoom-in sequences often support 2-4 shared elements
+- The cover should usually hand off one stable title, mark, image, or key phrase into slide 2, then the ordinary deck should continue with its own recurring anchors
+- A tiny global deck mark that persists on every slide is useful, but it does
+  not count as a rich Magic Move system by itself. Add local/content anchors
+  that change scale, position, or role between adjacent slides.
+- If an audit shows only one or two shared pairs in a normal-length deck, revise the outline or slide treatment before final polish
 - If only one small part of a block is truly stable, animate that sub-element instead of the whole wrapper
 - Tag changes are fine when the semantic entity is clearly the same and the visible text still matches
 - Do not add placeholder duplicates purely to manufacture motion
