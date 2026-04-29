@@ -70,6 +70,27 @@ python3 "$SKILL_DIR/scripts/generate-image.py" "prompt text" --output ./assets/i
 python3 "$SKILL_DIR/scripts/merge-slides.py" ./sources/ --lang en
 ```
 
+## CRITICAL: Injected Runtime Output Boundary
+
+Treat `scripts/inject-runtime.py` and the behavior/results it injects into the
+finished deck as Magic Slide runtime output. During deck generation, updates,
+and QA, run the existing injector unchanged and preserve its injected behavior
+by default. Do not edit the injector, patch injected runtime blocks in
+`{topic}/index.html`, or add source CSS/HTML/JS whose purpose is to disable,
+hide, neutralize, or override injected features unless the user explicitly asks
+for that specific runtime behavior change.
+
+Examples of prohibited "cleanup" without explicit user request: hiding the
+animated/custom cursor, restoring the system cursor with `cursor: auto` or
+`cursor: default`, removing or hiding navigation/progress/edit controls,
+turning off Magic Move, suppressing injected stagger, or bypassing runtime fit.
+
+If a deck has a visual or layout issue, fix the modular source files
+(`sources/style.css` and `sources/slide-XX.html`) around the runtime behavior,
+then re-run merge and inject. If the issue appears to be caused by injected
+runtime behavior itself, report the suspected runtime issue or ask before
+changing it; only modify runtime behavior when the user requested that change.
+
 ## Quick Workflow
 
 **Default to the balanced path.** Keep the outline checkpoint, write a short
@@ -88,12 +109,12 @@ end structured questions with a copyable response template; see
 4. **Step 4: Write Brief Lite** — Output a compact design brief before CSS/HTML: visual world, rejected tropes, cover promise, type/color/material logic, slide families
 5. **Step 5: Generate production sources** — Create `style.css` and all `slide-XX.html` files directly from the confirmed outline and Brief Lite
 6. **Step 6: Merge slides** — Combine modular sources into single HTML
-7. **Step 7: Inject runtime** — Add FLIP engine and interactive features
+7. **Step 7: Inject runtime** — Run the existing injector unchanged; preserve injected behavior/results unless the user explicitly asks otherwise
 8. **Step 8: Preview & final QA** — ALWAYS launch the skill preview server with `scripts/serve.py`, keep it running, and fix objective failures before delivery
 
 **NON-NEGOTIABLE DELIVERY RULE:** After generating or updating a deck, do not finish until `python3 "$SKILL_DIR/scripts/serve.py" {topic}/index.html` is running and you have given the user the preview URL. Opening the HTML file directly is not enough: edit mode, save, image replacement, and close/shutdown controls require the Magic Slide preview server. Never substitute `python3 -m http.server`, `npx serve`, or a file URL for the skill server.
 
-**NON-NEGOTIABLE UPDATE RULE:** When the user continues in chat after a deck has been generated and asks for changes, edit the modular source files first: `{topic}/sources/style.css`, `{topic}/sources/slide-XX.html`, and any source-local helpers. Then re-run `merge-slides.py`, re-run `inject-runtime.py`, and refresh or restart the Magic Slide preview server. Do not edit `{topic}/index.html` directly for agent-driven follow-up changes unless the user explicitly asks to patch the merged HTML, or the change comes from the browser edit mode Save flow.
+**NON-NEGOTIABLE UPDATE RULE:** When the user continues in chat after a deck has been generated and asks for changes, edit the modular source files first: `{topic}/sources/style.css`, `{topic}/sources/slide-XX.html`, and any source-local helpers. Then re-run `merge-slides.py`, re-run the existing `inject-runtime.py` unchanged, and refresh or restart the Magic Slide preview server. Do not edit `{topic}/index.html` directly for agent-driven follow-up changes unless the user explicitly asks to patch the merged HTML, or the change comes from the browser edit mode Save flow.
 
 **Brief Lite is not optional.** It is the quality guardrail that prevents
 generic or frightening template output. Keep it concise. Only use the slower
@@ -110,7 +131,7 @@ Each step has detailed instructions in the `references/workflows/` directory. Re
 - [Step 4: Write Brief Lite](references/workflows/step-04-design-brief.md) - Compact required design brief before coding
 - [Step 5: Generate Production Sources](references/workflows/step-07-generate.md) - Create `style.css` and all slides directly from the confirmed outline and Brief Lite
 - [Step 6: Merge Slides](references/workflows/step-08-merge.md) - Combine modular sources into single HTML
-- [Step 7: Inject Runtime](references/workflows/step-09-inject.md) - Add FLIP engine and interactive features
+- [Step 7: Inject Runtime](references/workflows/step-09-inject.md) - Run the existing injector and preserve injected behavior/results unless explicitly requested otherwise
 - [Step 8: Preview & Final QA](references/workflows/step-10-preview.md) - Launch preview and verify quality
 
 Legacy optional workflow files:
