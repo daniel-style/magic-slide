@@ -29,6 +29,22 @@ When invoked as `/magic-slide preview [topic]` in Claude Code or
 For any other `magic-slide` invocation arguments, treat the arguments as the
 user's presentation request and follow the normal generation workflow.
 
+## Non-Preview Intake Gate
+
+Before running commands, searching, creating folders, writing an outline, or
+generating slides for any non-preview deck request, complete Step 1 in
+`references/workflows/step-01-requirements.md`.
+
+Hard gate:
+- If topic/audience-lens, aesthetic style, presentation language, or image
+  policy is missing, inferred, or only implied, ask the Step 1 requirements
+  question and stop.
+- Do not treat the user's chat language as the presentation language.
+- Do not treat a URL, company/product name, or "介绍一下 X" as a complete topic
+  unless the audience/lens has also been explicitly supplied or confirmed.
+- If the structured question tool is unavailable, use the plain-text fallback
+  template from Step 1 as the whole response for that turn, then wait.
+
 ## CRITICAL: Script Execution Rules
 
 **All scripts in this skill are located in the `scripts/` directory relative to the skill root.**
@@ -66,7 +82,7 @@ fails. Always try AskUserQuestion first. If you must fall back to plain text,
 end structured questions with a copyable response template; see
 `references/workflows/text-question-templates.md`.
 
-1. **Step 1: Gather requirements** — Ask ALL 4 questions: topic, aesthetic style, **language** (REQUIRED - never infer from user's message language), images
+1. **Step 1: Gather requirements** — Ask ALL 4 question groups: topic/audience-lens, aesthetic style, **language** (REQUIRED - never infer from user's message language), images
 2. **Step 2: Web search** — Ask user if they want online search (optional). If they say yes, run `scripts/websearch.py` first; built-in agent search is only a fallback after the script fails or returns no usable results.
 3. **Step 3: Generate outline** — Create `{topic}/sources/outline.md` with MANDATORY elements: thesis spine, audience/lens, chapter arc, closing idea. Get user confirmation (required checkpoint)
 4. **Step 4: Write Brief Lite** — Output a compact design brief before CSS/HTML: visual world, rejected tropes, cover promise, type/color/material logic, slide families
@@ -88,7 +104,7 @@ visual direction, or a small sample before generating the whole deck.
 
 Each step has detailed instructions in the `references/workflows/` directory. Read the relevant file when you reach that step:
 
-- [Step 1: Gather Requirements](references/workflows/step-01-requirements.md) - **MUST ask ALL 4 questions: topic, style, language (REQUIRED), images. Never skip language question.**
+- [Step 1: Gather Requirements](references/workflows/step-01-requirements.md) - **MUST ask ALL 4 question groups: topic/audience-lens, style, language (REQUIRED), images. Never skip language question.**
 - [Step 2: Web Search](references/workflows/step-02-websearch.md) - Optional online search for current information
 - [Step 3: Generate Outline](references/workflows/step-03-outline.md) - Create and confirm presentation structure
 - [Step 4: Write Brief Lite](references/workflows/step-04-design-brief.md) - Compact required design brief before coding
