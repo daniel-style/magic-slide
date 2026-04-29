@@ -404,11 +404,11 @@ svg path[fill="none"],svg line,svg polyline{vector-effect:non-scaling-stroke}
 
 /* === Stagger entrance animations === */
 @keyframes ms-fade-in{from{opacity:0}to{opacity:var(--ms-stagger-final-opacity,1)}}
-@keyframes ms-fade-in-up{from{opacity:0;transform:translateY(var(--ms-stagger-y,30px))}to{opacity:var(--ms-stagger-final-opacity,1);transform:translateY(0)}}
-@keyframes ms-fade-in-down{from{opacity:0;transform:translateY(calc(var(--ms-stagger-y,30px) * -1))}to{opacity:var(--ms-stagger-final-opacity,1);transform:translateY(0)}}
-@keyframes ms-fade-in-left{from{opacity:0;transform:translateX(calc(var(--ms-stagger-x,30px) * -1))}to{opacity:var(--ms-stagger-final-opacity,1);transform:translateX(0)}}
-@keyframes ms-fade-in-right{from{opacity:0;transform:translateX(var(--ms-stagger-x,30px))}to{opacity:var(--ms-stagger-final-opacity,1);transform:translateX(0)}}
-@keyframes ms-zoom-in{from{opacity:0;transform:scale(0.8)}to{opacity:var(--ms-stagger-final-opacity,1);transform:scale(1)}}
+@keyframes ms-fade-in-up{from{opacity:0;transform:var(--ms-stagger-base-transform,translateZ(0)) translateY(var(--ms-stagger-y,30px))}to{opacity:var(--ms-stagger-final-opacity,1);transform:var(--ms-stagger-base-transform,translateZ(0)) translateY(0)}}
+@keyframes ms-fade-in-down{from{opacity:0;transform:var(--ms-stagger-base-transform,translateZ(0)) translateY(calc(var(--ms-stagger-y,30px) * -1))}to{opacity:var(--ms-stagger-final-opacity,1);transform:var(--ms-stagger-base-transform,translateZ(0)) translateY(0)}}
+@keyframes ms-fade-in-left{from{opacity:0;transform:var(--ms-stagger-base-transform,translateZ(0)) translateX(calc(var(--ms-stagger-x,30px) * -1))}to{opacity:var(--ms-stagger-final-opacity,1);transform:var(--ms-stagger-base-transform,translateZ(0)) translateX(0)}}
+@keyframes ms-fade-in-right{from{opacity:0;transform:var(--ms-stagger-base-transform,translateZ(0)) translateX(var(--ms-stagger-x,30px))}to{opacity:var(--ms-stagger-final-opacity,1);transform:var(--ms-stagger-base-transform,translateZ(0)) translateX(0)}}
+@keyframes ms-zoom-in{from{opacity:0;transform:var(--ms-stagger-base-transform,translateZ(0)) scale(0.8)}to{opacity:var(--ms-stagger-final-opacity,1);transform:var(--ms-stagger-base-transform,translateZ(0)) scale(1)}}
 
 /* Apply to JS-marked stagger elements */
 .ms-stagger-item{animation:ms-fade-in-up var(--ms-stagger-duration,0.5s) var(--ms-ease,cubic-bezier(0.25,1,0.5,1)) both;animation-delay:calc(var(--ms-stagger-base-delay,110ms) + var(--stagger-index,0) * 80ms)}
@@ -1005,7 +1005,9 @@ function go(from,to){
     }
     function markLeaf(el){
       if(sharedIds.length>0&&fromTexts[el.tagName+'|'+el.textContent.trim()])return;
-      el.style.setProperty('--ms-stagger-final-opacity',getComputedStyle(el).opacity||'1');
+      var cs=getComputedStyle(el);
+      el.style.setProperty('--ms-stagger-final-opacity',cs.opacity||'1');
+      el.style.setProperty('--ms-stagger-base-transform',cs.transform&&cs.transform!=='none'?cs.transform:'translateZ(0)');
       el.classList.add('ms-stagger-item');
       if(isTextBlock(el))el.classList.add('ms-stagger-text');
       el.style.setProperty('--stagger-index',staggerIndex);
@@ -1095,6 +1097,7 @@ function go(from,to){
         el.classList.remove('ms-stagger-item');
         el.classList.remove('ms-stagger-text');
         el.style.removeProperty('--ms-stagger-final-opacity');
+        el.style.removeProperty('--ms-stagger-base-transform');
       });
       animating=false;
     },Math.max(dur+50,staggerN*80+550));
@@ -1224,6 +1227,7 @@ function go(from,to){
       el.classList.remove('ms-stagger-item');
       el.classList.remove('ms-stagger-text');
       el.style.removeProperty('--ms-stagger-final-opacity');
+      el.style.removeProperty('--ms-stagger-base-transform');
       });
       animating=false;
   },Math.max(dur+40,staggerN*80+550));
