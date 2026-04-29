@@ -175,6 +175,12 @@ Rules:
 - For non-wrapping text, first allocate a container width, then choose a font-size `clamp()` that fits that width.
 - For card-contained text, prefer `container-type:inline-size` on the card and container query units (`cqw`) in the text size.
 - Use `min-width:0` on flex/grid children containing text.
+- Do not put three or more metric/text cards inside one half-width split
+  column. Four-card and five-card groups must use the full slide width, a
+  dedicated Metrics/Grid primitive, or multiple slides.
+- Long word/phrase metric values must be sized like card headings, not like
+  short numeric stats. They may wrap, use a lower minimum font size, or move
+  into wider cards; they must never overlap adjacent cards.
 - If the full text cannot fit, reduce the max font size, widen the container, allow wrapping, or split the slide.
 - Do not hide text overflow with `overflow:hidden`, `overflow:clip`, masks, or
   fades. If content needs hiding to look tidy, the slide is over budget.
@@ -398,4 +404,9 @@ Before delivery, check:
 - [ ] Layout, text-fit, vertical-balance, source-note, and overlap checks satisfy `layout-guide.md`
 - [ ] Card groups use available slide width and do not compress paragraph cards
       into unreadably narrow columns while nearby horizontal space is empty
+- [ ] Ordinary scorecard, comparison, KPI, evidence, and split slides are
+      vertically centered unless their main content genuinely fills the height
+      budget
+- [ ] Metric/card labels do not collide with neighboring cards; four-card
+      groups are not squeezed into half-width columns
 - [ ] Inline SVG connector paths include `fill="none"` and fallback stroke attributes

@@ -26,13 +26,18 @@ Before writing files, make a concise internal plan based on Brief Lite:
 - Footer/source-note strategy
 - Width allocation for card groups, comparison cells, and evidence bands,
   especially where a split layout would otherwise squeeze cards into one column
+- Card-count gate for split layouts: if one half of a horizontal split would
+  contain three or more metric/text cards, move the card group to a full-width
+  evidence band, use a Metrics/Grid slide, or split the content. Do not make
+  four-card metric grids inside a half-width column.
 - Magic Move continuity map for every adjacent slide pair: planned
   `data-magic-id` names, exact visible text, source/target element type, and
   intentional hard cuts
 - Slides that need diagrams, images, dense text, or split treatment
 - Slides, if any, that truly need top alignment, with a reason. Default every
   slide to vertically centered content; only dense matrices/tables/timelines
-  should opt into top alignment.
+  should opt into top alignment, and only when the main content fills most of
+  the usable height.
 
 Keep this plan compact. It is an authoring aid, not a conversation checkpoint.
 Do not treat this as a QA checklist after generation. If the map is weak before
@@ -75,6 +80,15 @@ notes, or intermediate files created during generation must also live under
 - Do not leave large horizontal dead zones while text cards overflow or wrap
   word-by-word. Use the slide width, convert cramped card rows into full-width
   evidence bands, or split the slide.
+- Do not use large metric-value styling for long words in narrow cards. If a
+  metric value is a word/phrase, size it as a card heading from the container
+  width, allow wrapping, or give it a wider card. Cards whose titles overlap
+  neighboring cards are broken even if every text rectangle remains inside the
+  viewport.
+- Do not add `.slide-top`, `.slide-dense`, or a top-aligned root class to
+  ordinary evidence, scorecard, KPI, comparison, or split slides. Top alignment
+  is reserved for content that genuinely occupies the height budget; otherwise
+  the source must stay vertically centered.
 - Apply `html-contract.md` for slide structure, root backgrounds, SVG, file
   naming, deck tone mode, and final verification.
 - Apply `images.md` before generating or placing images, including cover-image

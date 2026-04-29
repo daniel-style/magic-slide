@@ -33,6 +33,14 @@ with an absolute path.
    Treat cramped card rows with word-by-word wrapping as a failure when nearby
    horizontal space is empty; revise the source layout to use the available
    width or split the slide.
+   Also treat card-title collisions as failures even when the text remains
+   inside the viewport. In rendered review, scan metric/card grids for words
+   crossing into neighboring cards, especially four-card rows inside split
+   columns.
+   Treat ordinary slides whose main content sits in the upper third with a
+   large empty area below as failures. Remove `.slide-top` / `.slide-dense`,
+   center the `.slide-content`, or redesign the primitive unless the content is
+   genuinely dense enough to fill the height budget.
 4. `design-system.md` passes: visual world is specific, palette/readability are clean, and the cover is a distinct opening composition.
 5. `images.md` passes when images are used: assets load, content images are integrated, and cover imagery follows policy.
 6. `flip-engine.md` passes: Magic Move ids are semantic, adjacent, and animate smoothly.

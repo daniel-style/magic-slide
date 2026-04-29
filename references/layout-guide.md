@@ -83,6 +83,17 @@ Rules:
 - Do not place a three-card evidence row under a right-column paragraph while
   the left side or outer slide margins are empty. Reallocate that horizontal
   space to the card group.
+- In a horizontal split, a single column may contain at most two paragraph or
+  metric cards unless each card has a proven minimum text measure of `16ch`.
+  Three or more cards belong in a full-width evidence band, a separate
+  Metrics/Grid slide, or a second slide.
+- Never place four or five metric cards inside one half-width column. This
+  causes long labels such as customer names, retention labels, and attach-rate
+  labels to collide even when viewport-bound checks pass.
+- For metric cards whose value is a word or phrase rather than a short number,
+  treat the value as a heading: allow wrapping, lower the minimum font size,
+  or use a wider card. Do not use a large non-wrapping metric style for words
+  like `Customers`, `Retention`, or `Attach Rate` in narrow cards.
 - Prefer `grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr))`
   for variable card groups, and use larger minima such as `16rem`-`18rem` when
   cards contain paragraphs.
@@ -101,6 +112,12 @@ nothing technically overflows.
 Rules:
 - Default to centered `.slide-content`; do not use `.slide-dense`,
   `.slide-top`, or `justify-content:flex-start` for ordinary slides.
+- Hard gate: do not add `.slide-top`, `.slide-dense`, or
+  `justify-content:flex-start` unless the main content group occupies at least
+  about 70% of the usable slide height or the slide contains a genuinely dense
+  table/matrix/timeline/diagram that would otherwise collide with the top
+  navigation. A title, subtitle, compact table, card row, and source note do
+  not satisfy this gate.
 - A source note, footer, slide counter, or small caption does not make a slide
   dense. Reserve footer space, but keep the primary group centered in the
   remaining visual field.
@@ -113,6 +130,10 @@ Rules:
   fills most of the viewport: dense tables, multi-row matrices, long timelines,
   or complex diagrams. If the content group occupies less than roughly two
   thirds of the usable height, top alignment is almost always wrong.
+- If a rendered slide has a large empty region below the main content group,
+  remove the top-aligned class or enlarge/rebalance the primitive. Do not leave
+  ordinary evidence, scorecard, KPI, or comparison slides stranded in the upper
+  third.
 - Keep `.slide-content` vertically centered and let the main `.stage` or
   primitive container be the centered child.
 - If a slide needs a very small visual, either enlarge the visual intentionally

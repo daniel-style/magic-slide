@@ -109,6 +109,15 @@ For every slide:
 7. Only then write the HTML.
 
 If a slide needs two root layouts at once, split it into two slides.
+If a horizontal split wants three or more cards in one column, it is no longer
+a split slide. Promote the card group to a full-width evidence band, use a
+dedicated Metrics/Grid primitive, or split the idea. Do not shrink word-based
+metric cards until their titles collide.
+
+Keep ordinary slides vertically centered. Add top alignment only for genuinely
+dense tables, matrices, long timelines, or complex diagrams that fill most of
+the usable slide height. A compact scorecard or card grid with a large empty
+area below is a broken vertical-balance slide, not a dense slide.
 
 `layout-guide.md` is the authority for primitives, text fit, overflow,
 collision budgets, vertical balance, and source-note placement. `html-contract.md`
