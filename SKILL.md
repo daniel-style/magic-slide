@@ -100,8 +100,8 @@ a separate prototype unless the user explicitly asks for that slower workflow.
 **USER INTERACTION RULE:** All user confirmations MUST use the AskUserQuestion
 tool. Text-based questions are ONLY a fallback if the tool is unavailable or
 fails. Always try AskUserQuestion first. If you must fall back to plain text,
-end structured questions with a copyable response template; see
-`references/workflows/text-question-templates.md`.
+end structured questions with a copyable response template, except for outline
+confirmation; see `references/workflows/text-question-templates.md`.
 
 1. **Step 1: Gather requirements** — Ask ALL 4 question groups: topic/audience-lens, aesthetic style, **language** (REQUIRED - never infer from user's message language), images
 2. **Step 2: Web search** — Ask user if they want online search (optional). If they say yes, run `scripts/websearch.py` first; built-in agent search is only a fallback after the script fails or returns no usable results.

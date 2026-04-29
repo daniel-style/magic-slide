@@ -79,15 +79,7 @@ AskUserQuestion(
 **ONLY use this if AskUserQuestion tool is not available or fails.**
 
 Show the outline summary in plain text and ask the user to confirm, request
-changes, or edit `{topic}/sources/outline.md` directly. Follow
-[text-question-templates.md](text-question-templates.md) and end with a
-copyable template. English example:
-
-```text
-You can copy this template and fill it in:
-
-Outline decision: [Looks good, proceed / I'll edit it first / Change something]
-Changes requested:
-```
+changes, or edit `{topic}/sources/outline.md` directly. Do not include a
+copyable response template or example reply for outline confirmation.
 
 Do not proceed to Step 4 until the user explicitly confirms.
