@@ -63,22 +63,61 @@ choose the single point that matters.
 Reserve footer space when a source note is needed. A source note appended after
 an already-full layout is a common cause of bottom clipping.
 
-### Sparse Slide Centering Rule
+### Usable Width And Card Group Rule
 
-When a slide has only a title/subtitle, one compact diagram, one quote, or a
-short list, the primary content should sit around the visual center of the
-viewport.
+Use the slide's available width before shrinking supporting cards. A common
+failure is putting three or four text cards inside a narrow text column while
+large blank areas remain on either side of the slide. That is a layout failure,
+even when the cards technically fit.
 
 Rules:
-- Do not use `.slide-dense`, `.slide-top`, or `justify-content:flex-start` for
-  sparse slides.
+- The base `.slide-content` should give ordinary slides a wide 16:9 content
+  budget. Avoid a narrow centered content column unless the primitive is
+  intentionally editorial text.
+- Multi-card rows, phase boxes, comparison cells, and small evidence cards need
+  a real minimum inline size. As a rule of thumb, body-text cards should not
+  drop below `14rem` or about `16ch` of readable text width.
+- If a row of cards would become narrower than its text budget, let the group
+  span the full primary layout width, move it below the split as a full-width
+  evidence band, reduce the number of cards, or split the slide.
+- Do not place a three-card evidence row under a right-column paragraph while
+  the left side or outer slide margins are empty. Reallocate that horizontal
+  space to the card group.
+- Prefer `grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr))`
+  for variable card groups, and use larger minima such as `16rem`-`18rem` when
+  cards contain paragraphs.
+- Use `min-width:0`, `container-type:inline-size`, `max-inline-size:100%`, and
+  `overflow-wrap:break-word` on card contents so long words wrap inside the
+  intended card instead of escaping or forcing overflow.
+
+### Vertical Balance Rule
+
+Most slides should have their primary content group around the optical center
+of the viewport. This applies to ordinary business-report, evidence, metrics,
+image+text, comparison, quote, and diagram slides. A slide feels broken when its
+main group sits in the upper third with a large unused area below, even if
+nothing technically overflows.
+
+Rules:
+- Default to centered `.slide-content`; do not use `.slide-dense`,
+  `.slide-top`, or `justify-content:flex-start` for ordinary slides.
+- A source note, footer, slide counter, or small caption does not make a slide
+  dense. Reserve footer space, but keep the primary group centered in the
+  remaining visual field.
+- Do not put source notes in the same centered flex column with
+  `margin-top:auto`; that pushes the primary content group upward and creates a
+  false "balanced" layout. Prefer an absolutely positioned `.source` anchored
+  near the bottom of `.slide-content`, or wrap the main content in a `.stage`
+  that stays centered while the source note sits outside the centering flow.
+- Top alignment is allowed only when the main content truly needs it because it
+  fills most of the viewport: dense tables, multi-row matrices, long timelines,
+  or complex diagrams. If the content group occupies less than roughly two
+  thirds of the usable height, top alignment is almost always wrong.
 - Keep `.slide-content` vertically centered and let the main `.stage` or
   primitive container be the centered child.
-- If a footer/source note is required, reserve bottom padding but do not push the
-  main content into the upper third of the slide.
-- If a sparse slide needs a very small visual, either enlarge the visual
-  intentionally or tighten the content group; do not leave a large accidental
-  dead zone below it.
+- If a slide needs a very small visual, either enlarge the visual intentionally
+  or tighten the content group; do not leave a large accidental dead zone below
+  it.
 - Runtime may add `.ms-sparse-balance` to repair accidental top alignment, but
   source slides should still be authored centered. Runtime classes
   `.ms-fit-top` and `.ms-fit-scale` are warnings; revise the source layout
@@ -175,8 +214,8 @@ p { font-size: clamp(1rem, 1.15vw, 1.3rem); }
 
 ## Required CSS for .slide-content
 
-**In style.css, ALWAYS include a neutral base that does not force every slide to
-be centered:**
+**In style.css, ALWAYS include a neutral base that vertically centers ordinary
+slides:**
 
 ```css
 .slide-content {
@@ -185,7 +224,7 @@ be centered:**
   justify-content: center;
   align-items: stretch;
   width: 100%;
-  max-width: 1280px;
+  max-width: 1680px;
   margin: 0 auto;
   padding: clamp(2.5rem, 5vw, 5rem);
   min-height: 100vh;
@@ -201,19 +240,29 @@ be centered:**
 .slide-dense .slide-content {
   justify-content: flex-start;
 }
+
+.source {
+  position: absolute;
+  left: clamp(2.5rem, 5vw, 5rem);
+  right: clamp(2.5rem, 5vw, 5rem);
+  bottom: clamp(1.8rem, 3vw, 3rem);
+}
 ```
 
 **Why these properties matter:**
 - `display: flex` — Enables flexible layout
 - `flex-direction: column` — Stack content vertically
-- `justify-content: center` — Centers simple slides; dense slides must override
-  to `flex-start`
+- `justify-content: center` — Centers ordinary slides by default; only truly
+  dense slides may override to `flex-start`
 - `align-items: stretch` — Gives each primitive a predictable width budget
-- `max-width: 1200px` — Prevent content from being too wide
+- `max-width: 1680px` — Uses a wide 16:9 content budget without letting text
+  become unmanageably long
 - `min-height: 100vh` — Fill viewport height
 - `padding: 4rem` — Breathing room on all sides
-- Dense, evidence, comparison, and source-heavy slides should use a top-aligned
-  variant such as `.slide-dense` so the layout has a predictable footer budget.
+- Evidence, comparison, metrics, image+text, and source-noted slides should
+  remain centered unless their main content fills most of the viewport. Use a
+  top-aligned variant such as `.slide-dense` only for genuinely dense tables,
+  large matrices, long timelines, or complex diagrams with an explicit reason.
 
 ## Slide Type Patterns
 
@@ -283,6 +332,9 @@ Non-wrapping tokens are high-risk because a single string can be wider than its 
 Rules:
 - Before choosing a font size, decide the container width budget and the longest likely text string.
 - Prefer container-relative sizing for text inside cards: set `container-type:inline-size` on the card and use `cqw` inside `clamp()`.
+- Text cards with paragraph copy need enough inline space to breathe. If a
+  card's usable text measure falls below roughly `16ch`, widen the card, let
+  the card group use more of the slide, or split the content.
 - Use `white-space:nowrap` only when the full token fits. Otherwise reduce the max font size, widen the container, or allow wrapping.
 - Use `min-width:0` on grid/flex children and `max-inline-size:100%` on text blocks so parent constraints actually work.
 - In multi-column layouts, large headings must also be capped by the column width, such as `max-inline-size:min(100%, 18ch)`. A heading with `18ch` alone can still overflow a narrow grid track and cover the neighboring panel.
@@ -324,6 +376,44 @@ Rules:
 </div>
 ```
 **Problem:** One side is empty, creating unbalanced layout. Use vertical stack instead, or put image on the empty side.
+
+### ❌ WRONG: Three cards squeezed inside one narrow column
+```html
+<div class="split" style="display:grid; grid-template-columns:1fr 1fr; gap:4rem;">
+  <figure><!-- small image --></figure>
+  <div>
+    <h2>Services deepen the base.</h2>
+    <p>Short explanation.</p>
+    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:.75rem;">
+      <article class="card">Distribution...</article>
+      <article class="card">Utility...</article>
+      <article class="card">Financial cadence...</article>
+    </div>
+  </div>
+</div>
+```
+**Problem:** The cards inherit only the right column's width while the slide's
+outer width stays unused, so body text wraps every word and may overflow.
+
+### ✅ CORRECT: Card row gets a full-width evidence band
+```html
+<div class="stage" style="display:grid; gap:clamp(1.5rem,3vw,3rem);">
+  <div style="display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap:clamp(2rem,4vw,4rem); align-items:center;">
+    <figure style="min-width:0;"><!-- image --></figure>
+    <div style="min-width:0;">
+      <h2 style="max-inline-size:min(100%,14ch);">Services deepen the base.</h2>
+      <p style="max-inline-size:42rem;">Short explanation.</p>
+    </div>
+  </div>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr)); gap:clamp(1rem,2vw,1.5rem);">
+    <article class="card" style="min-width:0; container-type:inline-size;">Distribution...</article>
+    <article class="card" style="min-width:0; container-type:inline-size;">Utility...</article>
+    <article class="card" style="min-width:0; container-type:inline-size;">Financial cadence...</article>
+  </div>
+</div>
+```
+**Why:** The image/text split stays balanced, and the supporting cards use the
+available horizontal space instead of becoming narrow columns.
 
 ### ❌ WRONG: No structure
 ```html
@@ -431,6 +521,8 @@ Before generating, ensure:
       toward hero-scale sizes
 - [ ] Text has max-width constraints (700-900px)
 - [ ] Every text element is fully visible inside its intended container; non-wrapping tokens have an explicit width budget
+- [ ] Multi-card rows use the available slide width; no paragraph card is
+      squeezed below roughly `16ch` while nearby horizontal space is empty
 - [ ] Spacing uses clamp() for responsive gaps
 - [ ] No absolute positioning chaos
 - [ ] Layout works at different screen sizes

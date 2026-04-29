@@ -17,9 +17,21 @@ These CSS rules are injected automatically. Deck sources can override them with 
 
 To override: use inline `style` on the element or a `<style>` block in the skeleton.
 
-## Background images — atmosphere behind text
+## Background images — opt-in atmosphere behind text
 
-**CRITICAL RULE: Background images are ONLY used on the first slide (cover) and last slide (closing).** All middle content slides use solid colors or gradients only.
+**CRITICAL RULE: Default to no background images.** Cover slides should normally
+use a premium minimalist CSS material field instead: restrained gradients,
+subtle pattern or texture, strong typography, and generous whitespace. It must
+read as grand, calm, simple, and high-end at first glance.
+
+Background images are allowed only in narrow cases:
+- The user explicitly asks for cover imagery or photographic/generated cover
+  art.
+- The topic requires a recognizable product, place, or object on slide 1.
+- A closing slide explicitly needs a visual background.
+
+All middle content slides use solid colors, CSS gradients, diagrams, or content
+images only. Never add background images to middle slides.
 
 ```html
 <div class="bg" style="background-image:url('./[topic]-assets/slide-N-bg.png')"></div>
@@ -28,11 +40,25 @@ To override: use inline `style` on the element or a `<style>` block in the skele
 
 The `.bg::after` overlay gradient is injected by default. Text always sits on the dark side. Deck sources can customize the overlay via inline style on `.bg` when needed (e.g. stronger overlay for darker themes, softer for lighter ones).
 
+Do not implement the apparent cover background as an uploadable image wrapper,
+inset panel, or document-flow image. If a cover background image is explicitly
+allowed, it must be owned by the root `.slide` background or a full-bleed
+absolutely positioned decorative layer behind `.slide-content`.
+
 **Background prompts must produce purely abstract, texture-only images — no recognisable objects, no readable text, no detailed illustrations.** The image will be covered by a dark gradient overlay and slide text; any content in the image will compete with and obscure the text.
 
 ### Cover slide backgrounds (special requirements)
 
-**Cover slides need subtle, understated backgrounds that create visual impact without overwhelming the title.** The goal is restrained elegance with just enough visual interest to elevate the design. **Background images must be low-key and sophisticated — never busy or distracting. The title is the hero, not the background.**
+**Cover slide background images are not the default.** Use them only when the
+user explicitly requested cover imagery or the topic requires a recognizable
+cover subject. Otherwise, create the cover with CSS gradients, pattern, texture,
+typography, and whitespace.
+
+When a cover background image is allowed, it must be subtle and understated,
+creating visual impact without overwhelming the title. The goal is restrained
+elegance with just enough visual interest to elevate the design. **Background
+images must be low-key and sophisticated — never busy or distracting. The title
+is the hero, not the background.**
 
 **Cover background formula:**
 ```
@@ -87,6 +113,9 @@ Avoid:
 
 Cover image QA:
 - Inspect the rendered cover at desktop and mobile sizes.
+- If the user did not explicitly request cover imagery and the cover uses a
+  generated/photo background anyway, remove the image and replace it with a CSS
+  material field before delivery.
 - If the subject is cropped so tightly that it reads as a random texture or
   vertical stripe, change the container aspect ratio, use `object-fit:contain`,
   regenerate the image, or remove the image and use a typographic/material

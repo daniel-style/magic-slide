@@ -43,9 +43,17 @@ Rules:
 - Cover promise must make slide 1 a distinct opening image: name its focal
   object, scale move, material/image/typographic treatment, and how it differs
   from ordinary content slides.
+- Default cover promise must be no-image: a premium minimalist CSS material
+  field built from restrained gradients, subtle pattern or texture, typography,
+  and whitespace. It must read as grand, calm, simple, and high-end at first
+  glance.
+- Do not plan a generated/photo background for the cover unless the user
+  explicitly asked for cover imagery or the topic requires a recognizable
+  product/place/object on slide 1.
 - If the cover uses an image, Cover promise must say how the image is framed:
   full-bleed, wide hero panel, mostly visible object/product, or abstract
-  material. Do not allow a skinny cropped image strip as the cover visual.
+  material. Do not allow a skinny cropped image strip, low-information object
+  sliver, or ordinary uploadable image wrapper as the cover visual.
 - Type/color/material must assign jobs to colors; do not let one brand color
   dominate every surface.
 - Type/color/material must include a palette hygiene promise: the dominant field
@@ -65,6 +73,8 @@ Before writing CSS, reject the brief and revise it if it depends on:
 - Circuit-board, Matrix, cyber tunnel, abstract network, glowing grid, or
   "AI brain" wallpaper.
 - A huge title over a generic generated tech background.
+- A cover whose main impact depends on a generated/photo background image when
+  the user did not explicitly ask for cover imagery.
 - A cover that reuses the same two-column, card-grid, memo-panel, table, or
   ordinary system-diagram layout as the content slides.
 - A cover that places a landscape/generated subject image in a tall skinny

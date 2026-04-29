@@ -243,6 +243,14 @@ Rules:
 - It may use a hero wordmark, oversized title, full-bleed product/object/image,
   strong typographic crop, single symbolic diagram, dramatic whitespace, or
   one memorable material surface.
+- Default to a no-image cover. The safest high-end cover is a premium
+  minimalist CSS material field: restrained gradients, subtle pattern or
+  texture, strong typography, and generous whitespace. It must look grand,
+  simple, and high-end in the first second, not like a generated image was
+  placed behind text.
+- Use a cover background/subject image only when the user explicitly asks for
+  cover imagery or the topic requires a recognizable product/place/object on
+  slide 1.
 - It should have fewer content regions than normal slides. Avoid rows of
   repeated cards, dense tables, memo grids, or a balanced two-column evidence
   layout on the cover.

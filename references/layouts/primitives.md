@@ -79,14 +79,14 @@ For layout principles and guidelines, see [layout-guide.md](../layout-guide.md).
     <h2 style="font-size: 2.5rem; margin-bottom: 2rem; align-self: flex-start;">
       Slide Title
     </h2>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; width: 100%;">
-      <div>
+    <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 4vw, 4rem); width: 100%;">
+      <div style="min-width: 0;">
         <h3 style="font-size: 1.8rem; margin-bottom: 1rem;">Left Column</h3>
-        <p style="font-size: 1.2rem; line-height: 1.6;">Content here</p>
+        <p style="font-size: 1.2rem; line-height: 1.6; max-inline-size: 100%; overflow-wrap: break-word;">Content here</p>
       </div>
-      <div>
+      <div style="min-width: 0;">
         <h3 style="font-size: 1.8rem; margin-bottom: 1rem;">Right Column</h3>
-        <p style="font-size: 1.2rem; line-height: 1.6;">Content here</p>
+        <p style="font-size: 1.2rem; line-height: 1.6; max-inline-size: 100%; overflow-wrap: break-word;">Content here</p>
       </div>
     </div>
   </div>
@@ -95,9 +95,11 @@ For layout principles and guidelines, see [layout-guide.md](../layout-guide.md).
 
 **Key points:**
 - Use CSS Grid for columns
-- Equal width columns (1fr 1fr)
+- Equal width columns with shrink-safe tracks (`minmax(0, 1fr)`)
 - Adequate gap (2-3rem)
 - Consistent font sizes
+- Add `min-width:0` to columns that contain text so long labels wrap inside
+  their track instead of escaping
 
 ### 5. Image + Text Slide (Vertical Stack)
 
@@ -132,20 +134,20 @@ For layout principles and guidelines, see [layout-guide.md](../layout-guide.md).
 <section class="slide" data-id="image-text" data-transition="fade" data-stagger="cascade" data-bg="dark">
   <div class="slide-content" style="flex-direction: row; align-items: center; gap: clamp(2rem, 4vw, 4rem);">
     <!-- Left: Image -->
-    <div style="flex: 0 0 45%; display: flex; justify-content: center; align-items: center;">
+    <div style="flex: 0 1 45%; min-width: 0; display: flex; justify-content: center; align-items: center;">
       <img src="assets/image-1.png" alt="Description" 
            style="max-width: 100%; height: auto; border-radius: 0.5rem;">
     </div>
     
     <!-- Right: Text content -->
-    <div style="flex: 1; display: flex; flex-direction: column; gap: clamp(1rem, 2vw, 2rem);">
-      <h2 style="font-size: clamp(2rem, 4vw, 4rem); line-height: 1.2;">
+    <div style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: clamp(1rem, 2vw, 2rem);">
+      <h2 style="font-size: clamp(2rem, 4vw, 4rem); line-height: 1.2; max-inline-size: min(100%, 14ch);">
         The 81-Point Game
       </h2>
       <h3 style="font-size: clamp(3rem, 6vw, 6rem); font-weight: 900; line-height: 1;">
         81
       </h3>
-      <p style="font-size: clamp(1rem, 1.15vw, 1.3rem); line-height: 1.6;">
+      <p style="font-size: clamp(1rem, 1.15vw, 1.3rem); line-height: 1.6; max-inline-size: 42rem; overflow-wrap: break-word;">
         On January 22, 2006, Kobe scored 81 points against the Toronto Raptors
       </p>
       <p style="font-size: clamp(0.78rem, 0.9vw, 0.95rem); opacity: 0.7; line-height: 1.6;">
@@ -158,16 +160,19 @@ For layout principles and guidelines, see [layout-guide.md](../layout-guide.md).
 
 **Key points:**
 - Override `.slide-content` with `flex-direction: row` (inline style)
-- Left side: Fixed width (45%) for image container
-- Right side: Flexible width (`flex: 1`) for text content
+- Left side: starting width near 45% for image container, allowed to shrink
+- Right side: Flexible width (`flex: 1 1 0`) for text content, with `min-width:0`
 - Use `gap` for spacing between columns (not margin)
 - Image container uses flexbox centering
 - Text content stacked vertically with internal gaps
 - **NEVER leave one side empty** — always balance content
+- **Do not put a three-card row inside the text column** when the cards become
+  narrow. Move those cards into a full-width evidence band below the split, or
+  split the slide.
 
 **Why this works:**
-- `flex: 0 0 45%` — Image takes exactly 45% width, doesn't grow/shrink
-- `flex: 1` — Text takes remaining space (55% minus gap)
+- `flex: 0 1 45%` — Image starts near 45% width but can shrink safely
+- `flex: 1 1 0` — Text takes remaining space and can shrink because `min-width:0` is set
 - `gap: clamp(2rem, 4vw, 4rem)` — Responsive spacing between columns
 - Both sides have content, preventing the "empty left, crowded right" problem
 
@@ -176,6 +181,9 @@ For layout principles and guidelines, see [layout-guide.md](../layout-guide.md).
 - If the media keeps its own `aspect-ratio`, its wrapper should hug the media's natural height rather than fill the sibling column.
 - If one column becomes mostly empty structural space instead of intentional negative space, this layout choice is wrong. Switch to a vertical stack or split into two slides.
 - Use horizontal split only when both sides carry substantial, balanced content.
+- Supporting card groups must follow `layout-guide.md`: each paragraph card
+  needs roughly `16ch` of usable text width and should use available slide
+  width before text is shrunk.
 
 ### 7. Code Slide
 
@@ -199,4 +207,3 @@ For layout principles and guidelines, see [layout-guide.md](../layout-guide.md).
 - Adequate padding
 - Monospace font (inherited)
 - Overflow handling
-
