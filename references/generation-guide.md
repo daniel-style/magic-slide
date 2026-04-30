@@ -272,11 +272,22 @@ After generating the full deck:
 - Merge slides with `merge-slides.py`.
 - Inject runtime with `inject-runtime.py`.
 - Preview with `serve.py`.
+- Run the QA overview gate from `step-10-preview.md` before detailed viewport
+  checks. Open `?ms_qa=overview`, scan every card, and triage the summary plus
+  issue tags.
+- Treat QA overview `FAIL` as blocking: broken iframe/image loads, visible
+  overflow, adjacent `data-magic-id` text mismatches, and other failure tags
+  must be fixed in `sources/`, followed by merge, inject, and another QA
+  overview pass.
+- Treat QA overview `WARN` as requiring full-size review: runtime `.ms-fit-top`
+  / `.ms-fit-scale`, transparent root backgrounds, and ordinary tone
+  mismatches are actionable unless they are named intentional design
+  exceptions.
 - Run browser or manual viewport checks on every slide at a normal 16:9 viewport
   and a smaller 16:9 viewport, such as `1440x900` and `1024x576`.
 - Check for overflow, clipped text, broken images, dead zones, unbalanced
-  columns, and runtime fit issues using `step-10-preview.md` as the delivery
-  checklist.
+  columns, sparse framed panels, and runtime fit issues using
+  `step-10-preview.md` as the delivery checklist.
 - If any slide receives `.ms-fit-scale` or `.ms-fit-top`, treat it as a layout
   failure and revise the source slide. Runtime fit is an alarm, not a pass.
 - If images were requested, verify the final deck has actual assets and rendered

@@ -21,6 +21,36 @@ process, use that URL. If the command fails because the skill directory was not
 found, locate `magic-slide-skill` manually and re-run the same `serve.py` script
 with an absolute path.
 
+### 10a.1 QA overview gate
+
+Run the runtime QA overview before detailed screenshots. This is an agent
+quality gate, not an optional user aid.
+
+1. Open the preview URL with `?ms_qa=overview`, or press `Q` in the running
+   preview.
+2. Prefer browser automation or Playwright: scroll the QA grid until every
+   `.qa-card` has `data-scanned="1"`, then read `#qa-summary`, each card's
+   `data-status`, and its `.qa-tag` labels.
+3. If automation is unavailable, manually open QA overview, scroll through the
+   full grid, and inspect `Issues only`.
+4. Record the QA summary and issue tags in your working notes so the final
+   response can report the outcome.
+
+Triage rules:
+
+- `FAIL` blocks delivery. Fix the modular source files, then re-run
+  `merge-slides.py`, `inject-runtime.py`, `serve.py` if needed, and the QA
+  overview gate.
+- `WARN` requires full-size review. Fix actionable warnings; keep only named
+  intentional exceptions, such as a deliberate inverse-tone display slide.
+- QA overview flags high-signal heuristics: iframe/image load failures, visible
+  overflow, runtime `.ms-fit-*` rescue classes, transparent root backgrounds,
+  ordinary tone deviations, sparse framed panels, and adjacent `data-magic-id`
+  text mismatches.
+- QA overview is a first-pass radar. After it is clean, still do targeted
+  full-size screenshots or rendered slide checks for the cover, dense/content
+  slides, diagrams/images, and any formerly flagged pages.
+
 ### 10b. Final QA checklist
 
 **Objective checks:**
@@ -41,6 +71,8 @@ with an absolute path.
    large empty area below as failures. Remove `.slide-top` / `.slide-dense`,
    center the `.slide-content`, or redesign the primitive unless the content is
    genuinely dense enough to fill the height budget.
+   Treat oversized framed panels around low-density content as failures per
+   `layout-guide.md`; shrink the frame, remove it, or make the diagram complete.
 4. `design-system.md` passes: visual world is specific, palette/readability are clean, and the cover is a distinct opening composition.
 5. `images.md` passes when images are used: assets load, content images are integrated, and cover imagery follows policy.
 6. `flip-engine.md` passes: Magic Move ids are semantic, adjacent, and animate smoothly.
@@ -70,6 +102,7 @@ with an absolute path.
 Tell the user:
 - Preview is running at the displayed URL from `scripts/serve.py`
 - Final HTML is at `{topic}/index.html`
+- QA overview result, such as `QA overview: 40 slides, 0 fail, 0 actionable warn`
 - Final assets, if any, are in `{topic}/assets/`
 - They can edit sources in `{topic}/sources/` and re-run merge/inject
 - Process files such as outline, helper scripts, and QA artifacts are kept in
@@ -94,6 +127,8 @@ been generated:
 3. Re-run runtime injection:
    `python3 "$SKILL_DIR/scripts/inject-runtime.py" {topic}/index.html --lang {language}`
 4. Refresh or restart the Magic Slide preview server and give the user the URL.
+5. Re-run the QA overview gate. For pure text edits, at minimum confirm the
+   touched slides did not gain new `FAIL` or actionable `WARN` items.
 
 Do not patch `{topic}/index.html` directly for normal follow-up edits. The
 merged HTML is generated output. Direct edits are allowed only when the user

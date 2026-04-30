@@ -110,11 +110,13 @@ confirmation; see `references/workflows/text-question-templates.md`.
 5. **Step 5: Generate production sources** — Create `style.css` and all `slide-XX.html` files directly from the confirmed outline and Brief Lite, after making a continuity map for adjacent slide pairs
 6. **Step 6: Merge slides** — Combine modular sources into single HTML
 7. **Step 7: Inject runtime** — Run the existing injector unchanged; preserve injected behavior/results unless the user explicitly asks otherwise
-8. **Step 8: Preview & final QA** — ALWAYS launch the skill preview server with `scripts/serve.py`, keep it running, and fix objective failures before delivery
+8. **Step 8: Preview, QA overview gate, targeted full-size QA, and delivery** — ALWAYS launch the skill preview server with `scripts/serve.py`, run the runtime QA overview gate first, then do targeted full-size checks and fix objective failures before delivery
 
 **NON-NEGOTIABLE DELIVERY RULE:** After generating or updating a deck, do not finish until `python3 "$SKILL_DIR/scripts/serve.py" {topic}/index.html` is running and you have given the user the preview URL. Opening the HTML file directly is not enough: edit mode, save, image replacement, and close/shutdown controls require the Magic Slide preview server. Never substitute `python3 -m http.server`, `npx serve`, or a file URL for the skill server.
 
-**NON-NEGOTIABLE UPDATE RULE:** When the user continues in chat after a deck has been generated and asks for changes, edit the modular source files first: `{topic}/sources/style.css`, `{topic}/sources/slide-XX.html`, and any source-local helpers. Then re-run `merge-slides.py`, re-run the existing `inject-runtime.py` unchanged, and refresh or restart the Magic Slide preview server. Do not edit `{topic}/index.html` directly for agent-driven follow-up changes unless the user explicitly asks to patch the merged HTML, or the change comes from the browser edit mode Save flow.
+**NON-NEGOTIABLE QA GATE:** After `serve.py` is running, open the deck with `?ms_qa=overview` or press `Q`, scan every QA card, and triage all `FAIL` / `WARN` items before delivery. QA overview is the first-pass radar; it does not replace full-size screenshots or rendered slide review.
+
+**NON-NEGOTIABLE UPDATE RULE:** When the user continues in chat after a deck has been generated and asks for changes, edit the modular source files first: `{topic}/sources/style.css`, `{topic}/sources/slide-XX.html`, and any source-local helpers. Then re-run `merge-slides.py`, re-run the existing `inject-runtime.py` unchanged, refresh or restart the Magic Slide preview server, and re-run the QA overview gate before delivery. Do not edit `{topic}/index.html` directly for agent-driven follow-up changes unless the user explicitly asks to patch the merged HTML, or the change comes from the browser edit mode Save flow.
 
 **Brief Lite is not optional.** It is the quality guardrail that prevents
 generic or frightening template output. Keep it concise. Only use the slower

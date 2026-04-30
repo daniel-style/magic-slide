@@ -375,7 +375,11 @@ placement, and overflow/collision policy.
    - Fix: move the card group into a full-width evidence band, widen the layout
      track, reduce the card count, or split the slide
 
-10. **SVG route renders as a black blob**
+10. **Oversized frame around sparse content**
+   - Fix: apply `layout-guide.md`'s framed content occupancy rule; shrink or
+     remove the frame, or expand the diagram with meaningful internal structure
+
+11. **SVG route renders as a black blob**
    - Fix: add `fill="none"` and fallback stroke attributes to the source SVG path
    - Avoid: complex masks/filters/blend modes or decorative filled path blobs
 
@@ -404,6 +408,8 @@ Before delivery, check:
 - [ ] Layout, text-fit, vertical-balance, source-note, and overlap checks satisfy `layout-guide.md`
 - [ ] Card groups use available slide width and do not compress paragraph cards
       into unreadably narrow columns while nearby horizontal space is empty
+- [ ] Framed main visuals satisfy `layout-guide.md` occupancy rules; no large
+      bordered panel is mostly empty around sparse content
 - [ ] Ordinary scorecard, comparison, KPI, evidence, and split slides are
       vertically centered unless their main content genuinely fills the height
       budget

@@ -30,6 +30,9 @@ Before writing files, make a concise internal plan based on Brief Lite:
   contain three or more metric/text cards, move the card group to a full-width
   evidence band, use a Metrics/Grid slide, or split the content. Do not make
   four-card metric grids inside a half-width column.
+- Framed-content occupancy for main visuals, using `layout-guide.md`: a large
+  bordered panel must have a real filled diagram/composition, not a tiny row
+  inside an empty frame.
 - Magic Move continuity map for every adjacent slide pair: planned
   `data-magic-id` names, exact visible text, source/target element type, and
   intentional hard cuts
@@ -80,6 +83,9 @@ notes, or intermediate files created during generation must also live under
 - Do not leave large horizontal dead zones while text cards overflow or wrap
   word-by-word. Use the slide width, convert cramped card rows into full-width
   evidence bands, or split the slide.
+- Do not wrap a low-density mini-flow, chip row, or few small nodes in an
+  oversized `visual-card`/panel. Apply `layout-guide.md`'s framed content
+  occupancy rule.
 - Do not use large metric-value styling for long words in narrow cards. If a
   metric value is a word/phrase, size it as a card heading from the container
   width, allow wrapping, or give it a wider card. Cards whose titles overlap

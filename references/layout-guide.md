@@ -47,6 +47,32 @@ and one generic card is usually under-designed. A slide with many tiny items is
 usually overloaded. If content does not fit cleanly inside one primitive, split
 it into two slides rather than cramming.
 
+### Framed Content Occupancy Rule
+
+A visible frame, panel, card, or `visual-card` promises that the area inside it
+contains a finished visual object. Do not use a large bordered container as
+padding around a tiny row of nodes, chips, or cards. That reads as an empty
+placeholder, not intentional negative space.
+
+Rules:
+- A framed main visual must either be tightly sized to its contents or have
+  enough internal structure to feel complete: routes, lanes, annotations,
+  legends, axes, callouts, nested regions, image/detail layers, or a deliberate
+  art-directed composition.
+- Do not give generic frame classes a large `min-height` and then reuse them
+  for low-density content. `min-height`, aspect-ratio, and large padding belong
+  on specific slide roles whose content actually fills that surface.
+- If a system map has only two to four small nodes, prefer an unframed flow,
+  a full-width row of individual cards, or a compact band. Add a parent frame
+  only when the parent itself communicates something, such as a boundary,
+  runtime, region, stage, or controlled environment.
+- If most of the frame's interior is blank after rendering, fix the source:
+  shrink the frame, expand the diagram, add meaningful supporting structure, or
+  split the idea. Do not accept the empty area as "breathing room."
+- Intentional negative space is allowed outside the primary object or inside a
+  designed composition. It is not allowed as accidental dead space inside a
+  bordered wrapper.
+
 ### Viewport Budget Rule
 
 Before writing markup, count vertical zones:
@@ -459,6 +485,34 @@ outer width stays unused, so body text wraps every word and may overflow.
 **Why:** The image/text split stays balanced, and the supporting cards use the
 available horizontal space instead of becoming narrow columns.
 
+### ❌ WRONG: Large empty frame around a tiny flow
+```html
+<div class="visual-card" style="min-height:24rem;">
+  <div class="pipeline" style="display:grid; grid-template-columns:repeat(3,1fr);">
+    <div class="node">Client</div>
+    <div class="node">Gateway</div>
+    <div class="node">Models</div>
+  </div>
+</div>
+```
+**Problem:** The frame is much larger than the actual flow, so the empty
+interior looks like missing content. Shrink the wrapper, remove the wrapper, or
+turn the flow into a complete diagram with lanes, routes, labels, and callouts.
+
+### ✅ CORRECT: Compact flow without a fake stage
+```html
+<div class="stage" style="display:grid; gap:clamp(1.5rem,3vw,2.5rem);">
+  <div><!-- heading and lead copy --></div>
+  <div class="pipeline" style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(1rem,2vw,1.5rem);">
+    <article class="card">Client</article>
+    <article class="card">Gateway</article>
+    <article class="card">Models</article>
+  </div>
+</div>
+```
+**Why:** The content itself carries the structure. There is no oversized parent
+box implying a larger visual that never arrives.
+
 ### ❌ WRONG: No structure
 ```html
 <section class="slide" data-id="bad" data-transition="fade" data-stagger="cascade" data-bg="dark">
@@ -567,6 +621,8 @@ Before generating, ensure:
 - [ ] Every text element is fully visible inside its intended container; non-wrapping tokens have an explicit width budget
 - [ ] Multi-card rows use the available slide width; no paragraph card is
       squeezed below roughly `16ch` while nearby horizontal space is empty
+- [ ] Framed main visuals have real internal occupancy; no oversized bordered
+      wrapper surrounds a tiny row, sparse chips, or a low-density mini-flow
 - [ ] Spacing uses clamp() for responsive gaps
 - [ ] No absolute positioning chaos
 - [ ] Layout works at different screen sizes
