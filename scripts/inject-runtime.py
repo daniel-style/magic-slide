@@ -90,6 +90,12 @@ def strip(html: str) -> str:
         flags=re.DOTALL
     )
     h = re.sub(
+        r'<div id="qa-overview"[\s\S]*?(?=<div id="ms-toolbar"|<div id="ms-rich-toolbar"|<div id="ms-toast"|<script>|</body>)',
+        '',
+        h,
+        flags=re.DOTALL
+    )
+    h = re.sub(
         r'<div id="ms-toolbar"[\s\S]*?(?=<div id="ms-rich-toolbar"|<div id="ms-toast"|<script>|</body>)',
         '',
         h,
@@ -104,7 +110,7 @@ def strip(html: str) -> str:
     # Remove any injected elements by ID — use a generic tag pattern to handle
     # whatever the browser serializes (div, button, label, etc.)
     for el_id in ['ms-toolbar', 'ms-deck-badge', 'ms-rich-toolbar', 'ms-toast', 'ms-cursor', 'ms-cursor-trail-\\d+', 'ms-save-btn', 'ms-edit-btn', 'ms-close-btn',
-                  'progress', 'counter', 'slide-dock', 'dock-tip', 'dock-hover-preview', 'nav-prev', 'nav-next']:
+                  'progress', 'counter', 'slide-dock', 'dock-tip', 'dock-hover-preview', 'nav-prev', 'nav-next', 'qa-overview']:
         # Block elements with matching id (greedy within the element)
         h = re.sub(r'<[a-z]+[^>]*\bid="' + el_id + r'"[^>]*>.*?</[a-z]+>\n?', '', h, flags=re.DOTALL)
         # Self-closing elements
@@ -348,6 +354,47 @@ svg path[fill="none"],svg line,svg polyline{vector-effect:non-scaling-stroke}
 #slide-overview.show .overview-close{opacity:1;transform:translateY(0) scale(1)}
 .overview-close:hover{background:rgba(10,12,22,0.95);transform:scale(1.1);border-color:var(--accent,#7fc8ff)}
 
+/* QA overview panel */
+#qa-overview{position:fixed;inset:0;background:rgba(9,10,13,0.96);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);z-index:1300;display:none;opacity:0;visibility:hidden;pointer-events:none;transition:opacity 0.24s ease,backdrop-filter 0.24s ease,-webkit-backdrop-filter 0.24s ease;font-family:var(--font-body,system-ui,-apple-system,sans-serif);color:#edf1f7}
+#qa-overview.showing{display:block}
+#qa-overview.show{opacity:1;visibility:visible;pointer-events:auto}
+.qa-shell{position:absolute;inset:0;display:flex;flex-direction:column;min-width:0}
+.qa-toolbar{height:74px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px clamp(24px,4vw,72px);border-bottom:1px solid rgba(237,241,247,0.12);background:linear-gradient(180deg,rgba(12,13,17,0.96),rgba(12,13,17,0.84));box-shadow:0 16px 44px rgba(0,0,0,0.28);z-index:2}
+.qa-title{display:flex;align-items:baseline;gap:12px;min-width:0}
+.qa-title strong{font-size:15px;line-height:1;text-transform:uppercase;letter-spacing:0.14em;font-weight:800;color:#f8fafc;white-space:nowrap}
+#qa-summary{font-size:12px;line-height:1.35;color:rgba(237,241,247,0.64);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qa-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.qa-filter,.qa-close{height:34px;border:1px solid rgba(237,241,247,0.14);background:rgba(255,255,255,0.045);color:rgba(237,241,247,0.82);border-radius:8px;font-size:12px;font-weight:750;line-height:1;cursor:pointer;transition:background 0.16s ease,border-color 0.16s ease,color 0.16s ease,transform 0.16s ease}
+.qa-filter{padding:0 12px}
+.qa-close{width:34px;padding:0;font-size:18px}
+.qa-filter:hover,.qa-close:hover{background:rgba(255,255,255,0.09);border-color:rgba(237,241,247,0.28);color:#fff;transform:translateY(-1px)}
+.qa-filter.active{background:rgba(237,241,247,0.14);border-color:rgba(237,241,247,0.34);color:#fff}
+.qa-grid{position:absolute;top:74px;right:0;bottom:0;left:0;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr));gap:clamp(18px,2vw,30px);padding:clamp(22px,3vw,46px) clamp(24px,4vw,72px) clamp(34px,5vw,80px);align-content:start;scrollbar-width:thin;scrollbar-color:rgba(237,241,247,0.32) transparent}
+.qa-grid::-webkit-scrollbar{width:14px}
+.qa-grid::-webkit-scrollbar-track{background:transparent}
+.qa-grid::-webkit-scrollbar-thumb{background:rgba(237,241,247,0.28);border:4px solid transparent;border-radius:999px;background-clip:padding-box}
+.qa-card{min-width:0;border:1px solid rgba(237,241,247,0.12);border-radius:10px;background:rgba(255,255,255,0.035);overflow:hidden;cursor:pointer;box-shadow:0 18px 50px rgba(0,0,0,0.26);transition:transform 0.18s ease,border-color 0.18s ease,box-shadow 0.18s ease,opacity 0.18s ease}
+.qa-card:hover{transform:translateY(-4px);border-color:rgba(237,241,247,0.28);box-shadow:0 24px 70px rgba(0,0,0,0.34)}
+.qa-card.current{box-shadow:0 0 0 2px rgba(127,200,255,0.72),0 18px 52px rgba(0,0,0,0.34)}
+.qa-card[data-hidden="true"]{display:none}
+.qa-thumb{position:relative;aspect-ratio:16/9;background:rgba(24,25,31,0.86);overflow:hidden;isolation:isolate}
+.qa-frame-content{position:absolute;top:0;left:0;width:1920px;height:1080px;transform-origin:top left;pointer-events:none;background:transparent}
+.qa-frame-content iframe{width:1920px;height:1080px;border:0;display:block;pointer-events:none;background:transparent}
+.qa-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:12px 14px 13px;border-top:1px solid rgba(237,241,247,0.10);background:rgba(11,12,16,0.92)}
+.qa-page{display:flex;flex-direction:column;gap:4px;min-width:0}
+.qa-page strong{font-size:12px;line-height:1;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:#f8fafc}
+.qa-tags{display:flex;flex-wrap:wrap;gap:5px;min-height:21px}
+.qa-tag{max-width:100%;padding:4px 7px;border-radius:999px;background:rgba(237,241,247,0.075);color:rgba(237,241,247,0.70);font-size:10px;font-weight:750;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qa-status{flex-shrink:0;padding:5px 8px;border-radius:7px;background:rgba(237,241,247,0.10);color:rgba(237,241,247,0.76);font-size:10px;font-weight:900;line-height:1;letter-spacing:0.08em}
+.qa-card[data-status="ok"] .qa-status{background:rgba(34,197,94,0.15);color:#bbf7d0}
+.qa-card[data-status="warn"]{border-color:rgba(245,158,11,0.42)}
+.qa-card[data-status="warn"] .qa-status{background:rgba(245,158,11,0.18);color:#fde68a}
+.qa-card[data-status="fail"]{border-color:rgba(248,113,113,0.54)}
+.qa-card[data-status="fail"] .qa-status{background:rgba(248,113,113,0.18);color:#fecaca}
+.qa-empty{grid-column:1/-1;display:none;align-items:center;justify-content:center;min-height:36vh;border:1px dashed rgba(237,241,247,0.18);border-radius:12px;color:rgba(237,241,247,0.58);font-size:14px;font-weight:650}
+.qa-empty.show{display:flex}
+@media(max-width:720px){.qa-toolbar{height:auto;min-height:74px;align-items:flex-start;flex-direction:column;padding:16px 18px}.qa-actions{width:100%;justify-content:space-between}.qa-grid{top:128px;grid-template-columns:1fr;padding:18px}.qa-title{width:100%;justify-content:space-between}#qa-summary{white-space:normal;text-align:right}}
+
 /* Navigation buttons */
 .nav-btn{position:fixed;top:50%;width:44px;height:44px;border-radius:50%;background:rgba(10,12,22,0.72);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.1);color:#e8edf7;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:300;opacity:0;pointer-events:none;transition:opacity 0.25s ease,transform 0.25s ease}
 .nav-btn.nav-show{opacity:1;pointer-events:auto}
@@ -435,6 +482,7 @@ body.ms-overview-embed #ms-rich-toolbar,
 body.ms-overview-embed #slide-dock,
 body.ms-overview-embed #dock-hover-preview,
 body.ms-overview-embed #slide-overview,
+body.ms-overview-embed #qa-overview,
 body.ms-overview-embed .nav-btn,
 body.ms-overview-embed .progress,
 body.ms-overview-embed .counter,
@@ -463,6 +511,21 @@ def make_runtime_html(ui: dict) -> str:
 <div id="slide-overview">
   <div class="overview-grid"></div>
   <button class="overview-close">✕</button>
+</div>
+<div id="qa-overview" aria-hidden="true">
+  <div class="qa-shell">
+    <div class="qa-toolbar">
+      <div class="qa-title"><strong>QA Overview</strong><span id="qa-summary">Scanning slides...</span></div>
+      <div class="qa-actions">
+        <button class="qa-filter active" type="button" data-filter="all">All</button>
+        <button class="qa-filter" type="button" data-filter="issues">Issues only</button>
+        <button class="qa-close" type="button" aria-label="Close QA overview">×</button>
+      </div>
+    </div>
+    <div class="qa-grid">
+      <div class="qa-empty">No issue slides in this filter.</div>
+    </div>
+  </div>
 </div>
 <div id="ms-toolbar" aria-label="Preview controls">
   <div id="ms-deck-badge"></div>
@@ -502,6 +565,7 @@ var cur=0,animating=false;
 var MS_VIEW_PARAMS=new URLSearchParams(window.location.search);
 var MS_EMBED_MODE=MS_VIEW_PARAMS.get('ms_embed')||'';
 var MS_IS_OVERVIEW_EMBED=MS_EMBED_MODE==='overview';
+var MS_QA_MODE=MS_VIEW_PARAMS.get('ms_qa')==='overview';
 function isCjkTokenProtectionCandidate(el){
   if(!el||el.dataset.cjkWrap==='off'||el.classList.contains('ms-cjk-protected'))return false;
   if(el.closest('[contenteditable="true"]'))return false;
@@ -1268,6 +1332,11 @@ window.addEventListener('hashchange',restoreFromHash);
 // ──────────────────────────────────────────────────────────────────────────
 var cursorVisible=true;
 document.addEventListener('keydown',function(e){
+  var overlayOpen=document.querySelector('#slide-overview.show,#qa-overview.show');
+  if(overlayOpen&&['ArrowRight','ArrowDown','Space','ArrowLeft','ArrowUp'].indexOf(e.code)>-1){
+    e.preventDefault();
+    return;
+  }
   if(e.code==='ArrowRight'||e.code==='ArrowDown'||e.code==='Space'){e.preventDefault();go(cur,cur+1);}
   if(e.code==='ArrowLeft'||e.code==='ArrowUp'){e.preventDefault();go(cur,cur-1);}
   if(e.code==='KeyC'&&!e.ctrlKey&&!e.metaKey&&!e.altKey){
@@ -1691,6 +1760,10 @@ fitSlideLayout(slides[cur]);
 
   function openOverview(){
     if(!overview||!grid)return;
+    var qaOverview=document.getElementById('qa-overview');
+    if(qaOverview&&qaOverview.classList.contains('show')&&typeof window.closeQaOverview==='function'){
+      window.closeQaOverview();
+    }
     if(overviewHideTimer){
       clearTimeout(overviewHideTimer);
       overviewHideTimer=null;
@@ -1794,7 +1867,495 @@ fitSlideLayout(slides[cur]);
     }
   });
 
+  window.closeOverview=closeOverview;
   window.toggleOverview=toggleOverview;
+})();
+
+// ── QA overview panel ─────────────────────────────────────────────────────
+(function(){
+  var qa=document.getElementById('qa-overview');
+  var grid=qa?qa.querySelector('.qa-grid'):null;
+  var closeBtn=qa?qa.querySelector('.qa-close'):null;
+  var summary=document.getElementById('qa-summary');
+  var filterBtns=qa?Array.from(qa.querySelectorAll('.qa-filter')):[];
+  var empty=qa?qa.querySelector('.qa-empty'):null;
+  var qaCache=false;
+  var qaObserver=null;
+  var qaLoadQueue=[];
+  var qaQueueScheduled=false;
+  var qaHideTimer=null;
+  var qaFilter='all';
+  var qaMagicFailures=buildQaMagicFailureMap();
+  var qaPrimaryTone=detectQaPrimaryTone();
+
+  function buildQaFrameUrl(idx){
+    var url=new URL(window.location.href);
+    url.searchParams.delete('ms_qa');
+    url.searchParams.set('ms_embed','overview');
+    url.searchParams.set('ms_slide',String(idx+1));
+    url.hash='#'+(idx+1);
+    return url.toString();
+  }
+  function normalizeQaText(text){
+    return (text||'').replace(/\s+/g,' ').trim();
+  }
+  function getQaMagicTextMap(slide){
+    var map={};
+    if(!slide)return map;
+    slide.querySelectorAll('[data-magic-id]').forEach(function(el){
+      var id=el.getAttribute('data-magic-id');
+      if(id)map[id]=normalizeQaText(el.textContent);
+    });
+    return map;
+  }
+  function buildQaMagicFailureMap(){
+    var failures={};
+    for(var i=0;i<slides.length-1;i+=1){
+      var a=getQaMagicTextMap(slides[i]);
+      var b=getQaMagicTextMap(slides[i+1]);
+      Object.keys(a).forEach(function(id){
+        if(!Object.prototype.hasOwnProperty.call(b,id))return;
+        if(a[id]===b[id])return;
+        var label='magic text mismatch: '+id;
+        if(!failures[i])failures[i]=[];
+        if(!failures[i+1])failures[i+1]=[];
+        failures[i].push(label);
+        failures[i+1].push(label);
+      });
+    }
+    return failures;
+  }
+  function detectQaPrimaryTone(){
+    var counts={light:0,dark:0};
+    slides.forEach(function(slide,idx){
+      if(idx===0&&slides.length>1)return;
+      var tone=getSlideTone(slide);
+      if(tone==='light'||tone==='dark')counts[tone]+=1;
+    });
+    if(counts.light===counts.dark)return '';
+    return counts.light>counts.dark?'light':'dark';
+  }
+  function dedupeQaLabels(labels){
+    var seen={};
+    return labels.filter(function(label){
+      if(!label||seen[label])return false;
+      seen[label]=true;
+      return true;
+    });
+  }
+  function setQaResult(item,failures,warnings){
+    failures=dedupeQaLabels(failures||[]);
+    warnings=dedupeQaLabels(warnings||[]);
+    var status=failures.length?'fail':(warnings.length?'warn':'ok');
+    item.dataset.status=status;
+    item.dataset.scanned='1';
+    var statusEl=item.querySelector('.qa-status');
+    if(statusEl)statusEl.textContent=status.toUpperCase();
+    var tags=item.querySelector('.qa-tags');
+    if(tags){
+      tags.innerHTML='';
+      var labels=failures.concat(warnings);
+      if(!labels.length)labels=['clean'];
+      labels.slice(0,4).forEach(function(label){
+        var tag=document.createElement('span');
+        tag.className='qa-tag';
+        tag.textContent=label;
+        tag.title=label;
+        tags.appendChild(tag);
+      });
+      if(labels.length>4){
+        var more=document.createElement('span');
+        more.className='qa-tag';
+        more.textContent='+'+(labels.length-4);
+        tags.appendChild(more);
+      }
+    }
+    updateQaSummary();
+    applyQaFilter();
+    requestAnimationFrame(refreshQaScales);
+  }
+  function isQaTransparentColor(value){
+    if(!value||value==='transparent')return true;
+    var parsed=parseColorValue(value);
+    return !!(parsed&&parsed.a<=0.05);
+  }
+  function hasQaRootBackground(slide,win){
+    if(!slide||!win)return false;
+    var cs=win.getComputedStyle(slide);
+    return !isQaTransparentColor(cs.backgroundColor)||(cs.backgroundImage&&cs.backgroundImage!=='none');
+  }
+  function isQaVisibleDiagnosticNode(el,win){
+    if(!el||!win)return false;
+    if(el.closest('.bg,[aria-hidden="true"]'))return false;
+    var cs=win.getComputedStyle(el);
+    if(cs.display==='none'||cs.visibility==='hidden')return false;
+    if(parseFloat(cs.opacity||'1')<0.04)return false;
+    var text=normalizeQaText(el.textContent);
+    return !!(text||el.matches('img,svg,video,canvas')||el.hasAttribute('data-magic-id'));
+  }
+  function countQaContentOverflow(slide,win){
+    if(!slide||!win)return 0;
+    var slideRect=slide.getBoundingClientRect();
+    var tolerance=8;
+    var count=0;
+    var selector='h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,small,span,strong,em,b,.card,.stat-item,.compare-panel,.metric-poster,.time-card,.timeline-card,.phase-card,.step-card,.lane-card,img,svg,video,canvas,[data-magic-id]';
+    Array.from(slide.querySelectorAll(selector)).forEach(function(el){
+      if(!isQaVisibleDiagnosticNode(el,win))return;
+      var r=el.getBoundingClientRect();
+      if(r.width<1||r.height<1)return;
+      if(r.left<slideRect.left-tolerance||r.top<slideRect.top-tolerance||r.right>slideRect.right+tolerance||r.bottom>slideRect.bottom+tolerance){
+        count+=1;
+      }
+    });
+    return count;
+  }
+  function hasQaVisibleFrame(el,win){
+    if(!el||!win)return false;
+    if(el.matches('.slide,.slide-content,.bg,#deck,#slide-overview,#qa-overview'))return false;
+    if(el.closest('.bg,[aria-hidden="true"],#slide-overview,#qa-overview,#ms-toolbar,#ms-rich-toolbar'))return false;
+    var cs=win.getComputedStyle(el);
+    if(cs.display==='none'||cs.visibility==='hidden')return false;
+    if(parseFloat(cs.opacity||'1')<0.08)return false;
+    var borderWidth=(parseFloat(cs.borderTopWidth)||0)+(parseFloat(cs.borderRightWidth)||0)+(parseFloat(cs.borderBottomWidth)||0)+(parseFloat(cs.borderLeftWidth)||0);
+    var hasBg=!isQaTransparentColor(cs.backgroundColor)||(cs.backgroundImage&&cs.backgroundImage!=='none');
+    var hasShadow=cs.boxShadow&&cs.boxShadow!=='none';
+    var roleClass=(el.className&&typeof el.className==='string')?el.className:'';
+    var frameRole=/\\b(visual|panel|frame|surface|stage|matrix|diagram|map|flow|architecture|code|image)-?\\w*\\b/i.test(roleClass);
+    return borderWidth>0.5||hasShadow||(hasBg&&frameRole);
+  }
+  function getQaChildBounds(el,win,frameRect){
+    var bounds=null;
+    Array.from(el.children||[]).forEach(function(ch){
+      if(ch.matches('.bg,[aria-hidden="true"]'))return;
+      var cs=win.getComputedStyle(ch);
+      if(cs.display==='none'||cs.visibility==='hidden')return;
+      if(parseFloat(cs.opacity||'1')<0.04)return;
+      var text=normalizeQaText(ch.textContent);
+      if(!text&&!ch.matches('img,svg,video,canvas')&&!ch.querySelector('img,svg,video,canvas'))return;
+      var r=ch.getBoundingClientRect();
+      if(r.width<2||r.height<2)return;
+      var left=Math.max(r.left,frameRect.left);
+      var top=Math.max(r.top,frameRect.top);
+      var right=Math.min(r.right,frameRect.right);
+      var bottom=Math.min(r.bottom,frameRect.bottom);
+      if(right<=left||bottom<=top)return;
+      if(!bounds){
+        bounds={left:left,top:top,right:right,bottom:bottom};
+      }else{
+        bounds.left=Math.min(bounds.left,left);
+        bounds.top=Math.min(bounds.top,top);
+        bounds.right=Math.max(bounds.right,right);
+        bounds.bottom=Math.max(bounds.bottom,bottom);
+      }
+    });
+    return bounds;
+  }
+  function countQaSparseFramedPanels(slide,win){
+    if(!slide||!win)return 0;
+    var slideRect=slide.getBoundingClientRect();
+    var slideArea=Math.max(1,slideRect.width*slideRect.height);
+    var sparse=[];
+    var candidates=Array.from(slide.querySelectorAll('div,section,article,figure,aside'));
+    candidates.forEach(function(el){
+      if(!hasQaVisibleFrame(el,win))return;
+      if(sparse.some(function(parent){return parent.contains(el);}))return;
+      var r=el.getBoundingClientRect();
+      if(r.width<slideRect.width*0.32||r.height<slideRect.height*0.20)return;
+      if((r.width*r.height)/slideArea<0.08)return;
+      if(r.width>slideRect.width*0.94&&r.height>slideRect.height*0.82)return;
+      var bounds=getQaChildBounds(el,win,r);
+      if(!bounds)return;
+      var contentWidth=Math.max(1,bounds.right-bounds.left);
+      var contentHeight=Math.max(1,bounds.bottom-bounds.top);
+      var coverage=(contentWidth*contentHeight)/Math.max(1,r.width*r.height);
+      var heightRatio=contentHeight/Math.max(1,r.height);
+      var bottomVoid=(r.bottom-bounds.bottom)/Math.max(1,r.height);
+      var topVoid=(bounds.top-r.top)/Math.max(1,r.height);
+      if(coverage<0.45&&heightRatio<0.62&&(bottomVoid>0.18||topVoid>0.18)){
+        sparse.push(el);
+      }
+    });
+    return sparse.length;
+  }
+  function diagnoseQaFrame(item,frame,idx){
+    var failures=(qaMagicFailures[idx]||[]).slice();
+    var warnings=[];
+    try{
+      var doc=frame.contentDocument;
+      var win=frame.contentWindow;
+      if(!doc||!win){
+        failures.push('iframe inaccessible');
+      }else{
+        var frameSlides=doc.querySelectorAll('.slide');
+        var slide=doc.querySelector('.slide.active')||frameSlides[idx];
+        if(!slide){
+          failures.push('missing active slide');
+        }else{
+          if(typeof win.fitSlideLayout==='function')win.fitSlideLayout(slide);
+          if(slide.querySelector('.ms-fit-scale'))warnings.push('ms-fit-scale');
+          if(slide.querySelector('.ms-fit-top'))warnings.push('ms-fit-top');
+          if(!hasQaRootBackground(slide,win))warnings.push('transparent root bg');
+          var tone=typeof win.getSlideTone==='function'?win.getSlideTone(slide):getSlideTone(slides[idx]);
+          if(idx>0&&qaPrimaryTone&&tone&&tone!==qaPrimaryTone)warnings.push('tone '+tone+' vs '+qaPrimaryTone);
+          var brokenImages=Array.from(slide.querySelectorAll('img')).filter(function(img){
+            return !img.complete||img.naturalWidth===0;
+          });
+          if(brokenImages.length)failures.push('image load failed x'+brokenImages.length);
+          var overflowCount=countQaContentOverflow(slide,win);
+          if(overflowCount)failures.push('content overflow x'+overflowCount);
+          var sparseFrameCount=countQaSparseFramedPanels(slide,win);
+          if(sparseFrameCount)warnings.push('sparse framed panel x'+sparseFrameCount);
+        }
+      }
+    }catch(ex){
+      failures.push('diagnostic unavailable');
+    }
+    setQaResult(item,failures,warnings);
+  }
+  function refreshQaScales(){
+    if(!grid)return;
+    grid.querySelectorAll('.qa-card').forEach(function(item){
+      var thumb=item.querySelector('.qa-thumb');
+      var content=item.querySelector('.qa-frame-content');
+      var head=item.querySelector('.qa-card-head');
+      if(!thumb||!content)return;
+      var width=thumb.offsetWidth;
+      if(!width)return;
+      var thumbHeight=Math.round(width*1080/1920);
+      thumb.style.height=thumbHeight+'px';
+      content.style.transform='scale('+(width/1920)+')';
+      var headHeight=head?Math.ceil(head.getBoundingClientRect().height||head.offsetHeight||0):0;
+      item.style.minHeight=(thumbHeight+headHeight)+'px';
+    });
+  }
+  function mountQaFrame(item){
+    if(!item||item.dataset.frameMounted==='1')return;
+    var idx=parseInt(item.dataset.idx,10);
+    if(!(idx>=0))return;
+    var content=item.querySelector('.qa-frame-content');
+    if(!content)return;
+    var frame=document.createElement('iframe');
+    frame.loading=idx<6?'eager':'lazy';
+    frame.tabIndex=-1;
+    frame.setAttribute('aria-hidden','true');
+    frame.setAttribute('title','QA slide '+(idx+1));
+    var timeout=setTimeout(function(){
+      if(item.dataset.scanned!=='1')setQaResult(item,['iframe load failed'],[]);
+    },9000);
+    frame.addEventListener('load',function(){
+      clearTimeout(timeout);
+      setTimeout(function(){diagnoseQaFrame(item,frame,idx);},140);
+    });
+    frame.addEventListener('error',function(){
+      clearTimeout(timeout);
+      setQaResult(item,['iframe load failed'],[]);
+    });
+    frame.src=buildQaFrameUrl(idx);
+    content.appendChild(frame);
+    item.dataset.frameMounted='1';
+    item.dataset.frameQueued='0';
+  }
+  function flushQaLoadQueue(deadline){
+    qaQueueScheduled=false;
+    var start=performance.now();
+    while(qaLoadQueue.length){
+      var item=qaLoadQueue.shift();
+      if(item&&item.isConnected)mountQaFrame(item);
+      if(deadline&&typeof deadline.timeRemaining==='function'){
+        if(deadline.timeRemaining()<4)break;
+      }else if(performance.now()-start>16){
+        break;
+      }
+    }
+    if(qaLoadQueue.length)scheduleQaLoadQueue();
+  }
+  function scheduleQaLoadQueue(){
+    if(qaQueueScheduled)return;
+    qaQueueScheduled=true;
+    if('requestIdleCallback' in window){
+      window.requestIdleCallback(flushQaLoadQueue,{timeout:160});
+    }else{
+      setTimeout(function(){flushQaLoadQueue();},16);
+    }
+  }
+  function queueQaFrame(item){
+    if(!item||item.dataset.frameMounted==='1'||item.dataset.frameQueued==='1')return;
+    item.dataset.frameQueued='1';
+    qaLoadQueue.push(item);
+    scheduleQaLoadQueue();
+  }
+  function ensureQaObserver(){
+    if(qaObserver||!grid||!('IntersectionObserver' in window))return;
+    qaObserver=new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting)queueQaFrame(entry.target);
+      });
+    },{
+      root:grid,
+      rootMargin:'420px 0px',
+      threshold:0.01
+    });
+  }
+  function observeQaItems(){
+    if(!grid)return;
+    var items=grid.querySelectorAll('.qa-card');
+    if(qaObserver){
+      items.forEach(function(item){qaObserver.observe(item);});
+    }else{
+      items.forEach(function(item,idx){if(idx<8||idx===cur)queueQaFrame(item);});
+    }
+  }
+  function primeQaFrames(){
+    if(!grid)return;
+    var items=Array.from(grid.querySelectorAll('.qa-card'));
+    if(items[cur])queueQaFrame(items[cur]);
+    items.slice(0,6).forEach(function(item){queueQaFrame(item);});
+  }
+  function updateQaSummary(){
+    if(!summary||!grid)return;
+    var cards=Array.from(grid.querySelectorAll('.qa-card'));
+    var fail=cards.filter(function(item){return item.dataset.status==='fail';}).length;
+    var warn=cards.filter(function(item){return item.dataset.status==='warn';}).length;
+    var pending=cards.filter(function(item){return item.dataset.scanned!=='1';}).length;
+    summary.textContent=slides.length+' slides - '+fail+' fail - '+warn+' warn'+(pending?' - '+pending+' scanning':'');
+  }
+  function applyQaFilter(){
+    if(!grid)return;
+    var visible=0;
+    grid.querySelectorAll('.qa-card').forEach(function(item){
+      var hide=qaFilter==='issues'&&(item.dataset.status==='ok'||item.dataset.status==='pending');
+      item.dataset.hidden=hide?'true':'false';
+      if(!hide)visible+=1;
+    });
+    if(empty)empty.classList.toggle('show',visible===0);
+    filterBtns.forEach(function(btn){btn.classList.toggle('active',btn.dataset.filter===qaFilter);});
+  }
+  function buildQaCards(){
+    if(!grid||qaCache)return;
+    grid.querySelectorAll('.qa-card').forEach(function(card){card.remove();});
+    slides.forEach(function(slide,idx){
+      var item=document.createElement('div');
+      item.className='qa-card';
+      if(idx===cur)item.classList.add('current');
+      item.dataset.idx=idx;
+      item.dataset.status='pending';
+      item.dataset.scanned='0';
+      item.dataset.frameMounted='0';
+      item.dataset.frameQueued='0';
+
+      var thumb=document.createElement('div');
+      thumb.className='qa-thumb';
+      copyComputedBackground(resolveOverviewBackgroundSource(slide),thumb);
+      var content=document.createElement('div');
+      content.className='qa-frame-content';
+      content.style.transform='scale(0.2708)';
+      thumb.appendChild(content);
+      item.appendChild(thumb);
+
+      var head=document.createElement('div');
+      head.className='qa-card-head';
+      var page=document.createElement('div');
+      page.className='qa-page';
+      var title=document.createElement('strong');
+      title.textContent='Slide '+(idx+1)+' / '+slides.length;
+      var tags=document.createElement('div');
+      tags.className='qa-tags';
+      var pendingTag=document.createElement('span');
+      pendingTag.className='qa-tag';
+      pendingTag.textContent='pending';
+      tags.appendChild(pendingTag);
+      page.appendChild(title);
+      page.appendChild(tags);
+      var status=document.createElement('div');
+      status.className='qa-status';
+      status.textContent='SCAN';
+      head.appendChild(page);
+      head.appendChild(status);
+      item.appendChild(head);
+
+      item.addEventListener('click',function(e){
+        e.stopPropagation();
+        closeQaOverview();
+        if(idx!==cur)go(cur,idx);
+      });
+      grid.appendChild(item);
+    });
+    qaCache=true;
+    ensureQaObserver();
+    observeQaItems();
+  }
+  function openQaOverview(){
+    if(!qa||!grid)return;
+    var regularOverview=document.getElementById('slide-overview');
+    if(regularOverview&&regularOverview.classList.contains('show')&&typeof window.closeOverview==='function')window.closeOverview();
+    if(qaHideTimer){
+      clearTimeout(qaHideTimer);
+      qaHideTimer=null;
+    }
+    buildQaCards();
+    qa.classList.add('showing');
+    qa.setAttribute('aria-hidden','false');
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        qa.classList.add('show');
+        refreshQaScales();
+      });
+    });
+    grid.querySelectorAll('.qa-card').forEach(function(item,idx){
+      item.classList.toggle('current',idx===cur);
+    });
+    updateQaSummary();
+    applyQaFilter();
+    primeQaFrames();
+  }
+  function closeQaOverview(){
+    if(!qa)return;
+    qa.classList.remove('show');
+    qa.setAttribute('aria-hidden','true');
+    if(qaHideTimer)clearTimeout(qaHideTimer);
+    qaHideTimer=setTimeout(function(){
+      qa.classList.remove('showing');
+      qaHideTimer=null;
+    },280);
+  }
+  function toggleQaOverview(){
+    if(!qa)return;
+    if(qa.classList.contains('show'))closeQaOverview();
+    else openQaOverview();
+  }
+
+  if(qa)qa.addEventListener('click',function(e){
+    e.stopPropagation();
+  });
+  if(closeBtn)closeBtn.addEventListener('click',function(e){
+    e.stopPropagation();
+    closeQaOverview();
+  });
+  filterBtns.forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      qaFilter=btn.dataset.filter||'all';
+      applyQaFilter();
+    });
+  });
+  window.addEventListener('resize',function(){
+    if(qaCache)requestAnimationFrame(refreshQaScales);
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.code==='Escape'&&qa&&qa.classList.contains('show')){
+      e.preventDefault();
+      closeQaOverview();
+      return;
+    }
+    if(e.code==='KeyQ'&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!document.body.classList.contains('ms-edit-mode')){
+      e.preventDefault();
+      toggleQaOverview();
+    }
+  });
+  window.closeQaOverview=closeQaOverview;
+  window.openQaOverview=openQaOverview;
+  window.toggleQaOverview=toggleQaOverview;
+  if(MS_QA_MODE)setTimeout(openQaOverview,80);
 })();
 }
 
@@ -1889,7 +2450,7 @@ fitSlideLayout(slides[cur]);
         var s=el.getAttribute('src');if(map[s])el.src=map[s];
       });
       // Strip runtime so saved file is a clean skeleton
-      ['ms-toolbar','ms-deck-badge','ms-rich-toolbar','ms-toast','ms-cursor','ms-cursor-trail-0','ms-cursor-trail-1','ms-cursor-trail-2','ms-cursor-trail-3','ms-cursor-trail-4','progress','counter','slide-dock','dock-tip','dock-hover-preview','nav-prev','nav-next','slide-overview'].forEach(function(id){
+      ['ms-toolbar','ms-deck-badge','ms-rich-toolbar','ms-toast','ms-cursor','ms-cursor-trail-0','ms-cursor-trail-1','ms-cursor-trail-2','ms-cursor-trail-3','ms-cursor-trail-4','progress','counter','slide-dock','dock-tip','dock-hover-preview','nav-prev','nav-next','slide-overview','qa-overview'].forEach(function(id){
         var el=clone.querySelector('#'+id);if(el)el.remove();
       });
       clone.querySelectorAll('style').forEach(function(s){
@@ -2643,7 +3204,7 @@ fitSlideLayout(slides[cur]);
   var x=0,y=0,cx=0,cy=0;
   var cursorSuppressed=false;
   function isCursorSuppressedTarget(target){
-    return !!(target&&target.closest&&target.closest('#ms-toolbar,#ms-rich-toolbar,#slide-dock,.nav-btn,.overview-close,.overview-item'));
+    return !!(target&&target.closest&&target.closest('#ms-toolbar,#ms-rich-toolbar,#slide-dock,.nav-btn,.overview-close,.overview-item,#qa-overview'));
   }
   function setCursorSuppressed(next){
     if(cursorSuppressed===next)return;
