@@ -135,6 +135,10 @@ Rules:
 - Use `min-width:0`, `container-type:inline-size`, `max-inline-size:100%`, and
   `overflow-wrap:break-word` on card contents so long words wrap inside the
   intended card instead of escaping or forcing overflow.
+- QA overview should catch this failure mode: `card text overflow` means a
+  label or paragraph escaped its own card; `cramped card row` means four or more
+  cards were compressed into a narrow region below the readable-width budget.
+  Both require source layout changes, not acceptance as "clean."
 
 ### Vertical Balance Rule
 

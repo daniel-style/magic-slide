@@ -285,9 +285,9 @@ After generating the full deck:
   checks. Open `?ms_qa=overview`, scan every card, and triage the summary plus
   issue tags.
 - Treat QA overview `FAIL` as blocking: broken iframe/image loads, visible
-  overflow, adjacent `data-magic-id` text mismatches, and other failure tags
-  must be fixed in `sources/`, followed by merge, inject, and another QA
-  overview pass.
+  overflow, card-contained text overflow, cramped card rows, adjacent
+  `data-magic-id` text mismatches, and other failure tags must be fixed in
+  `sources/`, followed by merge, inject, and another QA overview pass.
 - Treat QA overview `WARN` as requiring full-size review: runtime `.ms-fit-top`
   / `.ms-fit-scale`, transparent root backgrounds, and ordinary tone
   mismatches are actionable unless they are named intentional design

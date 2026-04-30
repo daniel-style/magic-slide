@@ -43,7 +43,10 @@ The `.bg::after` overlay gradient is injected by default. Text always sits on th
 Do not implement the apparent cover background as an uploadable image wrapper,
 inset panel, or document-flow image. If a cover background image is explicitly
 allowed, it must be owned by the root `.slide` background or a full-bleed
-absolutely positioned decorative layer behind `.slide-content`.
+absolutely positioned decorative layer that is a direct child of `.slide`
+behind `.slide-content`. Never put the full-bleed cover image layer inside
+`.slide-content`; max-width content wrappers leave visible side gutters on wide
+screens.
 
 **Background prompts must produce purely abstract, texture-only images — no recognisable objects, no readable text, no detailed illustrations.** The image will be covered by a dark gradient overlay and slide text; any content in the image will compete with and obscure the text.
 
@@ -102,6 +105,8 @@ Allowed cover image treatments:
   recognizable subject competing with the title.
 
 Avoid:
+- A `position:absolute; inset:0` cover image inside `.slide-content` or any
+  other max-width wrapper.
 - Tall narrow image columns created by putting a landscape image into a skinny
   `height:70vh` container with `object-fit:cover`.
 - Crops that show only a door edge, server rack sliver, laptop corner, cable

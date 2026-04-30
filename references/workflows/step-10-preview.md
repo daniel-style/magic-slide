@@ -45,8 +45,9 @@ Triage rules:
   intentional exceptions, such as a deliberate inverse-tone display slide.
 - QA overview flags high-signal heuristics: iframe/image load failures, visible
   overflow, runtime `.ms-fit-*` rescue classes, transparent root backgrounds,
-  ordinary tone deviations, sparse framed panels, and adjacent `data-magic-id`
-  text mismatches.
+  inset full-bleed background layers, card-contained text overflow, cramped
+  multi-card rows, ordinary tone deviations, sparse framed panels, and adjacent
+  `data-magic-id` text mismatches.
 - QA overview is a first-pass radar. After it is clean, still do targeted
   full-size screenshots or rendered slide checks for the cover, dense/content
   slides, diagrams/images, and any formerly flagged pages.
@@ -59,10 +60,13 @@ Triage rules:
    Include the deck tone mode check: ordinary slides must stay in the primary
    light/dark mode, and inverse-tone slides must be named exceptions with a
    distinct display role.
+   Check wide-screen coverage: cover/photo/material backgrounds must reach all
+   four viewport edges and must not be bounded by `.slide-content` max-width.
 3. `layout-guide.md` passes: no overflow, clipped text, collisions, unplanned top-heavy layouts, or source-note collisions.
    Treat cramped card rows with word-by-word wrapping as a failure when nearby
    horizontal space is empty; revise the source layout to use the available
-   width or split the slide.
+   width or split the slide. QA overview tags `card text overflow` and
+   `cramped card row` are blocking failures, not visual-taste warnings.
    Also treat card-title collisions as failures even when the text remains
    inside the viewport. In rendered review, scan metric/card grids for words
    crossing into neighboring cards, especially four-card rows inside split

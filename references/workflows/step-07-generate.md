@@ -19,6 +19,10 @@ Read:
 Before writing files, make a concise internal plan based on Brief Lite:
 - Chosen visual world and avoided generic tropes
 - Dedicated cover composition and why it differs from slide 2
+- Full-viewport background ownership: which visual fields live on the root
+  `.slide`, which full-bleed layers are direct `.slide > .bg` children, and
+  which images are ordinary content images. No apparent background may be inside
+  `.slide-content` or another max-width wrapper.
 - Cover copy split: concise H1 plus any terse subtitle/chips needed for scope
 - Primary deck tone mode and named inverse-tone exceptions, if any
 - Slide family/primitives
@@ -108,6 +112,10 @@ notes, or intermediate files created during generation must also live under
   naming, deck tone mode, and final verification.
 - Apply `images.md` before generating or placing images, including cover-image
   and uploadable-wrapper policy.
+- If a slide uses a cover/photo/material background, implement it as the root
+  `.slide` background or a direct `.slide > .bg` layer before `.slide-content`;
+  do not generate `.slide-content > .cover-image` or similar max-width-bounded
+  background layers.
 - Apply `flip-engine.md` for Magic Move continuity and `data-magic-id` usage.
 - If the confirmed outline does not provide enough legitimate shared anchors,
   revise the slide treatment before writing HTML: turn a flat list into an

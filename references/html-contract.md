@@ -57,9 +57,9 @@ These rules are non-negotiable because unconstrained HTML/CSS generation is the 
 ## Background Contract
 
 Every slide's main background must be owned by the root `.slide` element and
-must cover the entire 16:9 viewport. Do not make the apparent background an
-inset `.slide-content`, `.stage`, card, panel, pseudo-frame, or centered
-rectangle.
+must cover the entire viewport, including wide or ultra-wide browser windows.
+Do not make the apparent background an inset `.slide-content`, `.stage`, card,
+panel, pseudo-frame, or centered rectangle.
 
 Rules:
 - Set `background`, `background-size`, `background-position`, and theme variants
@@ -68,6 +68,14 @@ Rules:
   `position:absolute; inset:0; pointer-events:none`.
 - `.slide-content` is a layout wrapper only. It may constrain content width, but
   it must not create the visible page boundary.
+- A full-bleed decorative/image layer must be either the root `.slide`
+  background or a direct child of `.slide`, outside `.slide-content`, such as:
+  `<div class="bg cover-bg" aria-hidden="true"></div>`. Use
+  `position:absolute; inset:0; background-size:cover; background-position:center`.
+- Never place a full-bleed-looking layer inside `.slide-content`. This fails on
+  wide screens because `.slide-content` often has `max-width` and `margin:auto`;
+  `.slide-content > .cover-image { position:absolute; inset:0; ... }` is an
+  explicit anti-pattern.
 - If a theme uses a paper, blueprint, canvas, photo, gradient, or color wash, it
   must visibly reach all four slide edges in both single-slide view and overview
   thumbnails.
@@ -136,9 +144,10 @@ Rules:
   a mostly visible product/object, or an abstract material field. Do not crop a
   landscape image into a tall skinny strip or arbitrary object sliver.
 - Never implement the apparent cover background as an uploadable image wrapper,
-  inset panel, or document-flow image. Cover imagery, when explicitly allowed,
-  must be owned by the root `.slide` background or a full-bleed absolutely
-  positioned decorative layer behind `.slide-content`.
+  inset panel, document-flow image, or absolutely positioned child of
+  `.slide-content`. Cover imagery, when explicitly allowed, must be owned by the
+  root `.slide` background or a full-bleed absolutely positioned decorative
+  layer that is a direct child of `.slide` behind `.slide-content`.
 
 ## Color Contrast Contract
 
@@ -184,6 +193,10 @@ Rules:
 - If the full text cannot fit, reduce the max font size, widen the container, allow wrapping, or split the slide.
 - Do not hide text overflow with `overflow:hidden`, `overflow:clip`, masks, or
   fades. If content needs hiding to look tidy, the slide is over budget.
+- QA overview `card text overflow` and `cramped card row` tags are hard
+  failures. They mean text is escaping its card or the card group was squeezed
+  into a region too narrow for readable labels, even if the slide-edge overflow
+  check is clean.
 
 ## SVG Contract
 
@@ -389,7 +402,10 @@ Before delivery, check:
 - [ ] Every slide maps to one approved primary layout primitive
 - [ ] All slides use `<section>`, not `<div>`
 - [ ] All slides have required attributes
-- [ ] Root `.slide` backgrounds visibly cover the full viewport in slide view and overview thumbnails
+- [ ] Root `.slide` backgrounds and any full-bleed decorative/image layers
+      visibly cover the full viewport in slide view and overview thumbnails,
+      including wide-screen windows; no `.slide-content`-bounded background
+      strip is visible
 - [ ] Deck tone mode is consistent: ordinary slides follow the primary
       light/dark mode, and inverse-tone slides are named exceptions with a
       distinct display role
@@ -415,4 +431,5 @@ Before delivery, check:
       budget
 - [ ] Metric/card labels do not collide with neighboring cards; four-card
       groups are not squeezed into half-width columns
+- [ ] QA overview has no `card text overflow` or `cramped card row` tags
 - [ ] Inline SVG connector paths include `fill="none"` and fallback stroke attributes
