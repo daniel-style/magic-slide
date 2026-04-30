@@ -30,6 +30,12 @@ Before writing files, make a concise internal plan based on Brief Lite:
   contain three or more metric/text cards, move the card group to a full-width
   evidence band, use a Metrics/Grid slide, or split the content. Do not make
   four-card metric grids inside a half-width column.
+- Card-grid parity gate: known even card counts must use explicit symmetric
+  grids, not automatic column counts that can orphan one card. Four cards must
+  render as `2x2`, six as `3x2` or `2x3`, and eight as `4x2` or `2x4` unless
+  the group intentionally stacks as one column at a breakpoint. If a split
+  column cannot support the symmetric grid with readable card widths, move the
+  card group to a full-width evidence band or split the slide.
 - Framed-content occupancy for main visuals, using `layout-guide.md`: a large
   bordered panel must have a real filled diagram/composition, not a tiny row
   inside an empty frame.
@@ -83,6 +89,9 @@ notes, or intermediate files created during generation must also live under
 - Do not leave large horizontal dead zones while text cards overflow or wrap
   word-by-word. Use the slide width, convert cramped card rows into full-width
   evidence bands, or split the slide.
+- Do not leave an orphan final row in a known even card group. Avoid
+  `auto-fit`/`auto-fill` for four-card and six-card groups unless QA proves the
+  rendered breakpoint cannot produce `3+1` or `5+1`.
 - Do not wrap a low-density mini-flow, chip row, or few small nodes in an
   oversized `visual-card`/panel. Apply `layout-guide.md`'s framed content
   occupancy rule.

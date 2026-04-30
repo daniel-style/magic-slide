@@ -106,6 +106,12 @@ Rules:
 - If a row of cards would become narrower than its text budget, let the group
   span the full primary layout width, move it below the split as a full-width
   evidence band, reduce the number of cards, or split the slide.
+- Do not allow orphan-card rows in card grids. For an even number of cards,
+  choose a symmetric column count that divides the card count: `4 = 2x2`,
+  `6 = 3x2` or `2x3`, `8 = 4x2` or `2x4`. Do not use `auto-fit`/`auto-fill`
+  on a known even card count if it can produce `3+1`, `5+1`, or another final
+  row with a single card. If a responsive breakpoint would orphan one card,
+  switch to a divisor column count or a single-column stack at that breakpoint.
 - Do not place a three-card evidence row under a right-column paragraph while
   the left side or outer slide margins are empty. Reallocate that horizontal
   space to the card group.
@@ -121,8 +127,11 @@ Rules:
   or use a wider card. Do not use a large non-wrapping metric style for words
   like `Customers`, `Retention`, or `Attach Rate` in narrow cards.
 - Prefer `grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr))`
-  for variable card groups, and use larger minima such as `16rem`-`18rem` when
-  cards contain paragraphs.
+  only for variable or unknown card groups where an orphan row is acceptable
+  after visual review. For known counts, write explicit grids that avoid orphan
+  rows, such as `repeat(2,minmax(0,1fr))` for four cards or
+  `repeat(3,minmax(0,1fr))` for six cards. Use larger minima such as
+  `16rem`-`18rem` when cards contain paragraphs.
 - Use `min-width:0`, `container-type:inline-size`, `max-inline-size:100%`, and
   `overflow-wrap:break-word` on card contents so long words wrap inside the
   intended card instead of escaping or forcing overflow.

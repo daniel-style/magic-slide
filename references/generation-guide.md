@@ -114,6 +114,15 @@ a split slide. Promote the card group to a full-width evidence band, use a
 dedicated Metrics/Grid primitive, or split the idea. Do not shrink word-based
 metric cards until their titles collide.
 
+Plan card-grid parity before writing CSS. A known even card count must not
+render with an orphan final row: four cards should be `2x2`, six cards should be
+`3x2` or `2x3`, and eight cards should be `4x2` or `2x4`. Use explicit
+`repeat(2, minmax(0, 1fr))`, `repeat(3, ...)`, or `repeat(4, ...)` grids for
+known counts instead of `auto-fit`/`auto-fill` when those automatic grids can
+produce `3+1`, `5+1`, or another single-card row. If the available width cannot
+support the symmetric grid, move the group to a full-width band, split it, or
+stack it cleanly at the breakpoint.
+
 Keep ordinary slides vertically centered. Add top alignment only for genuinely
 dense tables, matrices, long timelines, or complex diagrams that fill most of
 the usable slide height. A compact scorecard or card grid with a large empty
