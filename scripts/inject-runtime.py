@@ -565,7 +565,9 @@ var cur=0,animating=false;
 var MS_VIEW_PARAMS=new URLSearchParams(window.location.search);
 var MS_EMBED_MODE=MS_VIEW_PARAMS.get('ms_embed')||'';
 var MS_IS_OVERVIEW_EMBED=MS_EMBED_MODE==='overview';
-var MS_QA_MODE=MS_VIEW_PARAMS.get('ms_qa')==='overview';
+var MS_IS_MAGIC_SLIDE_PREVIEW=window.location.protocol==='http:'&&window.location.hostname==='localhost'&&/^\/deck\/[^/]+\//.test(window.location.pathname);
+var MS_QA_ALLOWED=MS_IS_MAGIC_SLIDE_PREVIEW;
+var MS_QA_MODE=MS_QA_ALLOWED&&MS_VIEW_PARAMS.get('ms_qa')==='overview';
 function isCjkTokenProtectionCandidate(el){
   if(!el||el.dataset.cjkWrap==='off'||el.classList.contains('ms-cjk-protected'))return false;
   if(el.closest('[contenteditable="true"]'))return false;
@@ -1873,6 +1875,12 @@ fitSlideLayout(slides[cur]);
 
 // ── QA overview panel ─────────────────────────────────────────────────────
 (function(){
+  if(!MS_QA_ALLOWED){
+    window.closeQaOverview=function(){};
+    window.openQaOverview=function(){};
+    window.toggleQaOverview=function(){};
+    return;
+  }
   var qa=document.getElementById('qa-overview');
   var grid=qa?qa.querySelector('.qa-grid'):null;
   var closeBtn=qa?qa.querySelector('.qa-close'):null;
