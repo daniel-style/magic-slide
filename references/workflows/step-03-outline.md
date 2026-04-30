@@ -97,7 +97,13 @@ remain reserved for final deliverables (`index.html` and `assets/`) plus the
    the full topic sentence as the cover H1; `html-contract.md` owns the
    detailed cover copy rules.
 
-11. **Each slide must advance the argument** - Not just list information. If a slide only says "this also exists", merge it or sharpen it.
+11. **Cover relay stays simple** - For company, product, AI, infrastructure,
+   SaaS, and developer-tool decks, do not plan a labeled process flow,
+   architecture map, or explanatory node/card diagram on Slide 1. Slide 1 may
+   hand off the title, logo/wordmark, or one short key phrase into Slide 2; the
+   working system map should begin on Slide 2 or later.
+
+12. **Each slide must advance the argument** - Not just list information. If a slide only says "this also exists", merge it or sharpen it.
 
 The outline must be an argument, not a topic inventory. For company, technology, finance, or product decks, avoid a flat encyclopedia sequence such as history, products, market, partnerships, future. Each slide should either advance the thesis, provide evidence, create contrast, answer a risk/question, or resolve the story.
 
@@ -105,6 +111,8 @@ Magic Move should influence slide order and content grouping. Prefer sequences
 like index -> focused detail, small metric -> hero metric, system map -> zoomed
 node, or comparison row -> evidence slide. Do not add fake repeated labels just
 to animate; instead, arrange the argument so real repeated entities can move.
+For product/AI/infrastructure covers, start complex system-map continuity on
+Slide 2 instead of making Slide 1 carry readable diagram nodes.
 
 ### Content relay example
 

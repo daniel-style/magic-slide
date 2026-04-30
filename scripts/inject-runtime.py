@@ -281,7 +281,7 @@ body{background-color:var(--bg, var(--field, #0a0c16));color:var(--text, var(--i
 svg path:not([fill])[class*="route"],svg path:not([fill])[class*="connector"],svg path:not([fill])[class*="edge"],svg path:not([fill])[class*="flow"],svg path:not([fill])[class*="arc"],svg path:not([fill])[class*="curve"],svg path:not([fill])[class*="rail"],svg path:not([fill])[class*="trace"],svg path:not([fill])[class*="arrow"],svg path:not([fill])[class*="link"],svg line:not([fill]),svg polyline:not([fill]){fill:none}
 svg path[fill="none"],svg line,svg polyline{vector-effect:non-scaling-stroke}
 .ms-nowrap,.ms-cjk-token{display:inline-block;white-space:nowrap}
-.kicker[data-magic-id],.chip[data-magic-id],.tag[data-magic-id],.badge[data-magic-id],.pill[data-magic-id],.label[data-magic-id],.eyebrow[data-magic-id]{white-space:nowrap!important;inline-size:max-content;max-inline-size:none;flex-shrink:0}
+.deck-mark[data-magic-id],.kicker[data-magic-id],.section-tag[data-magic-id],.chip[data-magic-id],.tag[data-magic-id],.badge[data-magic-id],.pill[data-magic-id],.label[data-magic-id],.eyebrow[data-magic-id],.mini-label[data-magic-id],.small-label[data-magic-id],.mini[data-magic-id],.endpoint[data-magic-id],[data-magic-id][data-magic-nowrap="true"]{white-space:nowrap!important;inline-size:max-content;max-inline-size:none;flex-shrink:0}
 .ms-cjk-balance{text-wrap:balance}
 .card,.stat-item,.compare-panel,.metric-poster,.time-card,.timeline-card,.phase-card,.step-card,.lane-card{min-width:0;overflow:visible;container-type:inline-size}
 .card-title{max-inline-size:100%;font-size:clamp(1.45rem,2.2vw,2.45rem);font-size:clamp(1.45rem,18cqw,2.45rem);line-height:1.02;overflow-wrap:break-word;word-break:normal;text-wrap:balance}
@@ -688,10 +688,11 @@ function isMagicNoWrapLabel(el){
   if(!text||text.length>52)return false;
   if(el.matches('[data-magic-nowrap="true"]'))return true;
   if(el.matches('h1,h2,h3,h4,h5,h6,p,.heading-hero,.heading-xl,.heading-lg,.heading-md'))return false;
-  if(el.matches('.deck-mark,.small-mono,.kicker,.chip,.tag,.badge,.pill,.label,.eyebrow,.feature-plate'))return true;
+  if(el.matches('.deck-mark,.small-mono,.kicker,.section-tag,.chip,.tag,.badge,.pill,.label,.eyebrow,.mini-label,.small-label,.mini,.endpoint,.feature-plate'))return true;
   var cs=getComputedStyle(el);
-  if((cs.display==='inline-flex'||cs.display==='inline-block'||cs.display==='inline')&&text.length<=52&&/^(SPAN|SMALL|LI|BUTTON|A|DIV)$/.test(el.tagName))return true;
-  return /^(SPAN|SMALL|LI|BUTTON)$/.test(el.tagName)&&text.length<=36;
+  var display=(cs.display||'').replace(/\s+/g,'-');
+  if((display==='inline-flex'||display==='inline-block'||display==='inline'||display==='inline-grid')&&text.length<=52&&/^(SPAN|SMALL|LI|BUTTON|A|DIV|STRONG|B|EM)$/.test(el.tagName))return true;
+  return /^(SPAN|SMALL|LI|BUTTON|A|DIV|STRONG|B|EM)$/.test(el.tagName)&&text.length<=36;
 }
 function stabilizeMagicText(root){
   (root||document).querySelectorAll('[data-magic-id]').forEach(function(el){
@@ -2047,8 +2048,89 @@ fitSlideLayout(slides[cur]);
     });
     return count;
   }
-  var QA_CARD_SELECTOR='.card,.node,.stat-item,.compare-panel,.metric-poster,.time-card,.timeline-card,.phase-card,.step-card,.lane-card,.compare-cell,.check-item,.decision-card,.stack-card';
-  var QA_CARD_TEXT_SELECTOR='h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,small,span,strong,em,b,.card-title,.card-subtitle,.card-body,.card-desc,.stat-value,.stat-label,[data-magic-id]';
+  function qaCompositeColor(top,bottom){
+    if(!top)return bottom||{r:255,g:255,b:255,a:1};
+    bottom=bottom||{r:255,g:255,b:255,a:1};
+    var a=Math.max(0,Math.min(1,top.a==null?1:top.a));
+    var ba=Math.max(0,Math.min(1,bottom.a==null?1:bottom.a));
+    var outA=a+ba*(1-a);
+    if(outA<=0.001)return {r:255,g:255,b:255,a:0};
+    return {
+      r:(top.r*a+bottom.r*ba*(1-a))/outA,
+      g:(top.g*a+bottom.g*ba*(1-a))/outA,
+      b:(top.b*a+bottom.b*ba*(1-a))/outA,
+      a:outA
+    };
+  }
+  function qaChannelToLinear(v){
+    v=Math.max(0,Math.min(255,v))/255;
+    return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);
+  }
+  function qaRelativeLuminance(color){
+    if(!color)return 1;
+    return 0.2126*qaChannelToLinear(color.r)+0.7152*qaChannelToLinear(color.g)+0.0722*qaChannelToLinear(color.b);
+  }
+  function qaContrastRatio(a,b){
+    var l1=qaRelativeLuminance(a),l2=qaRelativeLuminance(b);
+    var light=Math.max(l1,l2),dark=Math.min(l1,l2);
+    return (light+0.05)/(dark+0.05);
+  }
+  function qaBaseBackground(slide,win){
+    var tone=typeof win.getSlideTone==='function'?win.getSlideTone(slide):getSlideTone(slide);
+    var base=tone==='light'?{r:255,g:255,b:255,a:1}:{r:10,g:12,b:22,a:1};
+    var bodyColor=parseColorValue(win.getComputedStyle(win.document.body).backgroundColor);
+    if(bodyColor&&bodyColor.a>0.01)base=qaCompositeColor(bodyColor,base);
+    var slideColor=parseColorValue(win.getComputedStyle(slide).backgroundColor);
+    if(slideColor&&slideColor.a>0.01)base=qaCompositeColor(slideColor,base);
+    return base;
+  }
+  function qaEffectiveBackground(el,slide,win){
+    var bg=qaBaseBackground(slide,win);
+    var chain=[];
+    var node=el.parentElement;
+    while(node&&node!==slide.parentElement){
+      chain.unshift(node);
+      if(node===slide)break;
+      node=node.parentElement;
+    }
+    chain.forEach(function(item){
+      var cs=win.getComputedStyle(item);
+      var color=parseColorValue(cs.backgroundColor);
+      if(color&&color.a>0.01)bg=qaCompositeColor(color,bg);
+    });
+    return bg;
+  }
+  function qaIsLargeText(cs){
+    var fs=parseFloat(cs.fontSize)||16;
+    var fw=parseInt(cs.fontWeight,10);
+    if(!Number.isFinite(fw))fw=/bold/i.test(cs.fontWeight||'')?700:400;
+    return fs>=24||(fw>=700&&fs>=18.5);
+  }
+  function countQaLowContrastText(slide,win){
+    if(!slide||!win)return 0;
+    var count=0;
+    var selector='h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,small,span,strong,em,b,[data-magic-id]';
+    Array.from(slide.querySelectorAll(selector)).forEach(function(el){
+      if(!isQaVisibleDiagnosticNode(el,win))return;
+      if(!normalizeQaText(el.textContent))return;
+      if(Array.from(el.children||[]).some(function(ch){return normalizeQaText(ch.textContent)}))return;
+      var r=el.getBoundingClientRect();
+      if(r.width<2||r.height<2)return;
+      var cs=win.getComputedStyle(el);
+      var fg=parseColorValue(cs.color);
+      if(!fg)return;
+      var opacity=parseFloat(cs.opacity||'1');
+      if(!Number.isFinite(opacity))opacity=1;
+      var bg=qaEffectiveBackground(el,slide,win);
+      var effectiveFg=qaCompositeColor({r:fg.r,g:fg.g,b:fg.b,a:(fg.a==null?1:fg.a)*opacity},bg);
+      var ratio=qaContrastRatio(effectiveFg,bg);
+      var threshold=qaIsLargeText(cs)?3:4.5;
+      if(opacity<0.72||ratio<threshold)count+=1;
+    });
+    return count;
+  }
+  var QA_CARD_SELECTOR='.panel,.card,.node,.route-card,.phase,.mini-card,.stat-item,.compare-panel,.metric-poster,.time-card,.timeline-card,.phase-card,.step-card,.lane-card,.compare-cell,.check-item,.decision-card,.stack-card';
+  var QA_CARD_TEXT_SELECTOR='h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,small,span,strong,em,b,.big-token,.hero-label,.endpoint,.card-title,.card-subtitle,.card-body,.card-desc,.stat-value,.stat-label,[data-magic-id]';
   function getQaCardContainers(slide,win){
     if(!slide||!win)return [];
     return Array.from(slide.querySelectorAll(QA_CARD_SELECTOR)).filter(function(el){
@@ -2237,6 +2319,8 @@ fitSlideLayout(slides[cur]);
           if(brokenImages.length)failures.push('image load failed x'+brokenImages.length);
           var overflowCount=countQaContentOverflow(slide,win);
           if(overflowCount)failures.push('content overflow x'+overflowCount);
+          var lowContrastTextCount=countQaLowContrastText(slide,win);
+          if(lowContrastTextCount)failures.push('low contrast text x'+lowContrastTextCount);
           var cardTextOverflowCount=countQaCardTextOverflow(slide,win);
           if(cardTextOverflowCount)failures.push('card text overflow x'+cardTextOverflowCount);
           var crampedRowCount=countQaCrampedCardRows(slide,win);

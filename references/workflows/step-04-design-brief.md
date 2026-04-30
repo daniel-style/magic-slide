@@ -97,6 +97,9 @@ Before writing CSS, reject the brief and revise it if it depends on:
   the user did not explicitly ask for cover imagery.
 - A cover that reuses the same two-column, card-grid, memo-panel, table, or
   ordinary system-diagram layout as the content slides.
+- A cover for a company/product/AI/infrastructure/SaaS/developer-tool deck that
+  contains labeled process flows, request pipelines, mini architecture diagrams,
+  or explanatory card/node diagrams instead of a simple title-led opening.
 - A cover that places a landscape/generated subject image in a tall skinny
   column, creating a random vertical crop or low-information object slice.
 - Brand-color wallpaper where every chip, rail, heading, and image wash uses

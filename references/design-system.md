@@ -241,9 +241,9 @@ from ordinary evidence/content slides while still belonging to the same world.
 
 Rules:
 - Treat slide 1 as a display composition, not a normal information layout.
-- It may use a hero wordmark, oversized title, full-bleed product/object/image,
-  strong typographic crop, single symbolic diagram, dramatic whitespace, or
-  one memorable material surface.
+- It may use a hero wordmark, oversized title, full-bleed product/object/image
+  when justified, strong typographic crop, dramatic whitespace, or one memorable
+  material surface.
 - The cover title should feel like a poster line: short, memorable, and
   non-sentence-like. Put explanatory scope in a small subtitle, chips, or the
   first content slide; see `html-contract.md` for the verifiable copy limits.
@@ -261,8 +261,15 @@ Rules:
 - It should have fewer content regions than normal slides. Avoid rows of
   repeated cards, dense tables, memo grids, or a balanced two-column evidence
   layout on the cover.
-- If the cover needs a diagram, make it iconic and sparse: one visual metaphor
-  or one simplified system shape, not the same operational diagram used later.
+- For company, product, AI, infrastructure, SaaS, and developer-tool decks,
+  default to title/wordmark, one terse subtitle, at most 1-3 labels/chips, and
+  simple non-text decoration. Do not put labeled process flows, mini
+  architecture diagrams, card rows, request pipelines, or explanatory nodes on
+  the cover; move that working model to slide 2 or later.
+- If the user explicitly asks for a diagram-first cover, make it iconic and
+  poster-like: a single symbolic shape with no paragraphs, no tiny node labels,
+  and no pale-card/pale-text combinations. It should be understood as a cover
+  image, not read as an operational diagram.
 - It must look recognizably different from slide 2 in thumbnail view: different
   scale, hierarchy, density, and focal object.
 - The cover can share one Magic Move element with slide 2, such as the title,

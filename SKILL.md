@@ -203,8 +203,10 @@ rules in this file or workflow steps.
 4. **Generate once, inspect once** — Produce the full deck after outline and Brief Lite, then use final QA to catch objective failures.
 5. **Objective QA for objective failures** — Use tools for syntax, overflow, text contrast/readability, images, SVG rendering, and Magic Move, not subjective taste scoring.
 6. **Cover is a special moment** — Slide 1 must be a distinct opening
-   composition with concise cover copy. Use `design-system.md`, `images.md`,
-   and `html-contract.md` for the detailed cover rules.
+   composition with concise cover copy; for product/AI/infrastructure decks it
+   should stay title-led rather than carrying readable process diagrams. Use
+   `design-system.md`, `images.md`, and `html-contract.md` for the detailed
+   cover rules.
 7. **Fast iteration** — If something's wrong, revise CSS and affected source slides quickly, then merge/inject again.
 8. **Merged HTML is an artifact** — Treat `{topic}/index.html` as generated output. Direct HTML edits are only for explicit one-off patches or the browser edit mode Save flow.
 9. **Layout reliability is mandatory** — Follow `layout-guide.md` for

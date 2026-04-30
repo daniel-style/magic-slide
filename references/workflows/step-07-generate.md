@@ -19,6 +19,11 @@ Read:
 Before writing files, make a concise internal plan based on Brief Lite:
 - Chosen visual world and avoided generic tropes
 - Dedicated cover composition and why it differs from slide 2
+- Cover simplicity gate: for company/product/AI/infrastructure/SaaS/
+  developer-tool decks, confirm slide 1 is title-led with only simple
+  non-text decoration plus optional terse labels/chips; any process flow,
+  request pipeline, architecture diagram, or explanatory cards move to slide 2
+  or later.
 - Full-viewport background ownership: which visual fields live on the root
   `.slide`, which full-bleed layers are direct `.slide > .bg` children, and
   which images are ordinary content images. No apparent background may be inside
@@ -46,7 +51,8 @@ Before writing files, make a concise internal plan based on Brief Lite:
 - Magic Move continuity map for every adjacent slide pair: content
   relationship, primary vs supporting anchors, planned `data-magic-id` names,
   exact visible text, source/target element type, source/target visual role,
-  and intentional hard cuts
+  wrap policy (`nowrap` label vs matching multiline heading/body), and
+  intentional hard cuts
 - Slides that need diagrams, images, dense text, or split treatment
 - Slides, if any, that truly need top alignment, with a reason. Default every
   slide to vertically centered content; only dense matrices/tables/timelines
@@ -80,6 +86,11 @@ notes, or intermediate files created during generation must also live under
   agenda/list items, product/entity names, key numbers, dates, image frames,
   diagram nodes, and card titles. Do not use decorative blobs, ghost marks, or
   invented duplicates as Magic Move targets.
+- Keep short Magic Move labels stable while moving. For chips, badges, section
+  tags, deck marks, mini labels, and other short one-line anchors, use
+  `data-magic-nowrap="true"` or an approved label class and ensure both source
+  and target share a one-line width policy. Do not let a label wrap during the
+  clone animation and then snap back to one line on cleanup.
 
 **Avoid repetition:**
 - Vary layout primitives across slides
@@ -123,6 +134,11 @@ notes, or intermediate files created during generation must also live under
   index-to-detail sequence, split an overloaded slide into setup/detail, or
   carry a chapter marker or key number forward. Keep visible text identical for
   shared ids.
+- If a shared text anchor would be one line on one slide and multiline on the
+  other, either make both sides share the same line-break behavior, add
+  `data-magic-nowrap="true"` for a short label that genuinely fits, or move the
+  `data-magic-id` to a shorter stable token. Do not animate the outer wrapper
+  of a card/panel when its internal text reflows between roles.
 - Hard stop before HTML: if the continuity map mostly relies on a footer,
   corner label, tiny deck mark, watermark, or pure chapter chip, revise the
   slide order or treatment until the primary anchors are content-bearing. A

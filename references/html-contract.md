@@ -127,6 +127,11 @@ Rules:
   field on the root `.slide`: restrained gradients, subtle pattern or texture,
   strong typography, and whitespace. It must read as grand, simple, and
   high-end in the first second.
+- For company, product, AI, infrastructure, SaaS, and developer-tool decks, the
+  default cover composition is the title/wordmark, one optional terse subtitle,
+  at most 1-3 small labels/chips, and simple non-text decoration. Put
+  architecture maps, process flows, feature cards, request diagrams, and
+  explanatory mini-panels on slide 2 or later, not on the cover.
 - Do not use a generated/photo cover background unless the user explicitly
   asked for cover imagery or the topic requires a recognizable product/place/
   object on slide 1.
@@ -136,10 +141,19 @@ Rules:
   title, logo, or key phrase, but the rest of the composition should clearly
   change role after the opening.
 - The cover should have one primary focal object: hero title, product/object
-  image, iconic diagram, typographic crop, or strong material field.
+  image when explicitly justified, typographic crop, or strong material field.
+  Do not make a labeled process diagram, row of nodes, or card flow the cover's
+  focal object unless the user explicitly requested a diagram-first cover.
+- If the user explicitly asks for a diagram-first cover, it must be symbolic
+  and poster-like: no paragraphs inside nodes, no tiny labels, no pale cards
+  with pale text, and no operational architecture that must be read to
+  understand the title.
 - Decorative cover layers must satisfy the Cover Text Safety Zone in
   `layout-guide.md`: no visible route, trace, dot, pseudo-element, or diagram
   mark may cut through the title, subtitle, wordmark, or chip row.
+- Do not put `data-magic-id` on cover-only diagram nodes, flow cards, arrows, or
+  decorative labels. Cover Magic Move should usually hand off only the title,
+  logo/wordmark, or one short key phrase into slide 2.
 - If the cover uses a subject image, it must be full-bleed, a wide hero panel,
   a mostly visible product/object, or an abstract material field. Do not crop a
   landscape image into a tall skinny strip or arbitrary object sliver.
@@ -184,6 +198,10 @@ Rules:
 - For non-wrapping text, first allocate a container width, then choose a font-size `clamp()` that fits that width.
 - For card-contained text, prefer `container-type:inline-size` on the card and container query units (`cqw`) in the text size.
 - Use `min-width:0` on flex/grid children containing text.
+- For short Magic Move labels that must stay one line, use an approved label
+  class or `data-magic-nowrap="true"` and give the element an explicit
+  one-line width policy. Do not rely on the animated clone to discover a width
+  during transition.
 - Do not put three or more metric/text cards inside one half-width split
   column. Four-card and five-card groups must use the full slide width, a
   dedicated Metrics/Grid primitive, or multiple slides.
@@ -392,7 +410,18 @@ placement, and overflow/collision policy.
    - Fix: apply `layout-guide.md`'s framed content occupancy rule; shrink or
      remove the frame, or expand the diagram with meaningful internal structure
 
-11. **SVG route renders as a black blob**
+11. **Cover uses an explanatory mini-diagram**
+   - Fix: remove labeled nodes/cards/arrows from slide 1; keep title, terse
+     subtitle/chips, and simple decoration, then move the working diagram to
+     slide 2 or a later content slide
+
+12. **Magic Move label wraps during flight then snaps back**
+   - Fix: for short labels/chips/badges, use `data-magic-nowrap="true"` or an
+     approved label class, and give the source/target the same one-line width
+     policy; for real headings, keep the same line-break behavior on both
+     sides or animate a shorter stable token instead
+
+13. **SVG route renders as a black blob**
    - Fix: add `fill="none"` and fallback stroke attributes to the source SVG path
    - Avoid: complex masks/filters/blend modes or decorative filled path blobs
 
@@ -413,12 +442,16 @@ Before delivery, check:
 - [ ] Slide 1 H1 is a concise cover title, not a sentence-like topic
       description, and the subtitle is not a mini abstract
 - [ ] Slide 1 defaults to a no-image CSS material field unless the user explicitly requested cover imagery
+- [ ] Slide 1 does not contain a labeled process diagram, mini architecture
+      flow, row of explanatory cards, or card-like nodes with unreadable
+      internal text
 - [ ] Cover subject image, if present, is not an uploadable wrapper, inset panel, accidental skinny crop, or low-information object strip
 - [ ] Palette does not read as gray fog; dark slides, accent blocks, and text all have clear contrast
 - [ ] No white/cream/pale-gray or low-opacity text appears on a light/paper field
 - [ ] Content text uses opacity/alpha high enough to stay readable; hierarchy is mostly color/token based, not transparency based
 - [ ] Magic Move anchors satisfy `flip-engine.md`, including semantic adjacent
-      continuity, identical visible text, and no decorative-only placeholders
+      continuity, identical visible text, stable wrap/no-wrap behavior, and no
+      decorative-only placeholders
 - [ ] style.css has :root variables and animations
 - [ ] Files named slide-01.html, slide-02.html, etc.
 - [ ] Layout, text-fit, vertical-balance, source-note, and overlap checks satisfy `layout-guide.md`

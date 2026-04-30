@@ -442,6 +442,9 @@ Rules:
 - Use at most one decorative system on a cover, such as a material field,
   faint grid, route motif, or particle map. If the title needs a panel or fog
   overlay to stay readable, remove or move the decoration instead.
+- Do not use decorative cover space for readable mini-diagrams, process flows,
+  or card/node labels. If a viewer has to read text inside a cover diagram, the
+  cover is carrying content that belongs on a later slide.
 - Inspect the cover at full slide size and in overview thumbnail size. If the
   decoration is noticed before the title or makes the subtitle harder to read,
   move it to the edges/corners, lower its contrast, or delete it.

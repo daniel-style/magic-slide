@@ -87,8 +87,12 @@ the user asks to see a sample first or the visual direction is unusually risky.
 
 Before writing `slide-01.html`, define its display role separately from the
 deck's normal slide families. The cover should be a title sequence frame,
-poster, product reveal, book cover, exhibition wall, hero image, or simplified
-symbolic system map.
+poster, product reveal, book cover, exhibition wall, hero image, or strong
+material/typographic field. For product, AI, infrastructure, SaaS, and
+developer-tool decks, default to title plus minimal labels and simple
+decoration; do not put the working architecture, request pipeline, feature
+cards, or explanatory node diagram on slide 1. Move that model to slide 2 or a
+later content slide.
 
 Use `design-system.md` for the cover's visual role and `images.md` for cover
 image policy. Use `html-contract.md` for the verifiable cover checklist. The
@@ -276,7 +280,9 @@ After generating the full deck:
   grids, and pseudo-elements must not cross or compete with the title,
   subtitle, wordmark, or chip row.
 - Check the cover against `html-contract.md`: the H1 must be concise, and the
-  subtitle must not become a mini abstract.
+  subtitle must not become a mini abstract; for product/AI/infrastructure decks,
+  the cover must not contain a readable process diagram or explanatory card
+  flow.
 - Check inline SVG against the visual quality contract, not only the black-blob
   safety rules: diagrams need hierarchy, aligned labels, line rhythm, and
   enough structure to read as finished graphics.

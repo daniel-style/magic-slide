@@ -50,7 +50,9 @@ Triage rules:
   `data-magic-id` text mismatches.
 - QA overview is a first-pass radar. After it is clean, still do targeted
   full-size screenshots or rendered slide checks for the cover, dense/content
-  slides, diagrams/images, and any formerly flagged pages.
+  slides, diagrams/images, and any formerly flagged pages. `low contrast text`
+  is a failure: fix the source color/background pair rather than accepting it
+  as a style choice.
 
 ### 10b. Final QA checklist
 

@@ -88,12 +88,30 @@ visual rect just like font size, line height, and padding, so clones inside
 runtime-scaled slide wrappers still match the target at cleanup.
 
 Short, chrome-like text marks such as `.deck-mark`, `.small-mono`, tags,
-badges, `.feature-plate`, and simple inline-flex/inline-block labels use the
-no-wrap label path. Their animated clone keeps `white-space: nowrap` and
-animates fixed geometry, font size, line height, padding, and border widths
-instead of relying on a single transform scale. This keeps one-line marks from
-wrapping or snapping to a different text metric when the clone is replaced by
-the real target element on cleanup.
+badges, `.section-tag`, `.mini-label`, `.mini`, `.endpoint`,
+`.feature-plate`, and simple inline-flex/inline-block labels use the no-wrap
+label path. Their animated clone keeps `white-space: nowrap` and animates
+fixed geometry, font size, line height, padding, and border widths instead of
+relying on a single transform scale. This keeps one-line marks from wrapping or
+snapping to a different text metric when the clone is replaced by the real
+target element on cleanup.
+
+Use `data-magic-nowrap="true"` on any short custom label/chip that must remain
+one line but does not use one of the standard label classes. The source and
+target still need enough width for the string: if the label cannot fit on one
+line, widen the container, lower the font-size max, or remove the nowrap
+promise.
+
+Shared text anchors need stable line behavior. A label that wraps during the
+animated clone and then becomes one line at the destination is a broken Magic
+Move. Before writing HTML, decide whether each shared text anchor is a
+one-line label or a multiline heading/body block:
+- One-line labels: use an approved label class or `data-magic-nowrap="true"`
+  and keep both source and target to the same nowrap policy.
+- Multiline headings/body text: let both sides wrap naturally with compatible
+  widths, or avoid using the whole text block as the `data-magic-id`.
+- If only a short phrase is stable, put `data-magic-id` on that phrase rather
+  than on the card, panel, or paragraph wrapper.
 
 When a slide wrapper has been scaled by runtime fit logic, the runtime lays out each clone using the TO element's unscaled `offsetWidth` / `offsetHeight`, then animates to the visual `getBoundingClientRect()` scale. This keeps text layout based on the same width budget as the real element instead of forcing unscaled typography into a smaller transformed rect.
 
