@@ -141,12 +141,38 @@ function getMagic(slide) {
 Treat Magic Move as part of the narrative structure, not just a title trick. Before writing adjacent slides, quickly map which elements should persist.
 
 Plan this before HTML, ideally while writing or refining the outline. A strong
-Magic Slide deck usually contains a visible continuity spine: a short deck mark
-or chapter label that travels, overview items that expand into detail slides,
-small numbers that become hero stats, system nodes that become zoomed diagrams,
-or evidence cards that become case-study layouts. If the planned deck has no
-natural shared elements, improve the content sequence before trying to patch
-motion into finished slides.
+Magic Slide deck usually contains a visible continuity spine: concepts pass
+between slides as premise, focus, detail, contrast, or resolution. That often
+looks like overview items expanding into detail slides, small numbers becoming
+hero stats, system nodes becoming zoomed diagrams, or evidence cards becoming
+case-study layouts. If the planned deck has no natural shared elements,
+improve the content sequence before trying to patch motion into finished
+slides.
+
+### Primary Magic Move anchors
+
+For each adjacent pair with continuous subject matter, plan one **primary**
+Magic Move anchor. Supporting anchors can add context, but the primary anchor
+is the element that makes the audience feel the idea carried forward.
+
+A primary anchor must be:
+
+- **Semantic** — it is truly the same concept, object, metric, date, card,
+  image, or diagram node on both slides.
+- **Content-bearing** — it is part of the slide's main argument, not a footer,
+  watermark, corner label, purely decorative mark, or tiny navigation chip.
+- **Visually meaningful** — at least one side treats it as a main card, heading
+  phrase, hero number, image/object, comparison row, timeline date, or diagram
+  node.
+- **Role-changing** — it changes scale, position, crop, grouping, or narrative
+  role; a static label that barely moves is only a supporting anchor.
+- **Implementation-safe** — any text used for the shared `data-magic-id` has
+  identical visible text and compatible text transform on both slides.
+
+Content stays first: never alter facts, wording accuracy, or logical order just
+to make a Magic Move possible. The fix for weak motion is to arrange the
+argument into real relay beats: overview -> detail, setup -> reveal,
+map -> zoom, compare -> case, metric -> implication, or question -> answer.
 
 Long display titles are usually poor Magic Move anchors when the target is a
 small deck mark or navigation label. Let the hero title wrap and behave like
@@ -163,12 +189,13 @@ overflow risk.
 
 **Practical density guidance:**
 - Most adjacent slides with overlapping subject matter should share at least 1 meaningful element
-- For decks with 5+ slides, aim for Magic Move on a majority of adjacent pairs unless the outline has explicit hard cuts
-- Overview/detail or zoom-in sequences often support 2-4 shared elements
+- For decks with 5+ slides, aim for primary Magic Move anchors on a majority of adjacent pairs unless the outline has explicit hard cuts
+- Overview/detail or zoom-in sequences often support 1 primary anchor plus 1-3 supporting anchors
 - The cover should usually hand off one stable title, mark, image, or key phrase into slide 2, then the ordinary deck should continue with its own recurring anchors
 - A tiny global deck mark that persists on every slide is useful, but it does
-  not count as a rich Magic Move system by itself. Add local/content anchors
-  that change scale, position, or role between adjacent slides.
+  not count as a primary anchor or as the deck's Magic Move selling point by
+  itself. Add local/content anchors that change scale, position, or role
+  between adjacent slides.
 - If an audit shows only one or two shared pairs in a normal-length deck, revise the outline or slide treatment before final polish
 - If only one small part of a block is truly stable, animate that sub-element instead of the whole wrapper
 - Tag changes are fine when the semantic entity is clearly the same and the visible text still matches

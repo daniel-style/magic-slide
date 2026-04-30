@@ -31,7 +31,7 @@ Cover promise: ...
 Tone mode: primary [dark/light]; inverse exceptions: [none / slide numbers + role]
 Type/color/material: ...
 Slide families: ...
-Magic Move motif: ...
+Magic Move motif: [content relay motion grammar, not just transition effects]
 ```
 
 Rules:
@@ -75,12 +75,15 @@ Rules:
 - Slide families must include at least four roles, such as thesis hero,
   evidence/data, system diagram, risk map, integration map, timeline, quote, or
   closing.
-- Magic Move motif must name the recurring anchor system and at least three
-  adjacent transition beats for normal-length decks. Include any intentional
-  hard cuts so they are story decisions, not accidental missed animations.
-  Example beats: cover wordmark -> working header, agenda chip -> chapter
-  heading, small metric -> hero stat, system node -> zoomed diagram, evidence
-  card -> expanded case.
+- Magic Move motif must define the deck's content-relay motion grammar: how
+  ideas pass from slide to slide as premise, focus, detail, contrast, or
+  resolution. Name the recurring anchor system and at least three adjacent
+  transition beats for normal-length decks, but explain how those beats make
+  the argument feel continuous. Include any intentional hard cuts so they are
+  story decisions, not accidental missed animations. Example grammar:
+  overview card -> expanded case -> metric carried forward; system node ->
+  zoomed diagram -> decision label; small metric -> hero stat -> pricing-model
+  node.
 
 ### 4c. Hard Stop Anti-Template Check
 

@@ -106,9 +106,9 @@ confirmation and the web-search yes/no question; see
 
 1. **Step 1: Gather requirements** — Ask ALL 4 question groups: topic/audience-lens, aesthetic style, **language** (REQUIRED - never infer from user's message language), images
 2. **Step 2: Web search** — Ask user if they want online search (optional). If they say yes, run `scripts/websearch.py` first; built-in agent search is only a fallback after the script fails or returns no usable results.
-3. **Step 3: Generate outline** — Create `{topic}/sources/outline.md` with MANDATORY elements: thesis spine, audience/lens, chapter arc, closing idea, and Magic Move spine. Get user confirmation (required checkpoint)
-4. **Step 4: Write Brief Lite** — Output a compact design brief before CSS/HTML: visual world, rejected tropes, cover promise, tone mode, type/color/material logic, slide families, Magic Move motif and transition beats
-5. **Step 5: Generate production sources** — Create `style.css` and all `slide-XX.html` files directly from the confirmed outline and Brief Lite, after making a continuity map for adjacent slide pairs
+3. **Step 3: Generate outline** — Create `{topic}/sources/outline.md` with MANDATORY elements: thesis spine, audience/lens, chapter arc, closing idea, and Magic Move content-relay spine. Get user confirmation (required checkpoint)
+4. **Step 4: Write Brief Lite** — Output a compact design brief before CSS/HTML: visual world, rejected tropes, cover promise, tone mode, type/color/material logic, slide families, and Magic Move content-relay motion grammar
+5. **Step 5: Generate production sources** — Create `style.css` and all `slide-XX.html` files directly from the confirmed outline and Brief Lite, after making a primary/supporting continuity map for adjacent slide pairs
 6. **Step 6: Merge slides** — Combine modular sources into single HTML
 7. **Step 7: Inject runtime** — Run the existing injector unchanged; preserve injected behavior/results unless the user explicitly asks otherwise
 8. **Step 8: Preview, QA overview gate, targeted full-size QA, and delivery** — ALWAYS launch the skill preview server with `scripts/serve.py`, run the runtime QA overview gate first, then do targeted full-size checks and fix objective failures before delivery
@@ -199,7 +199,7 @@ rules in this file or workflow steps.
 
 1. **Outline must be an argument, not a topic list** — Every slide advances a thesis, not just "this also exists"
 2. **Brief Lite first** — Commit to a topic-specific visual world and primary light/dark tone before writing CSS. Keep it concise, but output it so the design promise is visible.
-3. **Magic Move is planned early** — The outline should create overview/detail, chapter-marker, and recurring-anchor opportunities before HTML exists. Do not rely on decorative duplicates to manufacture motion late.
+3. **Magic Move is planned early** — The outline should create content relay opportunities before HTML exists: overview/detail, metric/hero-stat, map/zoom, compare/case, and other primary anchors. Do not rely on decorative duplicates to manufacture motion late.
 4. **Generate once, inspect once** — Produce the full deck after outline and Brief Lite, then use final QA to catch objective failures.
 5. **Objective QA for objective failures** — Use tools for syntax, overflow, text contrast/readability, images, SVG rendering, and Magic Move, not subjective taste scoring.
 6. **Cover is a special moment** — Slide 1 must be a distinct opening

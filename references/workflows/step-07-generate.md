@@ -43,9 +43,10 @@ Before writing files, make a concise internal plan based on Brief Lite:
 - Framed-content occupancy for main visuals, using `layout-guide.md`: a large
   bordered panel must have a real filled diagram/composition, not a tiny row
   inside an empty frame.
-- Magic Move continuity map for every adjacent slide pair: planned
-  `data-magic-id` names, exact visible text, source/target element type, and
-  intentional hard cuts
+- Magic Move continuity map for every adjacent slide pair: content
+  relationship, primary vs supporting anchors, planned `data-magic-id` names,
+  exact visible text, source/target element type, source/target visual role,
+  and intentional hard cuts
 - Slides that need diagrams, images, dense text, or split treatment
 - Slides, if any, that truly need top alignment, with a reason. Default every
   slide to vertically centered content; only dense matrices/tables/timelines
@@ -70,11 +71,11 @@ notes, or intermediate files created during generation must also live under
 - Maintain the same visual language
 - Keep ordinary slides in the primary deck tone. Generate inverse-tone slides
   only when they were named in Brief Lite or the internal production plan.
-- Build the Magic Move spine from the outline instead of sprinkling ids after
-  the deck is done. Most adjacent pairs with continuous subject matter should
-  share at least one semantic anchor, and overview/detail or zoom-in sequences
-  should often share 2-4 anchors. Use hard cuts only for clear chapter breaks,
-  tone shifts, or visual resets.
+- Build the Magic Move spine from the outline's content relay instead of
+  sprinkling ids after the deck is done. Most adjacent pairs with continuous
+  subject matter should share a primary semantic anchor; overview/detail or
+  zoom-in sequences should often add 1-3 supporting anchors. Use hard cuts only
+  for clear chapter breaks, tone shifts, or visual resets.
 - Prefer semantic recurring elements: short deck marks, chapter labels,
   agenda/list items, product/entity names, key numbers, dates, image frames,
   diagram nodes, and card titles. Do not use decorative blobs, ghost marks, or
@@ -122,6 +123,11 @@ notes, or intermediate files created during generation must also live under
   index-to-detail sequence, split an overloaded slide into setup/detail, or
   carry a chapter marker or key number forward. Keep visible text identical for
   shared ids.
+- Hard stop before HTML: if the continuity map mostly relies on a footer,
+  corner label, tiny deck mark, watermark, or pure chapter chip, revise the
+  slide order or treatment until the primary anchors are content-bearing. A
+  supporting anchor can reinforce continuity, but it cannot replace the primary
+  content relay.
 
 ### 5d. Handle images (if requested)
 

@@ -231,6 +231,10 @@ affected slide pair.
 The continuity map should include:
 
 - The adjacent pair, such as `slide-03 -> slide-04`.
+- The content relationship: continuation, amplification, decomposition,
+  contrast, return, or chapter break.
+- Primary vs supporting anchors. Use `flip-engine.md` as the authority for the
+  primary-anchor quality standard.
 - Planned id names, exact visible text, and element type on both sides.
 - The motion role: travel, shrink, expand, zoom into detail, remain as deck
   mark, or carry chapter context.
@@ -238,10 +242,11 @@ The continuity map should include:
 
 Default density target:
 
-- In decks with five or more slides, most adjacent pairs should share at least
-  one meaningful Magic Move anchor unless they are intentional hard cuts.
+- In decks with five or more slides, most adjacent pairs should share a primary
+  Magic Move anchor unless they are intentional hard cuts.
 - Overview/detail, agenda/section, system-map/zoom, timeline/detail, and
-  metric/setup sequences should usually share 2-4 anchors.
+  metric/setup sequences should usually share one primary anchor plus 1-3
+  supporting anchors.
 - A deck where only the cover title moves once is underusing the skill. Fix
   the outline or slide treatment before polishing CSS.
 - Never add decorative duplicates, hidden ghosts, or fake repeated labels just
@@ -249,9 +254,10 @@ Default density target:
   markers, card titles, key numbers, images, and diagram nodes that are truly
   the same thing.
 - Hard stop before HTML: if the continuity map mostly says "none" or repeats
-  only a tiny global deck mark, do not proceed. Re-sequence the content into
-  index-to-detail, setup-to-reveal, map-to-zoom, or compare-to-case beats until
-  the Magic Move opportunities are real.
+  only a footer, corner label, tiny global deck mark, watermark, or pure
+  chapter chip, do not proceed. Re-sequence the content into index-to-detail,
+  setup-to-reveal, map-to-zoom, or compare-to-case beats until the Magic Move
+  opportunities are real.
 
 ## Objective QA
 
