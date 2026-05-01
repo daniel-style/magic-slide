@@ -295,14 +295,15 @@ After generating the full deck:
 - Preview with `serve.py`.
 - Run the QA overview gate from `step-10-preview.md` before detailed viewport
   checks. Open `?ms_qa=overview`, scan every card, and if user review is needed,
-  stop for them to mark issue notes saved in `sources/qa/visual-issues.json`.
-- Review the QA overview screenshots visually. The overview is intentionally not
-  a rule-based detector; it exists to make the rendered deck easy to inspect.
-- When repairing, read unresolved issue notes first, then capture the full QA
-  overview and full-size problem slides. Use both the JSON notes and screenshots,
-  fix `sources/`, then merge, inject, preview, and capture QA overview again.
-- After verification, mark repaired JSON issues `resolved: true`; do not write
-  issue notes into `index.html`.
+  stop for them to request revisions saved in `sources/qa/visual-issues.json`.
+- Read unresolved revision notes first. Treat those slides as known repair
+  targets, then review QA overview screenshots for additional visual problems on
+  unmarked slides. The overview is intentionally not a rule-based detector; it
+  exists to make the remaining rendered deck easy to inspect.
+- When repairing, use both the JSON notes and any new screenshot findings, fix
+  `sources/`, then merge, inject, preview, and capture QA overview again.
+- After verification, mark repaired JSON records `resolved: true`; do not write
+  revision notes into `index.html`.
 - Run browser or manual viewport checks on every slide at a normal 16:9 viewport
   and a smaller 16:9 viewport, such as `1440x900` and `1024x576`.
 - Check for overflow, clipped text, broken images, dead zones, unbalanced

@@ -529,14 +529,14 @@ def make_runtime_html(ui: dict) -> str:
     <div class="qa-issue-editor" hidden>
       <form class="qa-issue-dialog">
         <div>
-          <h3 id="qa-issue-title">Mark visual issue</h3>
-          <p>Describe why this slide has a visual problem. The note is saved to sources/qa/visual-issues.json.</p>
+          <h3 id="qa-issue-title">Request slide revision</h3>
+          <p>Describe what feels off or what should change. Ask for regeneration, a different layout, or visual fixes.</p>
         </div>
-        <textarea id="qa-issue-note" required placeholder="What looks wrong on this slide?"></textarea>
+        <textarea id="qa-issue-note" required placeholder="What should change on this slide?"></textarea>
         <div class="qa-issue-error" aria-live="polite"></div>
         <div class="qa-issue-actions">
           <button class="qa-issue-cancel" type="button">Cancel</button>
-          <button class="qa-issue-save" type="submit">Save issue</button>
+          <button class="qa-issue-save" type="submit">Save request</button>
         </div>
       </form>
     </div>
@@ -1349,7 +1349,23 @@ if(!MS_IS_OVERVIEW_EMBED){
 window.addEventListener('hashchange',restoreFromHash);
 // ──────────────────────────────────────────────────────────────────────────
 var cursorVisible=true;
+function isMsTextEntryTarget(target){
+  if(!target)return false;
+  var el=target.nodeType===1?target:(target.parentElement||null);
+  if(!el)return false;
+  if(el.isContentEditable||el.closest('[contenteditable="true"]'))return true;
+  return !!el.closest('input,textarea,select,[role="textbox"]');
+}
+function isMsContentEditableTarget(target){
+  if(!target)return false;
+  var el=target.nodeType===1?target:(target.parentElement||null);
+  return !!(el&&(el.isContentEditable||el.closest('[contenteditable="true"]')));
+}
+function shouldIgnorePresentationShortcut(e){
+  return isMsTextEntryTarget(e.target);
+}
 document.addEventListener('keydown',function(e){
+  if(shouldIgnorePresentationShortcut(e))return;
   var overlayOpen=document.querySelector('#slide-overview.show,#qa-overview.show');
   if(overlayOpen&&['ArrowRight','ArrowDown','Space','ArrowLeft','ArrowUp'].indexOf(e.code)>-1){
     e.preventDefault();
@@ -1879,6 +1895,7 @@ fitSlideLayout(slides[cur]);
       closeOverview();
       return;
     }
+    if(shouldIgnorePresentationShortcut(e))return;
     if(e.code==='KeyO'&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!document.body.classList.contains('ms-edit-mode')){
       e.preventDefault();
       toggleOverview();
@@ -2026,7 +2043,7 @@ fitSlideLayout(slides[cur]);
     if(!issueEditor||!issueTextarea)return;
     editingIssueIdx=idx;
     var issue=activeIssueForSlide(idx);
-    if(issueTitle)issueTitle.textContent='Slide '+(idx+1)+' issue note';
+    if(issueTitle)issueTitle.textContent='Slide '+(idx+1)+' revision request';
     issueTextarea.value=issue?issue.note:'';
     setIssueError('');
     issueEditor.hidden=false;
@@ -2036,7 +2053,7 @@ fitSlideLayout(slides[cur]);
     if(editingIssueIdx===null||!issueTextarea)return;
     var note=issueTextarea.value.trim();
     if(!note){
-      setIssueError('Please describe the visual problem before saving.');
+      setIssueError('Please describe what should change before saving.');
       issueTextarea.focus();
       return;
     }
@@ -2070,7 +2087,7 @@ fitSlideLayout(slides[cur]);
       })
       .catch(function(err){
         console.warn(err);
-        setIssueError('Could not save the issue note. Confirm the preview server is running.');
+        setIssueError('Could not save the revision request. Confirm the preview server is running.');
       })
       .finally(function(){
         if(issueSave)issueSave.disabled=false;
@@ -2091,8 +2108,8 @@ fitSlideLayout(slides[cur]);
       }
       var btn=item.querySelector('.qa-issue-btn');
       if(btn){
-        btn.textContent=hasIssue?'Issue marked':'Mark issue';
-        btn.setAttribute('aria-label',(hasIssue?'Edit issue note for slide ':'Mark issue on slide ')+(idx+1));
+        btn.textContent=hasIssue?'Revision saved':'Revise slide';
+        btn.setAttribute('aria-label',(hasIssue?'Edit revision request for slide ':'Request revision for slide ')+(idx+1));
       }
     });
   }
@@ -2215,7 +2232,7 @@ fitSlideLayout(slides[cur]);
     var cards=Array.from(grid.querySelectorAll('.qa-card'));
     var pending=cards.filter(function(item){return item.dataset.scanned!=='1';}).length;
     var issueCount=unresolvedIssueCount();
-    summary.textContent=slides.length+' slides'+(issueCount?' - '+issueCount+' marked issue'+(issueCount===1?'':'s'):'')+(pending?' - '+pending+' scanning':' - ready for visual review');
+    summary.textContent=slides.length+' slides'+(issueCount?' - '+issueCount+' revision request'+(issueCount===1?'':'s'):'')+(pending?' - '+pending+' scanning':' - ready for visual review');
   }
   function applyQaFilter(){
     if(!grid)return;
@@ -2258,7 +2275,7 @@ fitSlideLayout(slides[cur]);
       var issueBtn=document.createElement('button');
       issueBtn.type='button';
       issueBtn.className='qa-issue-btn';
-      issueBtn.textContent='Mark issue';
+      issueBtn.textContent='Revise slide';
       issueBtn.addEventListener('click',function(e){
         e.preventDefault();
         e.stopPropagation();
@@ -2324,6 +2341,9 @@ fitSlideLayout(slides[cur]);
   if(qa)qa.addEventListener('click',function(e){
     e.stopPropagation();
   });
+  if(issueForm)issueForm.addEventListener('keydown',function(e){
+    if(e.code!=='Escape')e.stopPropagation();
+  },true);
   if(issueForm)issueForm.addEventListener('submit',function(e){
     e.preventDefault();
     e.stopPropagation();
@@ -2355,6 +2375,7 @@ fitSlideLayout(slides[cur]);
       closeQaOverview();
       return;
     }
+    if(shouldIgnorePresentationShortcut(e))return;
     if(e.code==='KeyQ'&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!document.body.classList.contains('ms-edit-mode')){
       e.preventDefault();
       toggleQaOverview();
@@ -2557,6 +2578,7 @@ fitSlideLayout(slides[cur]);
   }
 
   document.addEventListener('keydown',function(e){
+    if(isMsTextEntryTarget(e.target)&&!isMsContentEditableTarget(e.target))return;
     var isSaveShortcut=(e.key==='s'||e.key==='S')&&(e.metaKey||e.ctrlKey)&&!e.altKey;
     if(!isSaveShortcut)return;
     if(!saveBtn||saving)return;

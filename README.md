@@ -152,7 +152,7 @@ The topic root is reserved for deliverables. Process files stay inside
 5. Generate `style.css` and the individual slide fragments.
 6. Merge slide fragments into `index.html`.
 7. Inject the Magic Move runtime and editing helpers.
-8. Launch the preview server, open the QA overview visual wall, let issue notes
+8. Launch the preview server, open the QA overview visual wall, let revision notes
    be captured in `sources/qa/visual-issues.json` when needed, then fix visible
    issues with layout, color, text, images, diagrams, or transitions.
 
@@ -253,8 +253,9 @@ based on Anthropic's public skill:
 Before delivery, verify:
 
 - Slides render without errors.
-- QA overview has been captured as a full visual wall, and unresolved
-  `sources/qa/visual-issues.json` notes have been reviewed with screenshots.
+- QA overview has been captured as a visual wall, unresolved
+  `sources/qa/visual-issues.json` notes are treated as known revisions, and
+  screenshots have been checked for additional issues on unmarked slides.
 - Text does not overflow or overlap.
 - Slide backgrounds cover the full viewport.
 - Magic Move transitions are smooth and semantically meaningful.

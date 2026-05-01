@@ -135,11 +135,11 @@ Rules:
 - Use `min-width:0`, `container-type:inline-size`, `max-inline-size:100%`, and
   `overflow-wrap:break-word` on card contents so long words wrap inside the
   intended card instead of escaping or forcing overflow.
-- QA overview should be used as a visual wall for this failure mode. Mark issue
-  notes for labels or paragraphs escaping their cards, and for four or more
+- QA overview should be used as a visual wall for this failure mode. Add
+  revision notes for labels or paragraphs escaping their cards, and for four or more
   cards compressed into a narrow region below the readable-width budget. When
-  repairing, combine those notes with fresh screenshots and revise the source
-  layout when the rendered slide looks cramped or broken.
+  repairing, read those notes first, then use fresh screenshots to check
+  unmarked slides for similar missed problems before revising the source layout.
 
 ### Vertical Balance Rule
 

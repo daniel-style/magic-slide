@@ -212,9 +212,9 @@ Rules:
 - Do not hide text overflow with `overflow:hidden`, `overflow:clip`, masks, or
   fades. If content needs hiding to look tidy, the slide is over budget.
 - In QA overview screenshots, visually inspect cards for escaped labels,
-  cramped rows, and unreadable wrapping. If user/agent review marks issue notes,
-  repair from both `sources/qa/visual-issues.json` and fresh screenshots, not
-  from runtime tags.
+  cramped rows, and unreadable wrapping. If `visual-issues.json` already has
+  unresolved revision notes, skip those marked cards during new-problem
+  screenshot triage and inspect the unmarked cards for additional issues.
 
 ## SVG Contract
 
@@ -464,7 +464,7 @@ Before delivery, check:
       budget
 - [ ] Metric/card labels do not collide with neighboring cards; four-card
       groups are not squeezed into half-width columns
-- [ ] QA overview screenshots and unresolved `sources/qa/visual-issues.json`
-      notes have been reviewed for cramped card rows, escaped labels, and
-      unreadable wrapping
+- [ ] QA overview screenshots have been checked for cramped card rows,
+      escaped labels, and unreadable wrapping on unmarked slides; unresolved
+      `sources/qa/visual-issues.json` notes are treated as known repair targets
 - [ ] Inline SVG connector paths include `fill="none"` and fallback stroke attributes
