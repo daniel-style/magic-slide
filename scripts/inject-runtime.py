@@ -377,12 +377,28 @@ svg path[fill="none"],svg line,svg polyline{vector-effect:non-scaling-stroke}
 .qa-thumb{position:relative;aspect-ratio:16/9;background:rgba(24,25,31,0.86);overflow:hidden;isolation:isolate}
 .qa-frame-content{position:absolute;top:0;left:0;width:1920px;height:1080px;transform-origin:top left;pointer-events:none;background:transparent}
 .qa-frame-content iframe{width:1920px;height:1080px;border:0;display:block;pointer-events:none;background:transparent}
-.qa-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px 13px;border-top:1px solid rgba(237,241,247,0.10);background:rgba(11,12,16,0.92)}
-.qa-page{display:flex;flex-direction:column;gap:4px;min-width:0}
+.qa-card.has-issue{border-color:rgba(251,191,36,0.56);box-shadow:0 0 0 1px rgba(251,191,36,0.26),0 18px 50px rgba(0,0,0,0.28)}
+.qa-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:12px 14px 13px;border-top:1px solid rgba(237,241,247,0.10);background:rgba(11,12,16,0.92)}
+.qa-page{display:flex;flex-direction:column;gap:6px;min-width:0}
 .qa-page strong{font-size:12px;line-height:1;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:#f8fafc}
-.qa-status{flex-shrink:0;padding:5px 8px;border-radius:7px;background:rgba(237,241,247,0.10);color:rgba(237,241,247,0.76);font-size:10px;font-weight:900;line-height:1;letter-spacing:0.08em}
-.qa-card[data-status="review"] .qa-status{background:rgba(34,197,94,0.14);color:#bbf7d0}
-@media(max-width:720px){.qa-toolbar{height:auto;min-height:74px;align-items:flex-start;flex-direction:column;padding:16px 18px}.qa-actions{width:100%;justify-content:space-between}.qa-grid{top:128px;grid-template-columns:1fr;padding:18px}.qa-title{width:100%;justify-content:space-between}#qa-summary{white-space:normal;text-align:right}}
+.qa-note-preview{display:none;max-width:44ch;color:rgba(237,241,247,0.66);font-size:11px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qa-card.has-issue .qa-note-preview{display:block}
+.qa-issue-btn{flex-shrink:0;max-width:10rem;border:1px solid rgba(237,241,247,0.14);background:rgba(255,255,255,0.055);color:rgba(237,241,247,0.82);border-radius:8px;padding:7px 9px;font-size:10px;font-weight:900;line-height:1;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;cursor:pointer;transition:background 0.16s ease,border-color 0.16s ease,color 0.16s ease,transform 0.16s ease}
+.qa-issue-btn:hover{background:rgba(255,255,255,0.10);border-color:rgba(237,241,247,0.30);color:#fff;transform:translateY(-1px)}
+.qa-card.has-issue .qa-issue-btn{background:rgba(251,191,36,0.18);border-color:rgba(251,191,36,0.46);color:#fde68a}
+.qa-issue-editor[hidden]{display:none}
+.qa-issue-editor{position:absolute;inset:0;z-index:4;display:grid;place-items:center;padding:22px;background:rgba(9,10,13,0.56);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.qa-issue-dialog{width:min(560px,100%);border:1px solid rgba(237,241,247,0.16);border-radius:14px;background:rgba(16,18,24,0.98);box-shadow:0 30px 90px rgba(0,0,0,0.48);padding:20px;display:grid;gap:14px}
+.qa-issue-dialog h3{margin:0;color:#f8fafc;font-size:16px;line-height:1.2;font-weight:850}
+.qa-issue-dialog p{margin:0;color:rgba(237,241,247,0.62);font-size:12px;line-height:1.45}
+.qa-issue-dialog textarea{width:100%;min-height:132px;resize:vertical;box-sizing:border-box;border:1px solid rgba(237,241,247,0.16);border-radius:10px;background:rgba(255,255,255,0.055);color:#f8fafc;font:inherit;font-size:13px;line-height:1.45;padding:12px;outline:none}
+.qa-issue-dialog textarea:focus{border-color:rgba(127,200,255,0.68);box-shadow:0 0 0 3px rgba(127,200,255,0.12)}
+.qa-issue-actions{display:flex;justify-content:flex-end;gap:8px}
+.qa-issue-actions button{height:34px;border:1px solid rgba(237,241,247,0.14);border-radius:8px;padding:0 12px;background:rgba(255,255,255,0.055);color:rgba(237,241,247,0.84);font-size:12px;font-weight:800;cursor:pointer}
+.qa-issue-actions button:hover{background:rgba(255,255,255,0.10);color:#fff}
+.qa-issue-actions .qa-issue-save{background:rgba(251,191,36,0.18);border-color:rgba(251,191,36,0.44);color:#fde68a}
+.qa-issue-error{min-height:1em;color:#fca5a5;font-size:12px;line-height:1.3}
+@media(max-width:720px){.qa-toolbar{height:auto;min-height:74px;align-items:flex-start;flex-direction:column;padding:16px 18px}.qa-actions{width:100%;justify-content:space-between}.qa-grid{top:128px;grid-template-columns:1fr;padding:18px}.qa-title{width:100%;justify-content:space-between}#qa-summary{white-space:normal;text-align:right}.qa-card-head{align-items:stretch;flex-direction:column}.qa-issue-btn{max-width:none;width:100%}}
 
 /* Navigation buttons */
 .nav-btn{position:fixed;top:50%;width:44px;height:44px;border-radius:50%;background:rgba(10,12,22,0.72);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.1);color:#e8edf7;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:300;opacity:0;pointer-events:none;transition:opacity 0.25s ease,transform 0.25s ease}
@@ -510,6 +526,20 @@ def make_runtime_html(ui: dict) -> str:
       </div>
     </div>
     <div class="qa-grid"></div>
+    <div class="qa-issue-editor" hidden>
+      <form class="qa-issue-dialog">
+        <div>
+          <h3 id="qa-issue-title">Mark visual issue</h3>
+          <p>Describe why this slide has a visual problem. The note is saved to sources/qa/visual-issues.json.</p>
+        </div>
+        <textarea id="qa-issue-note" required placeholder="What looks wrong on this slide?"></textarea>
+        <div class="qa-issue-error" aria-live="polite"></div>
+        <div class="qa-issue-actions">
+          <button class="qa-issue-cancel" type="button">Cancel</button>
+          <button class="qa-issue-save" type="submit">Save issue</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 <div id="ms-toolbar" aria-label="Preview controls">
@@ -1871,11 +1901,201 @@ fitSlideLayout(slides[cur]);
   var grid=qa?qa.querySelector('.qa-grid'):null;
   var closeBtn=qa?qa.querySelector('.qa-close'):null;
   var summary=document.getElementById('qa-summary');
+  var issueEditor=qa?qa.querySelector('.qa-issue-editor'):null;
+  var issueForm=qa?qa.querySelector('.qa-issue-dialog'):null;
+  var issueTitle=document.getElementById('qa-issue-title');
+  var issueTextarea=document.getElementById('qa-issue-note');
+  var issueError=qa?qa.querySelector('.qa-issue-error'):null;
+  var issueCancel=qa?qa.querySelector('.qa-issue-cancel'):null;
+  var issueSave=qa?qa.querySelector('.qa-issue-save'):null;
   var qaCache=false;
   var qaObserver=null;
   var qaLoadQueue=[];
   var qaQueueScheduled=false;
   var qaHideTimer=null;
+  var qaIssues=emptyQaIssues();
+  var qaIssuesLoaded=false;
+  var qaIssuesLoading=null;
+  var editingIssueIdx=null;
+
+  function emptyQaIssues(){
+    return {schemaVersion:1,qaRevision:0,updatedAt:null,issues:[]};
+  }
+  function qaIssueApiUrl(){
+    var m=window.location.pathname.match(/^\/deck\/[^/]+/);
+    return m?m[0]+'/qa-issues':'';
+  }
+  function normalizeQaIssues(data){
+    var doc=emptyQaIssues();
+    if(data&&typeof data==='object'){
+      doc.schemaVersion=Number.isInteger(data.schemaVersion)?data.schemaVersion:1;
+      doc.qaRevision=Number.isInteger(data.qaRevision)?data.qaRevision:0;
+      doc.updatedAt=typeof data.updatedAt==='string'?data.updatedAt:null;
+      if(Array.isArray(data.issues)){
+        doc.issues=data.issues.filter(function(issue){return issue&&typeof issue==='object';}).map(function(issue){
+          return {
+            id:String(issue.id||''),
+            slide:parseInt(issue.slide,10)||0,
+            slideId:typeof issue.slideId==='string'?issue.slideId:'',
+            note:typeof issue.note==='string'?issue.note:'',
+            resolved:issue.resolved===true,
+            createdAt:typeof issue.createdAt==='string'?issue.createdAt:'',
+            updatedAt:typeof issue.updatedAt==='string'?issue.updatedAt:'',
+            resolvedAt:typeof issue.resolvedAt==='string'?issue.resolvedAt:null,
+            resolvedInRevision:Number.isInteger(issue.resolvedInRevision)?issue.resolvedInRevision:null,
+            resolution:typeof issue.resolution==='string'?issue.resolution:null,
+            changedFiles:Array.isArray(issue.changedFiles)?issue.changedFiles.filter(function(file){return typeof file==='string';}):[]
+          };
+        });
+      }
+    }
+    return doc;
+  }
+  function loadQaIssues(force){
+    if(!force&&qaIssuesLoaded)return Promise.resolve(qaIssues);
+    if(qaIssuesLoading)return qaIssuesLoading;
+    var url=qaIssueApiUrl();
+    if(!url){
+      qaIssuesLoaded=true;
+      return Promise.resolve(qaIssues);
+    }
+    qaIssuesLoading=fetch(url,{headers:{'Accept':'application/json'}})
+      .then(function(r){return r.ok?r.json():Promise.reject(new Error('QA issue load failed'));})
+      .then(function(data){
+        qaIssues=normalizeQaIssues(data);
+        qaIssuesLoaded=true;
+        qaIssuesLoading=null;
+        applyQaIssuesToCards();
+        updateQaSummary();
+        return qaIssues;
+      })
+      .catch(function(err){
+        console.warn(err);
+        qaIssuesLoaded=true;
+        qaIssuesLoading=null;
+        updateQaSummary();
+        return qaIssues;
+      });
+    return qaIssuesLoading;
+  }
+  function saveQaIssues(){
+    var url=qaIssueApiUrl();
+    if(!url)return Promise.reject(new Error('QA issue API is unavailable'));
+    return fetch(url,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify(qaIssues)
+    })
+      .then(function(r){return r.ok?r.json():Promise.reject(new Error('QA issue save failed'));})
+      .then(function(data){
+        qaIssues=normalizeQaIssues(data);
+        qaIssuesLoaded=true;
+        applyQaIssuesToCards();
+        updateQaSummary();
+        return qaIssues;
+      });
+  }
+  function activeIssueForSlide(idx){
+    var slideNo=idx+1;
+    return qaIssues.issues.find(function(issue){return issue.slide===slideNo&&!issue.resolved;})||null;
+  }
+  function unresolvedIssueCount(){
+    return qaIssues.issues.filter(function(issue){return !issue.resolved;}).length;
+  }
+  function slideIdForIndex(idx){
+    var slide=slides[idx];
+    return slide?(slide.getAttribute('data-id')||''):'';
+  }
+  function nowIso(){
+    return new Date().toISOString();
+  }
+  function issueIdForSlide(idx){
+    var stamp=nowIso().replace(/[-:.TZ]/g,'').slice(0,14);
+    return 'slide-'+String(idx+1).padStart(2,'0')+'-'+stamp;
+  }
+  function setIssueError(text){
+    if(issueError)issueError.textContent=text||'';
+  }
+  function closeIssueEditor(){
+    editingIssueIdx=null;
+    setIssueError('');
+    if(issueEditor)issueEditor.hidden=true;
+    if(issueTextarea)issueTextarea.value='';
+  }
+  function openIssueEditor(idx){
+    if(!issueEditor||!issueTextarea)return;
+    editingIssueIdx=idx;
+    var issue=activeIssueForSlide(idx);
+    if(issueTitle)issueTitle.textContent='Slide '+(idx+1)+' issue note';
+    issueTextarea.value=issue?issue.note:'';
+    setIssueError('');
+    issueEditor.hidden=false;
+    setTimeout(function(){issueTextarea.focus();},0);
+  }
+  function saveIssueFromEditor(){
+    if(editingIssueIdx===null||!issueTextarea)return;
+    var note=issueTextarea.value.trim();
+    if(!note){
+      setIssueError('Please describe the visual problem before saving.');
+      issueTextarea.focus();
+      return;
+    }
+    var idx=editingIssueIdx;
+    var now=nowIso();
+    var issue=activeIssueForSlide(idx);
+    if(issue){
+      issue.note=note;
+      issue.slideId=slideIdForIndex(idx);
+      issue.updatedAt=now;
+    }else{
+      qaIssues.issues.push({
+        id:issueIdForSlide(idx),
+        slide:idx+1,
+        slideId:slideIdForIndex(idx),
+        note:note,
+        resolved:false,
+        createdAt:now,
+        updatedAt:now,
+        resolvedAt:null,
+        resolvedInRevision:null,
+        resolution:null,
+        changedFiles:[]
+      });
+    }
+    qaIssues.updatedAt=now;
+    if(issueSave)issueSave.disabled=true;
+    saveQaIssues()
+      .then(function(){
+        closeIssueEditor();
+      })
+      .catch(function(err){
+        console.warn(err);
+        setIssueError('Could not save the issue note. Confirm the preview server is running.');
+      })
+      .finally(function(){
+        if(issueSave)issueSave.disabled=false;
+      });
+  }
+  function applyQaIssuesToCards(){
+    if(!grid)return;
+    grid.querySelectorAll('.qa-card').forEach(function(item){
+      var idx=parseInt(item.dataset.idx,10);
+      var issue=activeIssueForSlide(idx);
+      var hasIssue=!!issue;
+      item.classList.toggle('has-issue',hasIssue);
+      item.dataset.issueId=hasIssue?issue.id:'';
+      var note=item.querySelector('.qa-note-preview');
+      if(note){
+        note.textContent=hasIssue?issue.note:'';
+        note.title=hasIssue?issue.note:'';
+      }
+      var btn=item.querySelector('.qa-issue-btn');
+      if(btn){
+        btn.textContent=hasIssue?'Issue marked':'Mark issue';
+        btn.setAttribute('aria-label',(hasIssue?'Edit issue note for slide ':'Mark issue on slide ')+(idx+1));
+      }
+    });
+  }
 
   function buildQaFrameUrl(idx){
     var url=new URL(window.location.href);
@@ -1887,10 +2107,7 @@ fitSlideLayout(slides[cur]);
   }
   function markQaFrameReady(item){
     if(!item)return;
-    item.dataset.status='review';
     item.dataset.scanned='1';
-    var statusEl=item.querySelector('.qa-status');
-    if(statusEl)statusEl.textContent='REVIEW';
     updateQaSummary();
     requestAnimationFrame(refreshQaScales);
   }
@@ -1997,7 +2214,8 @@ fitSlideLayout(slides[cur]);
     if(!summary||!grid)return;
     var cards=Array.from(grid.querySelectorAll('.qa-card'));
     var pending=cards.filter(function(item){return item.dataset.scanned!=='1';}).length;
-    summary.textContent=slides.length+' slides'+(pending?' - '+pending+' scanning':' - ready for visual review');
+    var issueCount=unresolvedIssueCount();
+    summary.textContent=slides.length+' slides'+(issueCount?' - '+issueCount+' marked issue'+(issueCount===1?'':'s'):'')+(pending?' - '+pending+' scanning':' - ready for visual review');
   }
   function applyQaFilter(){
     if(!grid)return;
@@ -2034,11 +2252,20 @@ fitSlideLayout(slides[cur]);
       var title=document.createElement('strong');
       title.textContent='Slide '+(idx+1)+' / '+slides.length;
       page.appendChild(title);
-      var status=document.createElement('div');
-      status.className='qa-status';
-      status.textContent='SCAN';
+      var note=document.createElement('div');
+      note.className='qa-note-preview';
+      page.appendChild(note);
+      var issueBtn=document.createElement('button');
+      issueBtn.type='button';
+      issueBtn.className='qa-issue-btn';
+      issueBtn.textContent='Mark issue';
+      issueBtn.addEventListener('click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        openIssueEditor(idx);
+      });
       head.appendChild(page);
-      head.appendChild(status);
+      head.appendChild(issueBtn);
       item.appendChild(head);
 
       item.addEventListener('click',function(e){
@@ -2051,6 +2278,7 @@ fitSlideLayout(slides[cur]);
     qaCache=true;
     ensureQaObserver();
     observeQaItems();
+    applyQaIssuesToCards();
   }
   function openQaOverview(){
     if(!qa||!grid)return;
@@ -2074,6 +2302,7 @@ fitSlideLayout(slides[cur]);
     });
     updateQaSummary();
     applyQaFilter();
+    loadQaIssues(true);
     primeQaFrames();
   }
   function closeQaOverview(){
@@ -2095,6 +2324,19 @@ fitSlideLayout(slides[cur]);
   if(qa)qa.addEventListener('click',function(e){
     e.stopPropagation();
   });
+  if(issueForm)issueForm.addEventListener('submit',function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    saveIssueFromEditor();
+  });
+  if(issueCancel)issueCancel.addEventListener('click',function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    closeIssueEditor();
+  });
+  if(issueEditor)issueEditor.addEventListener('click',function(e){
+    if(e.target===issueEditor)closeIssueEditor();
+  });
   if(closeBtn)closeBtn.addEventListener('click',function(e){
     e.stopPropagation();
     closeQaOverview();
@@ -2103,6 +2345,11 @@ fitSlideLayout(slides[cur]);
     if(qaCache)requestAnimationFrame(refreshQaScales);
   });
   document.addEventListener('keydown',function(e){
+    if(e.code==='Escape'&&issueEditor&&!issueEditor.hidden){
+      e.preventDefault();
+      closeIssueEditor();
+      return;
+    }
     if(e.code==='Escape'&&qa&&qa.classList.contains('show')){
       e.preventDefault();
       closeQaOverview();

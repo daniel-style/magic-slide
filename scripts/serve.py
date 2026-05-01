@@ -34,6 +34,7 @@ MAX_PORT = 8865
 HEARTBEAT_TIMEOUT = 120
 INITIAL_DECK_GRACE_TIMEOUT = 300
 SERVICE_KIND = "magic-slide-preview"
+QA_ISSUES_FILENAME = "visual-issues.json"
 
 
 @dataclass
@@ -171,6 +172,51 @@ def register_with_running_service(port: int, html_path: Path) -> Optional[dict]:
 
 def deck_route(deck: Deck) -> str:
     return f"http://localhost:{server_port}/{deck.url_path().lstrip('/')}"  # type: ignore[name-defined]
+
+
+def empty_qa_issues() -> dict:
+    return {
+        "schemaVersion": 1,
+        "qaRevision": 0,
+        "updatedAt": None,
+        "issues": [],
+    }
+
+
+def qa_issues_path(deck: Deck) -> Path:
+    return deck.sources_dir / "qa" / QA_ISSUES_FILENAME
+
+
+def read_qa_issues(deck: Deck) -> dict:
+    path = qa_issues_path(deck)
+    if not path.exists():
+        return empty_qa_issues()
+    with path.open("r", encoding="utf-8") as f:
+        data = json.load(f)
+    if not isinstance(data, dict):
+        return empty_qa_issues()
+    if not isinstance(data.get("issues"), list):
+        data["issues"] = []
+    if not isinstance(data.get("schemaVersion"), int):
+        data["schemaVersion"] = 1
+    if not isinstance(data.get("qaRevision"), int):
+        data["qaRevision"] = 0
+    if "updatedAt" not in data:
+        data["updatedAt"] = None
+    return data
+
+
+def write_qa_issues(deck: Deck, data: dict) -> None:
+    if not isinstance(data, dict) or not isinstance(data.get("issues"), list):
+        raise ValueError("qa issue payload must contain an issues array")
+    data.setdefault("schemaVersion", 1)
+    data.setdefault("qaRevision", 0)
+    data.setdefault("updatedAt", None)
+    path = qa_issues_path(deck)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    tmp.replace(path)
 
 
 def main():
@@ -356,6 +402,16 @@ def main():
                 self.end_headers()
                 return
 
+            if rel_path == "qa-issues":
+                try:
+                    deck.last_heartbeat = time.time()
+                    deck.has_client_contact = True
+                    self.send_json(200, read_qa_issues(deck))
+                except Exception as ex:
+                    print(f"  ✗ Failed to read QA issues for {deck.deck_id}: {ex}", file=sys.stderr)
+                    self.send_json(500, {"error": "failed to read QA issues"})
+                return
+
             target = resolve_static_target(deck, rel_path)
             if not target:
                 self.send_response(404)
@@ -407,7 +463,7 @@ def main():
                 )
                 return
 
-            match = re.match(r"^/deck/([^/]+)/(save|heartbeat|shutdown)$", path)
+            match = re.match(r"^/deck/([^/]+)/(save|heartbeat|shutdown|qa-issues)$", path)
             if not match:
                 self.send_response(404)
                 self.end_headers()
@@ -451,6 +507,22 @@ def main():
                     print(f"  ✗ Save failed for {deck.deck_id}: {ex}", file=sys.stderr)
                     self.send_response(500)
                     self.end_headers()
+                return
+
+            if action == "qa-issues":
+                payload = self.read_json_body()
+                if not isinstance(payload, dict) or not isinstance(payload.get("issues"), list):
+                    self.send_json(400, {"error": "invalid QA issues payload"})
+                    return
+                try:
+                    write_qa_issues(deck, payload)
+                    deck.last_heartbeat = time.time()
+                    deck.has_client_contact = True
+                    print(f"  ✓ QA issues saved → {qa_issues_path(deck)}")
+                    self.send_json(200, read_qa_issues(deck))
+                except Exception as ex:
+                    print(f"  ✗ QA issue save failed for {deck.deck_id}: {ex}", file=sys.stderr)
+                    self.send_json(500, {"error": "failed to save QA issues"})
                 return
 
             if action == "heartbeat":
