@@ -951,12 +951,100 @@ function placeMagicClone(c,tr,box){
   c.style.pointerEvents='none';
   c.style.margin='0';
   c.style.overflow='visible';
-  c.style.left=tr.left+'px';
-  c.style.top=tr.top+'px';
+  c.style.left='0';
+  c.style.top='0';
   c.style.width=box.width+'px';
   c.style.height=box.height+'px';
   c.style.transformOrigin='0 0';
   c.style.willChange='transform,opacity';
+}
+function matrixIdentity(){return {a:1,b:0,c:0,d:1,e:0,f:0}}
+function matrixTranslate(x,y){return {a:1,b:0,c:0,d:1,e:x||0,f:y||0}}
+function matrixScale(x,y){return {a:x,b:0,c:0,d:y,e:0,f:0}}
+function matrixMultiply(m,n){
+  return {
+    a:m.a*n.a+m.c*n.b,
+    b:m.b*n.a+m.d*n.b,
+    c:m.a*n.c+m.c*n.d,
+    d:m.b*n.c+m.d*n.d,
+    e:m.a*n.e+m.c*n.f+m.e,
+    f:m.b*n.e+m.d*n.f+m.f
+  };
+}
+function matrixCss(m){
+  function fmt(n){
+    if(!Number.isFinite(n))return '0';
+    if(Math.abs(n)<0.000001)n=0;
+    return String(Math.round(n*1000000)/1000000);
+  }
+  return 'matrix('+[m.a,m.b,m.c,m.d,m.e,m.f].map(fmt).join(',')+')';
+}
+function parseCssMatrix(t){
+  if(!t||t==='none')return matrixIdentity();
+  try{
+    var M=window.DOMMatrix?new DOMMatrix(t):(window.WebKitCSSMatrix?new WebKitCSSMatrix(t):null);
+    if(M&&(!('is2D' in M)||M.is2D!==false))return {a:M.a,b:M.b,c:M.c,d:M.d,e:M.e,f:M.f};
+  }catch(e){}
+  var m=t.match(/^matrix\\(([^)]+)\\)$/);
+  if(m){
+    var p=m[1].split(',').map(function(v){return parseFloat(v)});
+    if(p.length>=6&&p.every(Number.isFinite))return {a:p[0],b:p[1],c:p[2],d:p[3],e:p[4],f:p[5]};
+  }
+  m=t.match(/^matrix3d\\(([^)]+)\\)$/);
+  if(m){
+    var q=m[1].split(',').map(function(v){return parseFloat(v)});
+    if(q.length>=16&&q.every(Number.isFinite))return {a:q[0],b:q[1],c:q[4],d:q[5],e:q[12],f:q[13]};
+  }
+  return matrixIdentity();
+}
+function readMagicQuadMatrix(el,box){
+  if(!el||!el.getBoxQuads)return null;
+  try{
+    var qs=el.getBoxQuads({box:'border'});
+    if(!qs||!qs[0])return null;
+    var q=qs[0],p1=q.p1,p2=q.p2,p4=q.p4;
+    var w=Math.max(1,box.width||1),h=Math.max(1,box.height||1);
+    if(!p1||!p2||!p4)return null;
+    return {a:(p2.x-p1.x)/w,b:(p2.y-p1.y)/w,c:(p4.x-p1.x)/h,d:(p4.y-p1.y)/h,e:p1.x,f:p1.y};
+  }catch(e){return null}
+}
+function readRectWithoutOwnTransform(el,cs){
+  if(!cs||!cs.transform||cs.transform==='none')return el.getBoundingClientRect();
+  var oldTransform=el.style.getPropertyValue('transform');
+  var oldTransformPriority=el.style.getPropertyPriority('transform');
+  var oldTransition=el.style.getPropertyValue('transition');
+  var oldTransitionPriority=el.style.getPropertyPriority('transition');
+  el.style.setProperty('transition','none','important');
+  el.style.setProperty('transform','none','important');
+  var rect=el.getBoundingClientRect();
+  if(oldTransform)el.style.setProperty('transform',oldTransform,oldTransformPriority);
+  else el.style.removeProperty('transform');
+  if(oldTransition)el.style.setProperty('transition',oldTransition,oldTransitionPriority);
+  else el.style.removeProperty('transition');
+  return rect;
+}
+function readMagicMatrix(el,rect,box){
+  var quad=readMagicQuadMatrix(el,box);
+  if(quad)return quad;
+  var w=Math.max(1,box.width||1),h=Math.max(1,box.height||1);
+  var cs=getComputedStyle(el);
+  if(!cs.transform||cs.transform==='none')return {a:rect.width/w,b:0,c:0,d:rect.height/h,e:rect.left,f:rect.top};
+  var layoutRect=readRectWithoutOwnTransform(el,cs);
+  var ew=Math.max(1,el.offsetWidth||w),eh=Math.max(1,el.offsetHeight||h);
+  var origin=(cs.transformOrigin||'0 0').split(/\\s+/);
+  var ox=parseFloat(origin[0])||0,oy=parseFloat(origin[1])||0;
+  var base=matrixMultiply(matrixTranslate(layoutRect.left,layoutRect.top),matrixScale(layoutRect.width/ew,layoutRect.height/eh));
+  var own=matrixMultiply(matrixMultiply(matrixTranslate(ox,oy),parseCssMatrix(cs.transform)),matrixTranslate(-ox,-oy));
+  var boxScale=matrixScale(ew/w,eh/h);
+  return matrixMultiply(matrixMultiply(base,own),boxScale);
+}
+function hasMagicTransform(el){
+  if(!el)return false;
+  var cs=getComputedStyle(el);
+  if(cs.transform&&cs.transform!=='none')return true;
+  var r=el.getBoundingClientRect();
+  var q=readMagicQuadMatrix(el,{width:Math.max(1,el.offsetWidth||r.width||1),height:Math.max(1,el.offsetHeight||r.height||1)});
+  return !!(q&&(Math.abs(q.b)>0.001||Math.abs(q.c)>0.001));
 }
 function safeRatio(a,b){return Math.max(a,b)/Math.max(1,Math.min(a,b))}
 function lineHeightPx(cs){
@@ -1230,7 +1318,7 @@ function go(from,to){
     var fr=fromRects[id],tr=toRects[id];
     var c=toEls[id].cloneNode(true);
     c.removeAttribute('data-magic-id');
-    var labelMode=sameText&&isMagicNoWrapLabel(fromEls[id])&&isMagicNoWrapLabel(toEls[id]);
+    var labelMode=sameText&&isMagicNoWrapLabel(fromEls[id])&&isMagicNoWrapLabel(toEls[id])&&!hasMagicTransform(fromEls[id])&&!hasMagicTransform(toEls[id]);
     var p;
     if(labelMode){
       var fromLabel=visualLabelSnap(fromEls[id],fr),toLabel=visualLabelSnap(toEls[id],tr);
@@ -1239,14 +1327,13 @@ function go(from,to){
       p={id:id,mode:mode,fr:fr,tr:tr,clone:c,label:true,finalLabel:toLabel};
     }else{
       var box=magicLayoutBox(toEls[id],tr);
-      var scaleX=fr.width/box.width,scaleY=fr.height/box.height;
-      var finalScaleX=tr.width/box.width,finalScaleY=tr.height/box.height;
-      var dx=fr.left-tr.left,dy=fr.top-tr.top;
+      var fromMatrix=readMagicMatrix(fromEls[id],fr,box);
+      var toMatrix=readMagicMatrix(toEls[id],tr,box);
       applySnap(c,toStyles[id]);
       placeMagicClone(c,tr,box);
-      c.style.transform='translate('+dx+'px,'+dy+'px) scale('+scaleX+','+scaleY+')';
+      c.style.transform=matrixCss(fromMatrix);
       document.body.appendChild(c);
-      p={id:id,mode:mode,fr:fr,tr:tr,clone:c,finalTransform:'translate(0px,0px) scale('+finalScaleX+','+finalScaleY+')'};
+      p={id:id,mode:mode,fr:fr,tr:tr,clone:c,finalTransform:matrixCss(toMatrix)};
     }
     // Hide FROM element immediately after clone is appended to prevent double-display
     fromEls[id].style.visibility='hidden';

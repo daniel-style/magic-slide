@@ -294,18 +294,21 @@ After generating the full deck:
 - Inject runtime with `inject-runtime.py`.
 - Preview with `serve.py`.
 - Run the QA overview gate from `step-10-preview.md` before detailed viewport
-  checks. Open `?ms_qa=overview`, scan every card, and if user review is needed,
-  stop for them to request revisions saved in `sources/qa/visual-issues.json`.
-- Read unresolved revision notes first. Treat those slides as known repair
-  targets, then review QA overview screenshots for additional visual problems on
-  unmarked slides. The overview is intentionally not a rule-based detector; it
-  exists to make the remaining rendered deck easy to inspect.
+  checks. For newly generated decks, first capture QA overview screenshots and
+  repair the most obvious rendered issues, then stop for the mandatory user
+  `Revise slide` marking pass.
+- When the user returns, read unresolved revision notes first. Treat those
+  slides as known repair targets, then review QA overview screenshots for
+  additional visual problems on unmarked slides. The overview is intentionally
+  not a rule-based detector; it exists to make the remaining rendered deck easy
+  to inspect.
 - When repairing, use both the JSON notes and any new screenshot findings, fix
   `sources/`, then merge, inject, preview, and capture QA overview again.
 - After verification, mark repaired JSON records `resolved: true`; do not write
   revision notes into `index.html`.
-- Run browser or manual viewport checks on every slide at a normal 16:9 viewport
-  and a smaller 16:9 viewport, such as `1440x900` and `1024x576`.
+- Use the scrolling QA overview as the primary all-slide visual check. Capture
+  full-size single-slide screenshots only for slides that look problematic,
+  ambiguous, marked by the user, or representative of a risky layout family.
 - Check for overflow, clipped text, broken images, dead zones, unbalanced
   columns, sparse framed panels, and runtime fit issues using
   `step-10-preview.md` as the delivery checklist.
@@ -313,8 +316,9 @@ After generating the full deck:
   scaled down, or unbalanced.
 - If images were requested, verify the final deck has actual assets and rendered
   image slides.
-- Inspect rendered screenshots from at least six roles: cover, early evidence,
-  image/diagram, dense middle, risk/summary, and closing.
+- When the overview reveals no obvious issue, inspect only targeted rendered
+  screenshots from roles that still need closer confidence, such as cover, dense
+  middle, image/diagram, risk/summary, or closing.
 - Do a design director pass: name the three roughest or most generic rendered
   slides, then revise them. If fewer than three are weak, explicitly say why the
   remaining candidates are acceptable.

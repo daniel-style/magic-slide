@@ -20,8 +20,10 @@ Magic Slide is a Codex skill that generates polished, self-contained HTML presen
 5. Read reference files, make a compact internal style/layout plan with primary/supporting Magic Move continuity, and generate all modular HTML sources directly
 6. Merge slides into single HTML
 7. Inject FLIP engine and runtime
-8. Launch the Magic Slide preview server, capture the QA overview visual wall,
-   and fix visible issues found in rendered review
+8. Launch the Magic Slide preview server, capture scrolling QA overview
+   screenshots first, use full-size single-slide screenshots only for
+   problematic/questionable slides, then stop for the mandatory user
+   `Revise slide` marking pass before final repairs and delivery
 
 **Why this works:** User controls information gathering and reviews structure before generation. Brief Lite gives the deck an art direction without returning to the old long prototype loop. Read design guidelines once, generate all slides in main thread. Fast and simple with clear checkpoints.
 
@@ -65,7 +67,11 @@ All scripts are in `scripts/` directory:
 7. Generate a compact internal style/layout plan with primary/supporting Magic Move continuity, then create sources/ files directly (style.css, slide-01.html, slide-02.html, ...)
 8. merge-slides.py combines them into index.html
 9. inject-runtime.py adds FLIP + navigation to index.html
-10. serve.py launches preview and remains running for user editing
+10. serve.py launches preview and remains running for QA/editing
+11. Open QA Overview, capture scrolling screenshots, fix obvious rendered
+    issues, and only capture full-size single slides when the overview shows a
+    problem or ambiguity. Then stop for the mandatory user `Revise slide`
+    marking pass
 ```
 
 ### Running Scripts
@@ -85,6 +91,11 @@ Do not finish a deck-generation or deck-update task until the preview server is
 running and the user has the displayed URL. The in-browser editor depends on
 `scripts/serve.py`; opening the HTML file directly disables server-backed Save,
 image replacement, and close/shutdown behavior.
+
+For newly generated decks, delivery has an extra required pause: after the
+agent captures QA Overview screenshots and fixes the most obvious visible
+issues, it must stop with QA Overview available and tell the user to mark any
+remaining slide changes with `Revise slide`, then return to continue.
 
 For chat follow-up edits after a deck has been generated, treat `sources/` as
 the source of truth: edit `[topic]/sources/style.css`,

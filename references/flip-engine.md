@@ -12,8 +12,8 @@ The core Magic Move effect: shared elements (those with `data-magic-id` appearin
 
 1. **Capture FROM positions** — record bounding rects of all shared elements on the current slide
 2. **Measure TO positions** — briefly activate the target slide off-screen/invisible to capture final rects
-3. **Create one TO clone** — clone the TO element, snapshot its computed styles, and place it at the TO rect
-4. **Apply inverse FLIP** — move that single TO clone back to the FROM rect using translate + scale
+3. **Create one TO clone** — clone the TO element, snapshot its computed styles, and give it a fixed-position TO-sized layout box
+4. **Apply inverse FLIP** — move that single TO clone back to the FROM geometry using a 2D transform matrix, so translate, scale, and rotation/skew all participate in the motion
 5. **Hide originals** — hide the FROM original immediately and hide the TO original until cleanup
 6. **Animate** — the single TO clone flies to its natural TO position while the target slide runs its page transition and non-shared content staggers in
 7. **Cleanup** — reveal the real TO original and remove the clone in the same cleanup phase
@@ -114,6 +114,14 @@ one-line label or a multiline heading/body block:
   than on the card, panel, or paragraph wrapper.
 
 When a slide wrapper has been scaled by runtime fit logic, the runtime lays out each clone using the TO element's unscaled `offsetWidth` / `offsetHeight`, then animates to the visual `getBoundingClientRect()` scale. This keeps text layout based on the same width budget as the real element instead of forcing unscaled typography into a smaller transformed rect.
+
+For normal Magic Move clones, the runtime represents the FROM and TO visual
+states as viewport-space 2D matrices rather than only axis-aligned rectangles.
+This preserves rotated or skewed endpoints: an element whose target state uses
+`transform: rotate(...)` rotates during the FLIP animation instead of snapping
+to the angle only after cleanup. Short no-wrap labels continue to use their
+font/geometry interpolation path only when neither side has a transform; labels
+with transforms use the matrix path.
 
 ## Helper function
 
