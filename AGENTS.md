@@ -20,7 +20,8 @@ Magic Slide is a Codex skill that generates polished, self-contained HTML presen
 5. Read reference files, make a compact internal style/layout plan with primary/supporting Magic Move continuity, and generate all modular HTML sources directly
 6. Merge slides into single HTML
 7. Inject FLIP engine and runtime
-8. Launch the Magic Slide preview server and fix objective QA failures
+8. Launch the Magic Slide preview server, capture the QA overview visual wall,
+   and fix visible issues found in rendered review
 
 **Why this works:** User controls information gathering and reviews structure before generation. Brief Lite gives the deck an art direction without returning to the old long prototype loop. Read design guidelines once, generate all slides in main thread. Fast and simple with clear checkpoints.
 

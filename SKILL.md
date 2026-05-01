@@ -111,11 +111,11 @@ confirmation and the web-search yes/no question; see
 5. **Step 5: Generate production sources** — Create `style.css` and all `slide-XX.html` files directly from the confirmed outline and Brief Lite, after making a primary/supporting continuity map for adjacent slide pairs
 6. **Step 6: Merge slides** — Combine modular sources into single HTML
 7. **Step 7: Inject runtime** — Run the existing injector unchanged; preserve injected behavior/results unless the user explicitly asks otherwise
-8. **Step 8: Preview, QA overview gate, targeted full-size QA, and delivery** — ALWAYS launch the skill preview server with `scripts/serve.py`, run the runtime QA overview gate first, then do targeted full-size checks and fix objective failures before delivery
+8. **Step 8: Preview, visual QA overview gate, targeted full-size QA, and delivery** — ALWAYS launch the skill preview server with `scripts/serve.py`, capture the runtime QA overview first, then do targeted full-size checks and fix visual issues before delivery
 
 **NON-NEGOTIABLE DELIVERY RULE:** After generating or updating a deck, do not finish until `python3 "$SKILL_DIR/scripts/serve.py" {topic}/index.html` is running and you have given the user the preview URL. Opening the HTML file directly is not enough: edit mode, save, image replacement, and close/shutdown controls require the Magic Slide preview server. Never substitute `python3 -m http.server`, `npx serve`, or a file URL for the skill server.
 
-**NON-NEGOTIABLE QA GATE:** After `serve.py` is running, open the deck with `?ms_qa=overview` or press `Q`, scan every QA card, and triage all `FAIL` / `WARN` items before delivery. QA overview is the first-pass radar; it does not replace full-size screenshots or rendered slide review.
+**NON-NEGOTIABLE QA GATE:** After `serve.py` is running, open the deck with `?ms_qa=overview` or press `Q`, scan every QA card, and capture the complete QA overview. If the overview grid scrolls, capture the full scrollable view or a top-to-bottom set of overlapping screenshots. Use those screenshots as a visual review wall: identify layout, color, text, image, diagram, and hierarchy problems, keep that issue list in your working notes, fix the modular sources, and re-run merge/inject/preview. Do not inject screenshot review notes back into QA cards or `index.html`.
 
 **NON-NEGOTIABLE UPDATE RULE:** When the user continues in chat after a deck has been generated and asks for changes, edit the modular source files first: `{topic}/sources/style.css`, `{topic}/sources/slide-XX.html`, and any source-local helpers. Then re-run `merge-slides.py`, re-run the existing `inject-runtime.py` unchanged, refresh or restart the Magic Slide preview server, and re-run the QA overview gate before delivery. Do not edit `{topic}/index.html` directly for agent-driven follow-up changes unless the user explicitly asks to patch the merged HTML, or the change comes from the browser edit mode Save flow.
 
@@ -200,8 +200,8 @@ rules in this file or workflow steps.
 1. **Outline must be an argument, not a topic list** — Every slide advances a thesis, not just "this also exists"
 2. **Brief Lite first** — Commit to a topic-specific visual world and primary light/dark tone before writing CSS. Keep it concise, but output it so the design promise is visible.
 3. **Magic Move is planned early** — The outline should create content relay opportunities before HTML exists: overview/detail, metric/hero-stat, map/zoom, compare/case, and other primary anchors. Do not rely on decorative duplicates to manufacture motion late.
-4. **Generate once, inspect once** — Produce the full deck after outline and Brief Lite, then use final QA to catch objective failures.
-5. **Objective QA for objective failures** — Use tools for syntax, overflow, text contrast/readability, images, SVG rendering, and Magic Move, not subjective taste scoring.
+4. **Generate once, inspect once** — Produce the full deck after outline and Brief Lite, then use final QA screenshots to find visual issues.
+5. **QA overview is visual, not diagnostic** — Use the overview as a rendered slide wall for human/agent visual review. Keep separate checks limited to syntax, preview startup, runtime controls, and rendered screenshot inspection.
 6. **Cover is a special moment** — Slide 1 must be a distinct opening
    composition with concise cover copy; for product/AI/infrastructure decks it
    should stay title-led rather than carrying readable process diagrams. Use

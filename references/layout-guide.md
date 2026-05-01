@@ -135,10 +135,10 @@ Rules:
 - Use `min-width:0`, `container-type:inline-size`, `max-inline-size:100%`, and
   `overflow-wrap:break-word` on card contents so long words wrap inside the
   intended card instead of escaping or forcing overflow.
-- QA overview should catch this failure mode: `card text overflow` means a
-  label or paragraph escaped its own card; `cramped card row` means four or more
-  cards were compressed into a narrow region below the readable-width budget.
-  Both require source layout changes, not acceptance as "clean."
+- QA overview should be used as a visual wall for this failure mode. Look for
+  labels or paragraphs escaping their cards, and for four or more cards
+  compressed into a narrow region below the readable-width budget. Revise the
+  source layout when the rendered slide looks cramped or broken.
 
 ### Vertical Balance Rule
 
@@ -179,9 +179,8 @@ Rules:
   or tighten the content group; do not leave a large accidental dead zone below
   it.
 - Runtime may add `.ms-sparse-balance` to repair accidental top alignment, but
-  source slides should still be authored centered. Runtime classes
-  `.ms-fit-top` and `.ms-fit-scale` are warnings; revise the source layout
-  instead of accepting a top-shifted or scaled sparse slide.
+  source slides should still be authored centered. In screenshot review, revise
+  any slide that looks top-shifted, cramped, or scaled down.
 
 ### Repetition Rule
 

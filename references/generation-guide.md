@@ -294,23 +294,21 @@ After generating the full deck:
 - Inject runtime with `inject-runtime.py`.
 - Preview with `serve.py`.
 - Run the QA overview gate from `step-10-preview.md` before detailed viewport
-  checks. Open `?ms_qa=overview`, scan every card, and triage the summary plus
-  issue tags.
-- Treat QA overview `FAIL` as blocking: broken iframe/image loads, visible
-  overflow, card-contained text overflow, cramped card rows, adjacent
-  `data-magic-id` text mismatches, and other failure tags must be fixed in
-  `sources/`, followed by merge, inject, and another QA overview pass.
-- Treat QA overview `WARN` as requiring full-size review: runtime `.ms-fit-top`
-  / `.ms-fit-scale`, transparent root backgrounds, and ordinary tone
-  mismatches are actionable unless they are named intentional design
-  exceptions.
+  checks. Open `?ms_qa=overview`, scan every card, and capture the full visual
+  wall; if it scrolls, take a complete full-page capture or a top-to-bottom set
+  of overlapping screenshots.
+- Review the QA overview screenshots visually. The overview is intentionally not
+  a rule-based detector; it exists to make the rendered deck easy to inspect.
+- Keep screenshot review notes in working notes, not in QA cards or `index.html`.
+  For any visually questionable slide, open the slide full-size, fix `sources/`,
+  then merge, inject, preview, and capture QA overview again.
 - Run browser or manual viewport checks on every slide at a normal 16:9 viewport
   and a smaller 16:9 viewport, such as `1440x900` and `1024x576`.
 - Check for overflow, clipped text, broken images, dead zones, unbalanced
   columns, sparse framed panels, and runtime fit issues using
   `step-10-preview.md` as the delivery checklist.
-- If any slide receives `.ms-fit-scale` or `.ms-fit-top`, treat it as a layout
-  failure and revise the source slide. Runtime fit is an alarm, not a pass.
+- In full-size visual review, revise any slide that looks cramped, clipped,
+  scaled down, or unbalanced.
 - If images were requested, verify the final deck has actual assets and rendered
   image slides.
 - Inspect rendered screenshots from at least six roles: cover, early evidence,

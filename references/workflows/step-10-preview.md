@@ -24,35 +24,34 @@ with an absolute path.
 ### 10a.1 QA overview gate
 
 Run the runtime QA overview before detailed screenshots. This is an agent
-quality gate, not an optional user aid.
+visual-review gate, not an optional user aid.
 
 1. Open the preview URL with `?ms_qa=overview`, or press `Q` in the running
    preview.
 2. Prefer browser automation or Playwright: scroll the QA grid until every
-   `.qa-card` has `data-scanned="1"`, then read `#qa-summary`, each card's
-   `data-status`, and its `.qa-tag` labels.
-3. If automation is unavailable, manually open QA overview, scroll through the
-   full grid, and inspect `Issues only`.
-4. Record the QA summary and issue tags in your working notes so the final
-   response can report the outcome.
+   `.qa-card` has `data-scanned="1"`, then capture the complete overview. If
+   the QA grid has a scrollbar, use full-page capture or a top-to-bottom set of
+   overlapping screenshots.
+3. If automation is unavailable, manually open QA overview and scroll through
+   the full grid while capturing all rows.
+4. Review the screenshots as a visual wall. In working notes, list problem
+   slides and reasons such as layout imbalance, text errors, awkward wrapping,
+   muddy color, weak contrast, crowded cards, element collisions, broken-looking
+   images, rough diagrams, or slides that visibly do not hold together.
+5. Open problem slides at full size, fix the modular source files, then re-run
+   `merge-slides.py`, `inject-runtime.py`, `serve.py` if needed, and the QA
+   overview gate.
 
 Triage rules:
 
-- `FAIL` blocks delivery. Fix the modular source files, then re-run
-  `merge-slides.py`, `inject-runtime.py`, `serve.py` if needed, and the QA
-  overview gate.
-- `WARN` requires full-size review. Fix actionable warnings; keep only named
-  intentional exceptions, such as a deliberate inverse-tone display slide.
-- QA overview flags high-signal heuristics: iframe/image load failures, visible
-  overflow, runtime `.ms-fit-*` rescue classes, transparent root backgrounds,
-  inset full-bleed background layers, card-contained text overflow, cramped
-  multi-card rows, ordinary tone deviations, sparse framed panels, and adjacent
-  `data-magic-id` text mismatches.
-- QA overview is a first-pass radar. After it is clean, still do targeted
-  full-size screenshots or rendered slide checks for the cover, dense/content
-  slides, diagrams/images, and any formerly flagged pages. `low contrast text`
-  is a failure: fix the source color/background pair rather than accepting it
-  as a style choice.
+- QA overview is a visual review wall, not a rule-based diagnostic surface.
+  Cards should not contain pass/fail status labels or enumerated issue tags.
+- Do not inject screenshot review notes back into QA cards or `index.html`.
+  Keep the visual issue list in working notes, fix `sources/`, and report the
+  repaired slides in the final response.
+- After the overview pass, still do targeted full-size screenshots or rendered
+  slide checks for the cover, dense/content slides, diagrams/images, and any
+  slides that looked questionable in the visual wall.
 
 ### 10b. Final QA checklist
 
@@ -65,19 +64,19 @@ Triage rules:
    Check wide-screen coverage: cover/photo/material backgrounds must reach all
    four viewport edges and must not be bounded by `.slide-content` max-width.
 3. `layout-guide.md` passes: no overflow, clipped text, collisions, unplanned top-heavy layouts, or source-note collisions.
-   Treat cramped card rows with word-by-word wrapping as a failure when nearby
-   horizontal space is empty; revise the source layout to use the available
-   width or split the slide. QA overview tags `card text overflow` and
-   `cramped card row` are blocking failures, not visual-taste warnings.
-   Also treat card-title collisions as failures even when the text remains
+   Treat cramped card rows with word-by-word wrapping as a visual issue when
+   nearby horizontal space is empty; revise the source layout to use the
+   available width or split the slide. Find these problems from the rendered QA
+   overview wall and full-size screenshots, not from runtime-generated tags.
+   Also treat card-title collisions as visual issues even when the text remains
    inside the viewport. In rendered review, scan metric/card grids for words
    crossing into neighboring cards, especially four-card rows inside split
    columns.
    Treat ordinary slides whose main content sits in the upper third with a
-   large empty area below as failures. Remove `.slide-top` / `.slide-dense`,
+   large empty area below as visual issues. Remove `.slide-top` / `.slide-dense`,
    center the `.slide-content`, or redesign the primitive unless the content is
    genuinely dense enough to fill the height budget.
-   Treat oversized framed panels around low-density content as failures per
+   Treat oversized framed panels around low-density content as visual issues per
    `layout-guide.md`; shrink the frame, remove it, or make the diagram complete.
 4. `design-system.md` passes: visual world is specific, palette/readability are clean, and the cover is a distinct opening composition.
 5. `images.md` passes when images are used: assets load, content images are integrated, and cover imagery follows policy.
@@ -108,7 +107,10 @@ Triage rules:
 Tell the user:
 - Preview is running at the displayed URL from `scripts/serve.py`
 - Final HTML is at `{topic}/index.html`
-- QA overview result, such as `QA overview: 40 slides, 0 fail, 0 actionable warn`
+- QA overview result, such as `QA overview: 40 slides captured for visual review`
+- Visual issues found and repaired, by slide number, or a short note that the
+  captured overview and targeted full-size checks did not reveal issues needing
+  source changes
 - Final assets, if any, are in `{topic}/assets/`
 - They can edit sources in `{topic}/sources/` and re-run merge/inject
 - Process files such as outline, helper scripts, and QA artifacts are kept in
@@ -134,7 +136,7 @@ been generated:
    `python3 "$SKILL_DIR/scripts/inject-runtime.py" {topic}/index.html --lang {language}`
 4. Refresh or restart the Magic Slide preview server and give the user the URL.
 5. Re-run the QA overview gate. For pure text edits, at minimum confirm the
-   touched slides did not gain new `FAIL` or actionable `WARN` items.
+   touched slides still look correct in the overview.
 
 Do not patch `{topic}/index.html` directly for normal follow-up edits. The
 merged HTML is generated output. Direct edits are allowed only when the user

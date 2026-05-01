@@ -364,11 +364,9 @@ svg path[fill="none"],svg line,svg polyline{vector-effect:non-scaling-stroke}
 .qa-title strong{font-size:15px;line-height:1;text-transform:uppercase;letter-spacing:0.14em;font-weight:800;color:#f8fafc;white-space:nowrap}
 #qa-summary{font-size:12px;line-height:1.35;color:rgba(237,241,247,0.64);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .qa-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.qa-filter,.qa-close{height:34px;border:1px solid rgba(237,241,247,0.14);background:rgba(255,255,255,0.045);color:rgba(237,241,247,0.82);border-radius:8px;font-size:12px;font-weight:750;line-height:1;cursor:pointer;transition:background 0.16s ease,border-color 0.16s ease,color 0.16s ease,transform 0.16s ease}
-.qa-filter{padding:0 12px}
+.qa-close{height:34px;border:1px solid rgba(237,241,247,0.14);background:rgba(255,255,255,0.045);color:rgba(237,241,247,0.82);border-radius:8px;font-size:18px;font-weight:750;line-height:1;cursor:pointer;transition:background 0.16s ease,border-color 0.16s ease,color 0.16s ease,transform 0.16s ease}
 .qa-close{width:34px;padding:0;font-size:18px}
-.qa-filter:hover,.qa-close:hover{background:rgba(255,255,255,0.09);border-color:rgba(237,241,247,0.28);color:#fff;transform:translateY(-1px)}
-.qa-filter.active{background:rgba(237,241,247,0.14);border-color:rgba(237,241,247,0.34);color:#fff}
+.qa-close:hover{background:rgba(255,255,255,0.09);border-color:rgba(237,241,247,0.28);color:#fff;transform:translateY(-1px)}
 .qa-grid{position:absolute;top:74px;right:0;bottom:0;left:0;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr));gap:clamp(18px,2vw,30px);padding:clamp(22px,3vw,46px) clamp(24px,4vw,72px) clamp(34px,5vw,80px);align-content:start;scrollbar-width:thin;scrollbar-color:rgba(237,241,247,0.32) transparent}
 .qa-grid::-webkit-scrollbar{width:14px}
 .qa-grid::-webkit-scrollbar-track{background:transparent}
@@ -376,23 +374,14 @@ svg path[fill="none"],svg line,svg polyline{vector-effect:non-scaling-stroke}
 .qa-card{min-width:0;border:1px solid rgba(237,241,247,0.12);border-radius:10px;background:rgba(255,255,255,0.035);overflow:hidden;cursor:pointer;box-shadow:0 18px 50px rgba(0,0,0,0.26);transition:transform 0.18s ease,border-color 0.18s ease,box-shadow 0.18s ease,opacity 0.18s ease}
 .qa-card:hover{transform:translateY(-4px);border-color:rgba(237,241,247,0.28);box-shadow:0 24px 70px rgba(0,0,0,0.34)}
 .qa-card.current{box-shadow:0 0 0 2px rgba(127,200,255,0.72),0 18px 52px rgba(0,0,0,0.34)}
-.qa-card[data-hidden="true"]{display:none}
 .qa-thumb{position:relative;aspect-ratio:16/9;background:rgba(24,25,31,0.86);overflow:hidden;isolation:isolate}
 .qa-frame-content{position:absolute;top:0;left:0;width:1920px;height:1080px;transform-origin:top left;pointer-events:none;background:transparent}
 .qa-frame-content iframe{width:1920px;height:1080px;border:0;display:block;pointer-events:none;background:transparent}
-.qa-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:12px 14px 13px;border-top:1px solid rgba(237,241,247,0.10);background:rgba(11,12,16,0.92)}
+.qa-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px 13px;border-top:1px solid rgba(237,241,247,0.10);background:rgba(11,12,16,0.92)}
 .qa-page{display:flex;flex-direction:column;gap:4px;min-width:0}
 .qa-page strong{font-size:12px;line-height:1;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:#f8fafc}
-.qa-tags{display:flex;flex-wrap:wrap;gap:5px;min-height:21px}
-.qa-tag{max-width:100%;padding:4px 7px;border-radius:999px;background:rgba(237,241,247,0.075);color:rgba(237,241,247,0.70);font-size:10px;font-weight:750;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .qa-status{flex-shrink:0;padding:5px 8px;border-radius:7px;background:rgba(237,241,247,0.10);color:rgba(237,241,247,0.76);font-size:10px;font-weight:900;line-height:1;letter-spacing:0.08em}
-.qa-card[data-status="ok"] .qa-status{background:rgba(34,197,94,0.15);color:#bbf7d0}
-.qa-card[data-status="warn"]{border-color:rgba(245,158,11,0.42)}
-.qa-card[data-status="warn"] .qa-status{background:rgba(245,158,11,0.18);color:#fde68a}
-.qa-card[data-status="fail"]{border-color:rgba(248,113,113,0.54)}
-.qa-card[data-status="fail"] .qa-status{background:rgba(248,113,113,0.18);color:#fecaca}
-.qa-empty{grid-column:1/-1;display:none;align-items:center;justify-content:center;min-height:36vh;border:1px dashed rgba(237,241,247,0.18);border-radius:12px;color:rgba(237,241,247,0.58);font-size:14px;font-weight:650}
-.qa-empty.show{display:flex}
+.qa-card[data-status="review"] .qa-status{background:rgba(34,197,94,0.14);color:#bbf7d0}
 @media(max-width:720px){.qa-toolbar{height:auto;min-height:74px;align-items:flex-start;flex-direction:column;padding:16px 18px}.qa-actions{width:100%;justify-content:space-between}.qa-grid{top:128px;grid-template-columns:1fr;padding:18px}.qa-title{width:100%;justify-content:space-between}#qa-summary{white-space:normal;text-align:right}}
 
 /* Navigation buttons */
@@ -517,14 +506,10 @@ def make_runtime_html(ui: dict) -> str:
     <div class="qa-toolbar">
       <div class="qa-title"><strong>QA Overview</strong><span id="qa-summary">Scanning slides...</span></div>
       <div class="qa-actions">
-        <button class="qa-filter active" type="button" data-filter="all">All</button>
-        <button class="qa-filter" type="button" data-filter="issues">Issues only</button>
         <button class="qa-close" type="button" aria-label="Close QA overview">×</button>
       </div>
     </div>
-    <div class="qa-grid">
-      <div class="qa-empty">No issue slides in this filter.</div>
-    </div>
+    <div class="qa-grid"></div>
   </div>
 </div>
 <div id="ms-toolbar" aria-label="Preview controls">
@@ -1886,16 +1871,11 @@ fitSlideLayout(slides[cur]);
   var grid=qa?qa.querySelector('.qa-grid'):null;
   var closeBtn=qa?qa.querySelector('.qa-close'):null;
   var summary=document.getElementById('qa-summary');
-  var filterBtns=qa?Array.from(qa.querySelectorAll('.qa-filter')):[];
-  var empty=qa?qa.querySelector('.qa-empty'):null;
   var qaCache=false;
   var qaObserver=null;
   var qaLoadQueue=[];
   var qaQueueScheduled=false;
   var qaHideTimer=null;
-  var qaFilter='all';
-  var qaMagicFailures=buildQaMagicFailureMap();
-  var qaPrimaryTone=detectQaPrimaryTone();
 
   function buildQaFrameUrl(idx){
     var url=new URL(window.location.href);
@@ -1905,434 +1885,14 @@ fitSlideLayout(slides[cur]);
     url.hash='#'+(idx+1);
     return url.toString();
   }
-  function normalizeQaText(text){
-    return (text||'').replace(/\s+/g,' ').trim();
-  }
-  function getQaMagicTextMap(slide){
-    var map={};
-    if(!slide)return map;
-    slide.querySelectorAll('[data-magic-id]').forEach(function(el){
-      var id=el.getAttribute('data-magic-id');
-      if(id)map[id]=normalizeQaText(el.textContent);
-    });
-    return map;
-  }
-  function buildQaMagicFailureMap(){
-    var failures={};
-    for(var i=0;i<slides.length-1;i+=1){
-      var a=getQaMagicTextMap(slides[i]);
-      var b=getQaMagicTextMap(slides[i+1]);
-      Object.keys(a).forEach(function(id){
-        if(!Object.prototype.hasOwnProperty.call(b,id))return;
-        if(a[id]===b[id])return;
-        var label='magic text mismatch: '+id;
-        if(!failures[i])failures[i]=[];
-        if(!failures[i+1])failures[i+1]=[];
-        failures[i].push(label);
-        failures[i+1].push(label);
-      });
-    }
-    return failures;
-  }
-  function detectQaPrimaryTone(){
-    var counts={light:0,dark:0};
-    slides.forEach(function(slide,idx){
-      if(idx===0&&slides.length>1)return;
-      var tone=getSlideTone(slide);
-      if(tone==='light'||tone==='dark')counts[tone]+=1;
-    });
-    if(counts.light===counts.dark)return '';
-    return counts.light>counts.dark?'light':'dark';
-  }
-  function dedupeQaLabels(labels){
-    var seen={};
-    return labels.filter(function(label){
-      if(!label||seen[label])return false;
-      seen[label]=true;
-      return true;
-    });
-  }
-  function setQaResult(item,failures,warnings){
-    failures=dedupeQaLabels(failures||[]);
-    warnings=dedupeQaLabels(warnings||[]);
-    var status=failures.length?'fail':(warnings.length?'warn':'ok');
-    item.dataset.status=status;
+  function markQaFrameReady(item){
+    if(!item)return;
+    item.dataset.status='review';
     item.dataset.scanned='1';
     var statusEl=item.querySelector('.qa-status');
-    if(statusEl)statusEl.textContent=status.toUpperCase();
-    var tags=item.querySelector('.qa-tags');
-    if(tags){
-      tags.innerHTML='';
-      var labels=failures.concat(warnings);
-      if(!labels.length)labels=['clean'];
-      labels.slice(0,4).forEach(function(label){
-        var tag=document.createElement('span');
-        tag.className='qa-tag';
-        tag.textContent=label;
-        tag.title=label;
-        tags.appendChild(tag);
-      });
-      if(labels.length>4){
-        var more=document.createElement('span');
-        more.className='qa-tag';
-        more.textContent='+'+(labels.length-4);
-        tags.appendChild(more);
-      }
-    }
+    if(statusEl)statusEl.textContent='REVIEW';
     updateQaSummary();
-    applyQaFilter();
     requestAnimationFrame(refreshQaScales);
-  }
-  function isQaTransparentColor(value){
-    if(!value||value==='transparent')return true;
-    var parsed=parseColorValue(value);
-    return !!(parsed&&parsed.a<=0.05);
-  }
-  function hasQaRootBackground(slide,win){
-    if(!slide||!win)return false;
-    var cs=win.getComputedStyle(slide);
-    return !isQaTransparentColor(cs.backgroundColor)||(cs.backgroundImage&&cs.backgroundImage!=='none');
-  }
-  function countQaInsetBackgroundLayers(slide,win){
-    if(!slide||!win)return 0;
-    var slideRect=slide.getBoundingClientRect();
-    var slideArea=Math.max(1,slideRect.width*slideRect.height);
-    var tolerance=6;
-    var count=0;
-    Array.from(slide.querySelectorAll('div,section,article,figure,aside')).forEach(function(el){
-      if(el===slide||el.matches('.bg'))return;
-      if(el.closest('.bg,#slide-overview,#qa-overview,#ms-toolbar,#ms-rich-toolbar'))return;
-      var cs=win.getComputedStyle(el);
-      if(cs.display==='none'||cs.visibility==='hidden')return;
-      if(parseFloat(cs.opacity||'1')<0.04)return;
-      var bgImage=cs.backgroundImage||'none';
-      if(bgImage==='none')return;
-      var r=el.getBoundingClientRect();
-      if(r.width<2||r.height<2)return;
-      var area=r.width*r.height;
-      var large=(r.width>=slideRect.width*0.60&&r.height>=slideRect.height*0.60)||area>=slideArea*0.38;
-      if(!large)return;
-      var missesEdge=r.left>slideRect.left+tolerance||r.top>slideRect.top+tolerance||r.right<slideRect.right-tolerance||r.bottom<slideRect.bottom-tolerance;
-      if(!missesEdge)return;
-      var insideContent=!!el.closest('.slide-content');
-      var roleClass=(el.className&&typeof el.className==='string')?el.className:'';
-      var backgroundRole=/bg|background|cover|hero|image|photo|texture|field|wash|backdrop|atmosphere/i.test(roleClass);
-      var hasText=!!normalizeQaText(el.textContent);
-      var emptyDecorative=!hasText&&(!el.children||el.children.length===0);
-      if(insideContent&&(backgroundRole||emptyDecorative))count+=1;
-    });
-    return count;
-  }
-  function isQaVisibleDiagnosticNode(el,win){
-    if(!el||!win)return false;
-    if(el.closest('.bg,[aria-hidden="true"]'))return false;
-    var cs=win.getComputedStyle(el);
-    if(cs.display==='none'||cs.visibility==='hidden')return false;
-    if(parseFloat(cs.opacity||'1')<0.04)return false;
-    var text=normalizeQaText(el.textContent);
-    return !!(text||el.matches('img,svg,video,canvas')||el.hasAttribute('data-magic-id'));
-  }
-  function countQaContentOverflow(slide,win){
-    if(!slide||!win)return 0;
-    var slideRect=slide.getBoundingClientRect();
-    var tolerance=8;
-    var count=0;
-    var selector='h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,small,span,strong,em,b,.card,.stat-item,.compare-panel,.metric-poster,.time-card,.timeline-card,.phase-card,.step-card,.lane-card,img,svg,video,canvas,[data-magic-id]';
-    Array.from(slide.querySelectorAll(selector)).forEach(function(el){
-      if(!isQaVisibleDiagnosticNode(el,win))return;
-      var r=el.getBoundingClientRect();
-      if(r.width<1||r.height<1)return;
-      if(r.left<slideRect.left-tolerance||r.top<slideRect.top-tolerance||r.right>slideRect.right+tolerance||r.bottom>slideRect.bottom+tolerance){
-        count+=1;
-      }
-    });
-    return count;
-  }
-  function qaCompositeColor(top,bottom){
-    if(!top)return bottom||{r:255,g:255,b:255,a:1};
-    bottom=bottom||{r:255,g:255,b:255,a:1};
-    var a=Math.max(0,Math.min(1,top.a==null?1:top.a));
-    var ba=Math.max(0,Math.min(1,bottom.a==null?1:bottom.a));
-    var outA=a+ba*(1-a);
-    if(outA<=0.001)return {r:255,g:255,b:255,a:0};
-    return {
-      r:(top.r*a+bottom.r*ba*(1-a))/outA,
-      g:(top.g*a+bottom.g*ba*(1-a))/outA,
-      b:(top.b*a+bottom.b*ba*(1-a))/outA,
-      a:outA
-    };
-  }
-  function qaChannelToLinear(v){
-    v=Math.max(0,Math.min(255,v))/255;
-    return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);
-  }
-  function qaRelativeLuminance(color){
-    if(!color)return 1;
-    return 0.2126*qaChannelToLinear(color.r)+0.7152*qaChannelToLinear(color.g)+0.0722*qaChannelToLinear(color.b);
-  }
-  function qaContrastRatio(a,b){
-    var l1=qaRelativeLuminance(a),l2=qaRelativeLuminance(b);
-    var light=Math.max(l1,l2),dark=Math.min(l1,l2);
-    return (light+0.05)/(dark+0.05);
-  }
-  function qaBaseBackground(slide,win){
-    var tone=typeof win.getSlideTone==='function'?win.getSlideTone(slide):getSlideTone(slide);
-    var base=tone==='light'?{r:255,g:255,b:255,a:1}:{r:10,g:12,b:22,a:1};
-    var bodyColor=parseColorValue(win.getComputedStyle(win.document.body).backgroundColor);
-    if(bodyColor&&bodyColor.a>0.01)base=qaCompositeColor(bodyColor,base);
-    var slideColor=parseColorValue(win.getComputedStyle(slide).backgroundColor);
-    if(slideColor&&slideColor.a>0.01)base=qaCompositeColor(slideColor,base);
-    return base;
-  }
-  function qaEffectiveBackground(el,slide,win){
-    var bg=qaBaseBackground(slide,win);
-    var chain=[];
-    var node=el.parentElement;
-    while(node&&node!==slide.parentElement){
-      chain.unshift(node);
-      if(node===slide)break;
-      node=node.parentElement;
-    }
-    chain.forEach(function(item){
-      var cs=win.getComputedStyle(item);
-      var color=parseColorValue(cs.backgroundColor);
-      if(color&&color.a>0.01)bg=qaCompositeColor(color,bg);
-    });
-    return bg;
-  }
-  function qaIsLargeText(cs){
-    var fs=parseFloat(cs.fontSize)||16;
-    var fw=parseInt(cs.fontWeight,10);
-    if(!Number.isFinite(fw))fw=/bold/i.test(cs.fontWeight||'')?700:400;
-    return fs>=24||(fw>=700&&fs>=18.5);
-  }
-  function countQaLowContrastText(slide,win){
-    if(!slide||!win)return 0;
-    var count=0;
-    var selector='h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,small,span,strong,em,b,[data-magic-id]';
-    Array.from(slide.querySelectorAll(selector)).forEach(function(el){
-      if(!isQaVisibleDiagnosticNode(el,win))return;
-      if(!normalizeQaText(el.textContent))return;
-      if(Array.from(el.children||[]).some(function(ch){return normalizeQaText(ch.textContent)}))return;
-      var r=el.getBoundingClientRect();
-      if(r.width<2||r.height<2)return;
-      var cs=win.getComputedStyle(el);
-      var fg=parseColorValue(cs.color);
-      if(!fg)return;
-      var opacity=parseFloat(cs.opacity||'1');
-      if(!Number.isFinite(opacity))opacity=1;
-      var bg=qaEffectiveBackground(el,slide,win);
-      var effectiveFg=qaCompositeColor({r:fg.r,g:fg.g,b:fg.b,a:(fg.a==null?1:fg.a)*opacity},bg);
-      var ratio=qaContrastRatio(effectiveFg,bg);
-      var threshold=qaIsLargeText(cs)?3:4.5;
-      if(opacity<0.72||ratio<threshold)count+=1;
-    });
-    return count;
-  }
-  var QA_CARD_SELECTOR='.panel,.card,.node,.route-card,.phase,.mini-card,.stat-item,.compare-panel,.metric-poster,.time-card,.timeline-card,.phase-card,.step-card,.lane-card,.compare-cell,.check-item,.decision-card,.stack-card';
-  var QA_CARD_TEXT_SELECTOR='h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,small,span,strong,em,b,.big-token,.hero-label,.endpoint,.card-title,.card-subtitle,.card-body,.card-desc,.stat-value,.stat-label,[data-magic-id]';
-  function getQaCardContainers(slide,win){
-    if(!slide||!win)return [];
-    return Array.from(slide.querySelectorAll(QA_CARD_SELECTOR)).filter(function(el){
-      if(!isQaVisibleDiagnosticNode(el,win))return false;
-      var r=el.getBoundingClientRect();
-      return r.width>=24&&r.height>=24;
-    });
-  }
-  function countQaCardTextOverflow(slide,win){
-    if(!slide||!win)return 0;
-    var tolerance=3;
-    var count=0;
-    getQaCardContainers(slide,win).forEach(function(card){
-      var cardRect=card.getBoundingClientRect();
-      var hasOverflow=false;
-      Array.from(card.querySelectorAll(QA_CARD_TEXT_SELECTOR)).forEach(function(el){
-        if(hasOverflow)return;
-        if(el.closest(QA_CARD_SELECTOR)!==card)return;
-        if(!isQaVisibleDiagnosticNode(el,win))return;
-        if(!normalizeQaText(el.textContent))return;
-        var r=el.getBoundingClientRect();
-        if(r.width<1||r.height<1)return;
-        if(r.left<cardRect.left-tolerance||r.top<cardRect.top-tolerance||r.right>cardRect.right+tolerance||r.bottom>cardRect.bottom+tolerance){
-          hasOverflow=true;
-        }
-      });
-      if(hasOverflow)count+=1;
-    });
-    return count;
-  }
-  function groupQaCardsByRow(cards){
-    var rows=[];
-    cards.forEach(function(card){
-      var r=card.getBoundingClientRect();
-      var cy=r.top+r.height/2;
-      var row=rows.find(function(item){return Math.abs(item.cy-cy)<Math.max(12,Math.min(item.height,r.height)*0.42)});
-      if(!row){
-        rows.push({cy:cy,height:r.height,cards:[card]});
-      }else{
-        row.cards.push(card);
-        row.cy=(row.cy*(row.cards.length-1)+cy)/row.cards.length;
-        row.height=Math.max(row.height,r.height);
-      }
-    });
-    return rows;
-  }
-  function hasQaTextDemand(card,win){
-    return Array.from(card.querySelectorAll(QA_CARD_TEXT_SELECTOR)).some(function(el){
-      if(el.closest(QA_CARD_SELECTOR)!==card)return false;
-      if(!isQaVisibleDiagnosticNode(el,win))return false;
-      var text=normalizeQaText(el.textContent);
-      if(!text)return false;
-      var longest=(text.match(/[A-Za-z0-9+.#/_-]{7,}|[\u3400-\u9fff\uf900-\ufaff]{5,}/g)||[]).length>0;
-      var r=el.getBoundingClientRect();
-      var cr=card.getBoundingClientRect();
-      return longest||r.width>cr.width*0.72||r.height>cr.height*0.36;
-    });
-  }
-  function countQaCrampedCardRows(slide,win){
-    if(!slide||!win)return 0;
-    var slideRect=slide.getBoundingClientRect();
-    var minReadableWidth=Math.max(132,Math.min(210,slideRect.width*0.088));
-    var count=0;
-    var seenRows=[];
-    Array.from(slide.querySelectorAll('div,section,article,figure,aside')).forEach(function(group){
-      if(group.matches(QA_CARD_SELECTOR))return;
-      if(group.closest('.bg,[aria-hidden="true"],#slide-overview,#qa-overview,#ms-toolbar,#ms-rich-toolbar'))return;
-      var children=Array.from(group.children||[]).filter(function(ch){
-        return ch.matches&&ch.matches(QA_CARD_SELECTOR)&&isQaVisibleDiagnosticNode(ch,win);
-      });
-      if(children.length<4)return;
-      var groupRect=group.getBoundingClientRect();
-      if(groupRect.width<1||groupRect.height<1)return;
-      groupQaCardsByRow(children).forEach(function(row){
-        if(row.cards.length<4)return;
-        var rowRects=row.cards.map(function(card){return card.getBoundingClientRect()});
-        var minWidth=Math.min.apply(null,rowRects.map(function(r){return r.width}));
-        if(minWidth>=minReadableWidth)return;
-        if(!row.cards.some(function(card){return hasQaTextDemand(card,win)}))return;
-        var left=Math.min.apply(null,rowRects.map(function(r){return r.left}));
-        var right=Math.max.apply(null,rowRects.map(function(r){return r.right}));
-        var rowWidth=right-left;
-        var usesNarrowRegion=rowWidth<slideRect.width*0.62||left>slideRect.left+slideRect.width*0.36||right<slideRect.right-slideRect.width*0.36;
-        if(!usesNarrowRegion)return;
-        var key=Math.round(left)+'|'+Math.round(row.cy)+'|'+row.cards.length;
-        if(seenRows.indexOf(key)!==-1)return;
-        seenRows.push(key);
-        count+=1;
-      });
-    });
-    return count;
-  }
-  function hasQaVisibleFrame(el,win){
-    if(!el||!win)return false;
-    if(el.matches('.slide,.slide-content,.bg,#deck,#slide-overview,#qa-overview'))return false;
-    if(el.closest('.bg,[aria-hidden="true"],#slide-overview,#qa-overview,#ms-toolbar,#ms-rich-toolbar'))return false;
-    var cs=win.getComputedStyle(el);
-    if(cs.display==='none'||cs.visibility==='hidden')return false;
-    if(parseFloat(cs.opacity||'1')<0.08)return false;
-    var borderWidth=(parseFloat(cs.borderTopWidth)||0)+(parseFloat(cs.borderRightWidth)||0)+(parseFloat(cs.borderBottomWidth)||0)+(parseFloat(cs.borderLeftWidth)||0);
-    var hasBg=!isQaTransparentColor(cs.backgroundColor)||(cs.backgroundImage&&cs.backgroundImage!=='none');
-    var hasShadow=cs.boxShadow&&cs.boxShadow!=='none';
-    var roleClass=(el.className&&typeof el.className==='string')?el.className:'';
-    var frameRole=/\\b(visual|panel|frame|surface|stage|matrix|diagram|map|flow|architecture|code|image)-?\\w*\\b/i.test(roleClass);
-    return borderWidth>0.5||hasShadow||(hasBg&&frameRole);
-  }
-  function getQaChildBounds(el,win,frameRect){
-    var bounds=null;
-    Array.from(el.children||[]).forEach(function(ch){
-      if(ch.matches('.bg,[aria-hidden="true"]'))return;
-      var cs=win.getComputedStyle(ch);
-      if(cs.display==='none'||cs.visibility==='hidden')return;
-      if(parseFloat(cs.opacity||'1')<0.04)return;
-      var text=normalizeQaText(ch.textContent);
-      if(!text&&!ch.matches('img,svg,video,canvas')&&!ch.querySelector('img,svg,video,canvas'))return;
-      var r=ch.getBoundingClientRect();
-      if(r.width<2||r.height<2)return;
-      var left=Math.max(r.left,frameRect.left);
-      var top=Math.max(r.top,frameRect.top);
-      var right=Math.min(r.right,frameRect.right);
-      var bottom=Math.min(r.bottom,frameRect.bottom);
-      if(right<=left||bottom<=top)return;
-      if(!bounds){
-        bounds={left:left,top:top,right:right,bottom:bottom};
-      }else{
-        bounds.left=Math.min(bounds.left,left);
-        bounds.top=Math.min(bounds.top,top);
-        bounds.right=Math.max(bounds.right,right);
-        bounds.bottom=Math.max(bounds.bottom,bottom);
-      }
-    });
-    return bounds;
-  }
-  function countQaSparseFramedPanels(slide,win){
-    if(!slide||!win)return 0;
-    var slideRect=slide.getBoundingClientRect();
-    var slideArea=Math.max(1,slideRect.width*slideRect.height);
-    var sparse=[];
-    var candidates=Array.from(slide.querySelectorAll('div,section,article,figure,aside'));
-    candidates.forEach(function(el){
-      if(!hasQaVisibleFrame(el,win))return;
-      if(sparse.some(function(parent){return parent.contains(el);}))return;
-      var r=el.getBoundingClientRect();
-      if(r.width<slideRect.width*0.32||r.height<slideRect.height*0.20)return;
-      if((r.width*r.height)/slideArea<0.08)return;
-      if(r.width>slideRect.width*0.94&&r.height>slideRect.height*0.82)return;
-      var bounds=getQaChildBounds(el,win,r);
-      if(!bounds)return;
-      var contentWidth=Math.max(1,bounds.right-bounds.left);
-      var contentHeight=Math.max(1,bounds.bottom-bounds.top);
-      var coverage=(contentWidth*contentHeight)/Math.max(1,r.width*r.height);
-      var heightRatio=contentHeight/Math.max(1,r.height);
-      var bottomVoid=(r.bottom-bounds.bottom)/Math.max(1,r.height);
-      var topVoid=(bounds.top-r.top)/Math.max(1,r.height);
-      if(coverage<0.45&&heightRatio<0.62&&(bottomVoid>0.18||topVoid>0.18)){
-        sparse.push(el);
-      }
-    });
-    return sparse.length;
-  }
-  function diagnoseQaFrame(item,frame,idx){
-    var failures=(qaMagicFailures[idx]||[]).slice();
-    var warnings=[];
-    try{
-      var doc=frame.contentDocument;
-      var win=frame.contentWindow;
-      if(!doc||!win){
-        failures.push('iframe inaccessible');
-      }else{
-        var frameSlides=doc.querySelectorAll('.slide');
-        var slide=doc.querySelector('.slide.active')||frameSlides[idx];
-        if(!slide){
-          failures.push('missing active slide');
-        }else{
-          if(typeof win.fitSlideLayout==='function')win.fitSlideLayout(slide);
-          if(slide.querySelector('.ms-fit-scale'))warnings.push('ms-fit-scale');
-          if(slide.querySelector('.ms-fit-top'))warnings.push('ms-fit-top');
-          if(!hasQaRootBackground(slide,win))warnings.push('transparent root bg');
-          var insetBgCount=countQaInsetBackgroundLayers(slide,win);
-          if(insetBgCount)failures.push('inset bg layer x'+insetBgCount);
-          var tone=typeof win.getSlideTone==='function'?win.getSlideTone(slide):getSlideTone(slides[idx]);
-          if(idx>0&&qaPrimaryTone&&tone&&tone!==qaPrimaryTone)warnings.push('tone '+tone+' vs '+qaPrimaryTone);
-          var brokenImages=Array.from(slide.querySelectorAll('img')).filter(function(img){
-            return !img.complete||img.naturalWidth===0;
-          });
-          if(brokenImages.length)failures.push('image load failed x'+brokenImages.length);
-          var overflowCount=countQaContentOverflow(slide,win);
-          if(overflowCount)failures.push('content overflow x'+overflowCount);
-          var lowContrastTextCount=countQaLowContrastText(slide,win);
-          if(lowContrastTextCount)failures.push('low contrast text x'+lowContrastTextCount);
-          var cardTextOverflowCount=countQaCardTextOverflow(slide,win);
-          if(cardTextOverflowCount)failures.push('card text overflow x'+cardTextOverflowCount);
-          var crampedRowCount=countQaCrampedCardRows(slide,win);
-          if(crampedRowCount)failures.push('cramped card row x'+crampedRowCount);
-          var sparseFrameCount=countQaSparseFramedPanels(slide,win);
-          if(sparseFrameCount)warnings.push('sparse framed panel x'+sparseFrameCount);
-        }
-      }
-    }catch(ex){
-      failures.push('diagnostic unavailable');
-    }
-    setQaResult(item,failures,warnings);
   }
   function refreshQaScales(){
     if(!grid)return;
@@ -2362,15 +1922,15 @@ fitSlideLayout(slides[cur]);
     frame.setAttribute('aria-hidden','true');
     frame.setAttribute('title','QA slide '+(idx+1));
     var timeout=setTimeout(function(){
-      if(item.dataset.scanned!=='1')setQaResult(item,['iframe load failed'],[]);
+      if(item.dataset.scanned!=='1')markQaFrameReady(item);
     },9000);
     frame.addEventListener('load',function(){
       clearTimeout(timeout);
-      setTimeout(function(){diagnoseQaFrame(item,frame,idx);},140);
+      setTimeout(function(){markQaFrameReady(item);},140);
     });
     frame.addEventListener('error',function(){
       clearTimeout(timeout);
-      setQaResult(item,['iframe load failed'],[]);
+      markQaFrameReady(item);
     });
     frame.src=buildQaFrameUrl(idx);
     content.appendChild(frame);
@@ -2436,21 +1996,14 @@ fitSlideLayout(slides[cur]);
   function updateQaSummary(){
     if(!summary||!grid)return;
     var cards=Array.from(grid.querySelectorAll('.qa-card'));
-    var fail=cards.filter(function(item){return item.dataset.status==='fail';}).length;
-    var warn=cards.filter(function(item){return item.dataset.status==='warn';}).length;
     var pending=cards.filter(function(item){return item.dataset.scanned!=='1';}).length;
-    summary.textContent=slides.length+' slides - '+fail+' fail - '+warn+' warn'+(pending?' - '+pending+' scanning':'');
+    summary.textContent=slides.length+' slides'+(pending?' - '+pending+' scanning':' - ready for visual review');
   }
   function applyQaFilter(){
     if(!grid)return;
-    var visible=0;
     grid.querySelectorAll('.qa-card').forEach(function(item){
-      var hide=qaFilter==='issues'&&(item.dataset.status==='ok'||item.dataset.status==='pending');
-      item.dataset.hidden=hide?'true':'false';
-      if(!hide)visible+=1;
+      item.dataset.hidden='false';
     });
-    if(empty)empty.classList.toggle('show',visible===0);
-    filterBtns.forEach(function(btn){btn.classList.toggle('active',btn.dataset.filter===qaFilter);});
   }
   function buildQaCards(){
     if(!grid||qaCache)return;
@@ -2480,14 +2033,7 @@ fitSlideLayout(slides[cur]);
       page.className='qa-page';
       var title=document.createElement('strong');
       title.textContent='Slide '+(idx+1)+' / '+slides.length;
-      var tags=document.createElement('div');
-      tags.className='qa-tags';
-      var pendingTag=document.createElement('span');
-      pendingTag.className='qa-tag';
-      pendingTag.textContent='pending';
-      tags.appendChild(pendingTag);
       page.appendChild(title);
-      page.appendChild(tags);
       var status=document.createElement('div');
       status.className='qa-status';
       status.textContent='SCAN';
@@ -2552,13 +2098,6 @@ fitSlideLayout(slides[cur]);
   if(closeBtn)closeBtn.addEventListener('click',function(e){
     e.stopPropagation();
     closeQaOverview();
-  });
-  filterBtns.forEach(function(btn){
-    btn.addEventListener('click',function(e){
-      e.stopPropagation();
-      qaFilter=btn.dataset.filter||'all';
-      applyQaFilter();
-    });
   });
   window.addEventListener('resize',function(){
     if(qaCache)requestAnimationFrame(refreshQaScales);

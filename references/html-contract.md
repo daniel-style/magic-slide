@@ -211,10 +211,9 @@ Rules:
 - If the full text cannot fit, reduce the max font size, widen the container, allow wrapping, or split the slide.
 - Do not hide text overflow with `overflow:hidden`, `overflow:clip`, masks, or
   fades. If content needs hiding to look tidy, the slide is over budget.
-- QA overview `card text overflow` and `cramped card row` tags are hard
-  failures. They mean text is escaping its card or the card group was squeezed
-  into a region too narrow for readable labels, even if the slide-edge overflow
-  check is clean.
+- In QA overview screenshots, visually inspect cards for escaped labels,
+  cramped rows, and unreadable wrapping. These issues should be found by looking
+  at the rendered wall, not by relying on runtime tags.
 
 ## SVG Contract
 
@@ -464,5 +463,6 @@ Before delivery, check:
       budget
 - [ ] Metric/card labels do not collide with neighboring cards; four-card
       groups are not squeezed into half-width columns
-- [ ] QA overview has no `card text overflow` or `cramped card row` tags
+- [ ] QA overview screenshots have been reviewed visually for cramped card rows,
+      escaped labels, and unreadable wrapping
 - [ ] Inline SVG connector paths include `fill="none"` and fallback stroke attributes
