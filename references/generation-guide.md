@@ -295,11 +295,12 @@ After generating the full deck:
 - Merge slides with `merge-slides.py`.
 - Inject runtime with `inject-runtime.py`.
 - Preview with `serve.py`.
-- Run the QA overview gate from `step-10-preview.md` before detailed viewport
-  checks. For newly generated decks, first capture one QA overview longshot from
-  `?ms_qa=overview&ms_qa_capture=1` only after the QA wall reports iframe-loaded
-  readiness. Repair the most obvious rendered visual issues by slide number,
-  then stop for the mandatory user `Revise slide` marking pass.
+- Run the QA overview gate from `step-10-preview.md` before any later detailed
+  viewport checks. For newly generated decks, first capture one QA overview
+  longshot from `?ms_qa=overview&ms_qa_capture=1` only after the QA wall
+  reports iframe-loaded readiness. Repair the most obvious rendered visual
+  issues by slide number, then stop for the mandatory user `Revise slide`
+  marking pass without doing single-slide screenshot repair.
 - When the user returns, read unresolved revision notes first. Treat those
   slides as known repair targets, then review the QA overview longshot for
   additional visual problems on unmarked slides. The overview is intentionally
@@ -311,19 +312,22 @@ After generating the full deck:
 - After verification, mark repaired JSON records `resolved: true`; do not write
   revision notes into `index.html`.
 - Use the scrolling QA overview longshot as the primary all-slide visual check.
-  Capture full-size single-slide screenshots only for slides that look
+  Do not capture full-size single-slide screenshots during the newly generated
+  deck's autonomous first pass before the user revision pause. After the user
+  returns, capture targeted full-size screenshots only for slides that look
   problematic, ambiguous, marked by the user, or representative of a risky
   layout family.
 - Check for overflow, clipped text, broken images, dead zones, unbalanced
   columns, sparse framed panels, and runtime fit issues using
   `step-10-preview.md` as the delivery checklist.
-- In full-size visual review, revise any slide that looks cramped, clipped,
-  scaled down, or unbalanced.
+- After the user returns for post-revision or follow-up verification, revise
+  any full-size slide that looks cramped, clipped, scaled down, or unbalanced.
 - If images were requested, verify the final deck has actual assets and rendered
   image slides.
-- When the overview reveals no obvious issue, inspect only targeted rendered
-  screenshots from roles that still need closer confidence, such as cover, dense
-  middle, image/diagram, risk/summary, or closing.
+- After the user revision pause, if the overview reveals no obvious issue,
+  inspect only targeted rendered screenshots from roles that still need closer
+  confidence, such as cover, dense middle, image/diagram, risk/summary, or
+  closing.
 - Do a design director pass: name the three roughest or most generic rendered
   slides, then revise them. If fewer than three are weak, explicitly say why the
   remaining candidates are acceptable.

@@ -23,8 +23,9 @@ with an absolute path.
 
 ### 10a.1 QA overview gate
 
-Run the runtime QA overview before detailed screenshots. This is a visual
-review wall and revision-note capture surface, not an automatic scoring gate.
+Run the runtime QA overview before any later detailed screenshots. This is a
+visual review wall and revision-note capture surface, not an automatic scoring
+gate.
 
 For a newly generated deck, the gate has three ordered phases:
 
@@ -48,12 +49,13 @@ For a newly generated deck, the gate has three ordered phases:
    layout overflow, clipped or cropped content, text/image overlap, cramped
    grids, unreadable text or weak color contrast, broken/cropped image
    treatment, weak cover framing, blank/unloaded cards, or visibly unfinished
-   diagrams. Only after this overview triage may you capture full-size
-   single-slide screenshots, and only for slides that looked problematic,
-   ambiguous, or high-risk in the overview. Fix those obvious issues in modular
-   sources, re-run `merge-slides.py` and `inject-runtime.py`, refresh or restart
-   `serve.py` if needed, and repeat the single QA overview longshot check until
-   the first-pass visible problems are repaired.
+   diagrams. Fix those obvious issues in modular sources, re-run
+   `merge-slides.py` and `inject-runtime.py`, refresh or restart `serve.py` if
+   needed, and repeat the single QA overview longshot check until the
+   first-pass visible problems are repaired. Do not capture full-size
+   single-slide screenshots during this autonomous first pass; once the
+   overview-longshot repairs are done, go directly to the mandatory user
+   revision pause.
 2. **Mandatory user revision pause.** After the autonomous pass, reopen or leave
    the deck in QA Overview and stop. Tell the user they can mark slide-level
    changes by clicking `Revise slide` on a QA card, entering a free-text note,
@@ -95,11 +97,13 @@ Triage rules:
   `sources/qa/visual-issues.json`; the merged HTML remains generated output.
 - Do not ask the user to clear resolved issues. The agent resolves them in JSON
   after repairing and visually verifying the relevant slides.
-- After the overview longshot pass, do targeted full-size screenshots or
-  rendered slide checks only for slides that need closer inspection: the cover
-  if its framing is uncertain, dense/content slides, diagrams/images, marked
-  revision slides, and any cards that looked questionable in the visual wall.
-  Do not capture every slide individually by default.
+- For a newly generated deck, do not do targeted full-size screenshots after
+  the autonomous overview-longshot repair pass; stop for the mandatory
+  `Revise slide` marking pass. After the user returns, targeted full-size
+  screenshots or rendered slide checks may be used only for slides that need
+  closer inspection: marked revision slides, dense/content slides,
+  diagrams/images, and any cards that still look questionable in the visual
+  wall. Do not capture every slide individually by default.
 
 ### 10b. Final QA checklist
 
