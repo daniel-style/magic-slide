@@ -42,7 +42,9 @@ Before writing files, make a concise internal plan based on Brief Lite:
 - Design-canvas scaling strategy from `layout-guide.md`: keep `.slide-content`
   as the stable 16:9 design-canvas wrapper and rely on runtime/overview scaling
   for rendered sizes; use internal stages, groups, panels, and evidence bands
-  to make individual slides feel tight.
+  to make individual slides feel tight. Confirm the source CSS does not
+  override the runtime `.slide-content` content-canvas guard with
+  `max-width:none`, `width:100vw`, or viewport-spanning inline root styles.
 - Stage-fit map from `layout-guide.md`: for each slide family, choose compact
   stage, wide evidence band, or full visual frame before writing HTML.
 - Width allocation for card groups, comparison cells, and evidence bands,
@@ -112,6 +114,11 @@ notes, or intermediate files created during generation must also live under
   that are already necessary content; do not create labels or token rows merely
   so they can move. Do not let a label wrap during the clone animation and then
   snap back to one line on cleanup.
+- Hard gate: do not put `data-magic-nowrap="true"` on heading phrases, card
+  titles, hero-card titles, callout titles, or ordinary `.magic-phrase` spans
+  inside `h1`-`h6`. Those are text layout, not labels. They must wrap naturally
+  inside their container, use container-sized type, or be split into semantic
+  Magic Move fragments.
 
 **Avoid repetition:**
 - Vary layout primitives across slides
@@ -132,6 +139,10 @@ notes, or intermediate files created during generation must also live under
   the slide are layout failures. Fix the internal primitive instead: group
   related items, reduce split gaps, wrap card rows in a shared panel, constrain
   a `.stage`, or redesign the slide.
+- Do not make `.slide-content` ultra-wide to "use the monitor". The injected
+  runtime centers the direct content wrapper at a stable 1680px budget; sources
+  must work within that wrapper and place truly full-bleed imagery/material on
+  root `.slide` backgrounds or `.slide > .bg` layers.
 - Apply `layout-guide.md`'s global stage-fit rule so sparse content does not
   default to repeated full-width trays.
 - Do not leave an orphan final row in a known even card group. Avoid
@@ -169,9 +180,15 @@ notes, or intermediate files created during generation must also live under
   forward. Keep visible text identical for shared ids.
 - If a shared text anchor would be one line on one slide and multiline on the
   other, either make both sides share the same line-break behavior, add
-  `data-magic-nowrap="true"` for a short label that genuinely fits, or move the
+  `data-magic-nowrap="true"` only for a short label/chip that genuinely fits, or move the
   `data-magic-id` to a shorter stable token. Do not animate the outer wrapper
   of a card/panel when its internal text reflows between roles.
+- For long heading phrases that legitimately need Magic Move, follow
+  `flip-engine.md`'s phrase-fragment anchor pattern: split the phrase into
+  semantic inline-block spans and let the parent heading own wrapping/alignment.
+- Before writing a card or hero-card title with `data-magic-id`, check the
+  longest rendered phrase against the card width. If it needs to wrap, remove
+  nowrap, lower the max heading size, or widen the card before continuing.
 - Hard stop before HTML: if the continuity map mostly relies on a footer,
   corner label, tiny deck mark, watermark, or pure chapter chip, revise the
   slide order or treatment until the primary anchors are content-bearing. A

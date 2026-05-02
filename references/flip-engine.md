@@ -97,11 +97,12 @@ wrapping or snapping to a different text metric when the clone is replaced by
 the real target element on cleanup. This runtime support is not permission to
 invent Magic-only labels or deck chrome.
 
-Use `data-magic-nowrap="true"` on any short custom label/chip that must remain
-one line but does not use one of the standard label classes. The source and
-target still need enough width for the string: if the label cannot fit on one
-line, widen the container, lower the font-size max, or remove the nowrap
-promise.
+Use `data-magic-nowrap="true"` only on short custom label/chip elements that
+must remain one line and behave like labels. It is not for heading phrases,
+card titles, hero-card titles, callout titles, or ordinary `.magic-phrase`
+spans, even when the text is only two or three words. The source and target
+still need enough width for the string: if the label cannot fit on one line,
+widen the container, lower the font-size max, or remove the nowrap promise.
 
 Shared text anchors need stable line behavior. A label that wraps during the
 animated clone and then becomes one line at the destination is a broken Magic
@@ -110,11 +111,20 @@ one-line label or a multiline heading/body block:
 - One-line labels: use an approved label class or `data-magic-nowrap="true"`
   and keep both source and target to the same nowrap policy.
 - Multiline headings/body text: let both sides wrap naturally with compatible
-  widths, or avoid using the whole text block as the `data-magic-id`.
+  widths, and do not add `data-magic-nowrap="true"` to the phrase. If the
+  whole text block is too unstable, anchor a shorter phrase or split it into
+  semantic fragments.
 - If only a short phrase is stable, put `data-magic-id` on that phrase rather
   than on the card, panel, or paragraph wrapper.
 
 When a slide wrapper has been scaled by runtime fit logic, the runtime lays out each clone using the TO element's unscaled `offsetWidth` / `offsetHeight`, then animates to the visual `getBoundingClientRect()` scale. This keeps text layout based on the same width budget as the real element instead of forcing unscaled typography into a smaller transformed rect.
+
+For ordinary Magic text, including `.magic-phrase`, the runtime treats the
+element as text rather than as a label. The animated clone gets a fixed TO-sized
+layout box and moves with `transform`; if the TO element renders as one line,
+the clone is also locked to one line for the whole transition. This prevents the
+mid-animation state from wrapping at an interpolated width and then snapping
+back when the real TO element is revealed.
 
 For normal Magic Move clones, the runtime represents the FROM and TO visual
 states as viewport-space 2D matrices rather than only axis-aligned rectangles.
@@ -206,6 +216,33 @@ small deck mark or navigation label. Let the hero title wrap and behave like
 normal slide typography; put `data-magic-id` on a shorter stable phrase inside
 real content, or skip the move. A one-line forced `h1` or artificial chip is
 not worth the overflow or ambiguity risk.
+
+Card, hero-card, callout, and metric headings follow the same rule. Never mark
+a card title phrase as `data-magic-nowrap="true"` just because it needs to move
+to the next slide. Size it from the card/container, allow wrapping, or use the
+phrase-fragment pattern below.
+
+When a real long phrase must carry the transition, split it into semantic
+phrase fragments instead of animating one long text box. Each fragment gets its
+own `data-magic-id`, identical visible text, and `display:inline-block`; a
+parent heading controls alignment, line breaks, and gap. This keeps the visual
+layout honest on each slide while letting the words travel independently.
+
+Use this pattern for phrase-level anchors:
+
+```html
+<h1 class="relay-title">
+  <span data-magic-id="closing-change-models" style="display:inline-block">change models,</span>
+  <span data-magic-id="closing-not-products" style="display:inline-block">not products</span>
+</h1>
+```
+
+The fragments should be natural reading units, not arbitrary word confetti:
+short clauses, noun phrases, number + unit pairs, or the emphasized contrast in
+a sentence. Keep punctuation with the fragment where readers hear it. If the
+source slide needs two lines and the target slide needs one line, author that
+line layout on the parent container with normal CSS; do not force a single
+nowrap magic element just to satisfy FLIP.
 
 ### No Magic-only labels
 

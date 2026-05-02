@@ -230,6 +230,10 @@ Rules:
   class or `data-magic-nowrap="true"` and give the element an explicit
   one-line width policy. Do not rely on the animated clone to discover a width
   during transition.
+- Do not use `data-magic-nowrap="true"` on heading phrases, card titles,
+  hero-card titles, callout titles, or ordinary `.magic-phrase` spans inside
+  headings. Those elements must wrap naturally or use semantic phrase-fragment
+  anchors from `flip-engine.md`.
 - Do not put three or more metric/text cards inside one half-width split
   column. Four-card and five-card groups must use the full slide width, a
   dedicated Metrics/Grid primitive, or multiple slides.
@@ -399,7 +403,10 @@ magic-id or remove the label.
 ```
 
 Use `layout-guide.md` for centering, dense-slide exceptions, source-note
-placement, design-canvas scaling, and overflow/collision policy.
+placement, design-canvas scaling, and overflow/collision policy. The injected
+runtime re-applies the centered 1680px content-canvas guard to the direct
+`.slide-content`; generated sources must not override it with `max-width:none`,
+`width:100vw`, or inline viewport-spanning root layout styles.
 
 ## What NOT to Include
 
@@ -461,23 +468,40 @@ placement, design-canvas scaling, and overflow/collision policy.
    - Fix: for short labels/chips/badges, use `data-magic-nowrap="true"` or an
      approved label class, and give the source/target the same one-line width
      policy; for real headings, keep the same line-break behavior on both
-     sides or animate a shorter stable token instead
+     sides, animate a shorter stable token, or use `flip-engine.md`'s
+     semantic phrase-fragment anchor pattern for real long phrases
 
-13. **SVG route renders as a black blob**
+13. **Heading phrase is forced nowrap and overflows its card**
+   - Fix: remove `data-magic-nowrap="true"` from the heading phrase, let the
+     parent heading wrap naturally, lower the max heading size, widen the card,
+     or split the phrase into semantic Magic Move fragments
+   - Avoid: `<h3><span class="magic-phrase" data-magic-nowrap="true">long
+     product surface phrase</span></h3>` inside `.hero-card`, `.callout`,
+     `.card`, `.tile`, or `.stat-item`
+
+14. **SVG route renders as a black blob**
    - Fix: add `fill="none"` and fallback stroke attributes to the source SVG path
    - Avoid: complex masks/filters/blend modes or decorative filled path blobs
 
-14. **Top brand pill becomes a full-width bug bar**
+15. **Top brand pill becomes a full-width bug bar**
    - Fix: remove direct-child slide chrome, put any necessary mark inside
      `.slide-content`, and avoid long thin top rails entirely
    - Avoid: `.brand-mark` / `.section-no` direct children or browser-bar-like
      strips near the viewport edge
 
-15. **Magic Move labels added only for motion**
+16. **Magic Move labels added only for motion**
    - Fix: move `data-magic-id` to real content such as a heading phrase, card
      title, metric, image/object, or diagram node, or use a hard cut
    - Avoid: repeated `.focus-token`, token rows, chips, or pills appended to
      the body just to create a shared element
+
+17. **Content canvas stretches across an ultra-wide browser**
+   - Fix: keep the direct `.slide-content` centered with the runtime 1680px
+     canvas guard; tighten individual slides with internal stages, groups,
+     panels, or evidence bands
+   - Avoid: `.slide-content { max-width:none }`, `width:100vw`, inline
+     viewport-spanning wrappers, or treating full-bleed content as ordinary
+     slide content instead of a root background/`.bg` layer
 
 ## Verification
 
@@ -518,6 +542,10 @@ Before delivery, check:
 - [ ] Layout, text-fit, vertical-balance, source-note, and overlap checks satisfy `layout-guide.md`
 - [ ] `.slide-content` is a stable 16:9 design-canvas wrapper; visual tightness
       comes from internal stages/groups rather than global viewport reflow
+- [ ] In single-slide view on a wide browser, ordinary content remains inside
+      the centered 1680px content canvas; no title, split panel, evidence row,
+      or source note hugs the viewport edges because `.slide-content` stretched
+      to `100vw`
 - [ ] Card groups use available slide width and do not compress paragraph cards
       into unreadably narrow columns while nearby horizontal space is empty
 - [ ] Framed main visuals satisfy `layout-guide.md` occupancy rules; no large

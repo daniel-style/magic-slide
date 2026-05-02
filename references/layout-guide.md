@@ -399,6 +399,11 @@ Rules:
 - Keep `.slide-content` as the stable design canvas wrapper. Prefer
   `width:100%; max-width:1680px; margin:0 auto; padding:clamp(2.5rem,5vw,5rem)`
   rather than a narrow `vw`-driven root frame.
+- The injected runtime also enforces a centered `max-width:min(1680px,100vw)`
+  on the direct `.slide-content` wrapper as a guardrail. Do not override that
+  with `max-width:none`, `width:100vw`, viewport-spanning inline styles, or a
+  more specific selector; put intentionally wide visuals on root `.slide`
+  backgrounds, `.slide > .bg` layers, or internal evidence bands instead.
 - Use internal composition objects for visual tightness: a `.stage`,
   `.composition`, panel, diagram group, or evidence band may have its own
   `max-width`, columns, or grouping behavior inside `.slide-content`.

@@ -130,6 +130,12 @@ Triage rules:
    far from their related content as visual issues. Repair by grouping content,
    constraining the internal `.stage`, reducing split gaps, or redesigning the
    primitive; do not treat global `.slide-content` shrinkage as the default fix.
+   Also check at least the active single-slide preview in a wide browser
+   viewport: direct `.slide-content` must stay centered inside the injected
+   1680px content canvas. If every slide suddenly looks very wide and loose in
+   single-slide view but not in the QA cards, look for source CSS or inline
+   styles overriding the runtime canvas guard (`max-width:none`, `width:100vw`,
+   or a more specific `.slide-content` rule) and remove that override.
    Also apply `layout-guide.md`'s global stage-fit rule; those failures are
    visual issues even when nothing overflows.
    Treat cramped card rows with word-by-word wrapping as a visual issue when
