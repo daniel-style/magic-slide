@@ -88,6 +88,10 @@ Rules:
   overview card -> expanded case -> metric carried forward; system node ->
   zoomed diagram -> decision label; small metric -> hero stat -> pricing-model
   node.
+- Magic Move motif must not be a visual token system. Do not promise "magic
+  labels", "focus tokens", "pipe tokens", recurring bottom chip rows, or other
+  labels whose main job is to move. Use real content anchors that would still
+  belong in the deck without animation.
 
 ### 4c. Hard Stop Anti-Template Check
 
@@ -106,6 +110,10 @@ Before writing CSS, reject the brief and revise it if it depends on:
   or explanatory card/node diagrams instead of a simple title-led opening.
 - A cover that places a landscape/generated subject image in a tall skinny
   column, creating a random vertical crop or low-information object slice.
+- A slide chrome idea that depends on long, thin top bars, fake address bars,
+  browser-toolbar strips, or full-width brand pills.
+- A Magic Move motif that depends on appended token rows, focus chips, magic
+  labels, or other body tags created mainly for motion.
 - Brand-color wallpaper where every chip, rail, heading, and image wash uses
   the same color.
 - Low-saturation gray/blue/green wash as the whole visual idea, especially with

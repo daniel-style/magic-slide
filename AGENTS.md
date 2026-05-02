@@ -191,6 +191,10 @@ See `references/design-system.md` for complete list.
 
 ## Layout And SVG Reliability
 
+- Do not generate top-edge browser/address-bar-like chrome or full-width brand
+  pills; `html-contract.md` owns direct-child and slide-chrome rules.
+- Do not invent Magic Move labels, focus-token rows, or body chips whose main
+  purpose is motion; `flip-engine.md` owns content-first anchor rules.
 - Do not generate `data-stagger="none"` as a default. Use `cascade` for most
   slides and `zoom-in` for covers/reveal beats. Slide-level `none` requires an
   explicit no-animation request and `data-stagger-disabled="true"`.

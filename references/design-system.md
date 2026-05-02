@@ -55,8 +55,9 @@ deck, define the spine that makes the pages feel directed:
 - **Slide families:** 4-6 reusable families such as hero thesis, evidence/data,
   image evidence, system diagram, risk map, timeline, comparison, or closing.
   Each family needs a role in the story, not just a layout shape.
-- **Recurring anchors:** labels, section markers, chips, key numbers, images, or
-  title fragments that can persist with Magic Move across adjacent slides.
+- **Recurring anchors:** heading phrases, card titles, key numbers, images,
+  comparison rows, or diagram nodes that can persist with Magic Move across
+  adjacent slides because the content itself continues.
 - **Detail budget:** what makes a normal slide feel finished: source note,
   caption, diagram label, proportional bar, crop decision, callout, rail,
   sequence number, texture, or another subject-specific detail.
@@ -145,7 +146,8 @@ Define a type hierarchy contract before writing CSS:
 - Body: readable at slide distance; not a smaller clone of the display role.
 - Caption/source: quiet but legible; never the same emphasis as body copy.
 - Data: numbers, units, and labels sized from the container they occupy.
-- Labels/chips: navigation or grouping; not decorative confetti.
+- Labels/chips: navigation, status, or grouping when the slide truly needs
+  them; not decorative confetti and not Magic Move handles invented for motion.
 
 The type contract must translate style into concrete choices:
 
@@ -295,9 +297,9 @@ Rules:
   image, not read as an operational diagram.
 - It must look recognizably different from slide 2 in thumbnail view: different
   scale, hierarchy, density, and focal object.
-- The cover can share one Magic Move element with slide 2, such as the title,
-  logo, or key phrase, but the rest of the composition should transform into the
-  deck's working system rather than remain the same layout.
+- The cover can share one Magic Move element with slide 2, such as the main
+  title/wordmark or one key phrase, but the rest of the composition should
+  transform into the deck's working system rather than remain the same layout.
 
 If slide 1 and slide 2 could swap positions without anyone noticing, the cover
 has failed.

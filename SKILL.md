@@ -6,7 +6,7 @@ argument-hint: "[preview <topic> | presentation request]"
 
 # Magic Slide
 
-Generate polished HTML presentations with smooth Magic Move transitions — elements that appear on multiple slides animate fluidly between their positions. Treat Magic Move as a story-planning constraint, not an afterthought: arrange the outline so meaningful labels, numbers, cards, images, or section markers can persist across adjacent slides.
+Generate polished HTML presentations with smooth Magic Move transitions — elements that appear on multiple slides animate fluidly between their positions. Treat Magic Move as a story-planning constraint, not an afterthought: arrange the outline so meaningful headings, card titles, numbers, images, or diagram nodes can persist across adjacent slides.
 
 ## Skill Command Arguments
 
@@ -211,6 +211,10 @@ rules in this file or workflow steps.
 8. **Merged HTML is an artifact** — Treat `{topic}/index.html` as generated output. Direct HTML edits are only for explicit one-off patches or the browser edit mode Save flow.
 9. **Layout reliability is mandatory** — Follow `layout-guide.md` for
    primitives, stage fit, overflow, vertical balance, and source-note placement.
+10. **No artificial slide chrome or Magic-only labels** — Follow
+    `html-contract.md` and `flip-engine.md`: do not generate browser-bar-like
+    top strips, full-width brand pills, or body token rows whose main purpose is
+    to create Magic Move continuity.
 
 **Quality bar:** Every deck should feel distinctive and intentional, not like the first thing that came to mind. If another topic could use the same design unchanged, the design is too generic.
 

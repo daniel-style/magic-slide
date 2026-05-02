@@ -225,6 +225,27 @@ Rules:
   source slides should still be authored centered. In screenshot review, revise
   any slide that looks top-shifted, cramped, or scaled down.
 
+### Slide Chrome Guardrail
+
+Avoid generated elements that look like the Magic Slide runtime, a browser
+toolbar, or a broken overlay. Navigation, progress, counters, edit controls,
+and utility chrome belong to the injected runtime, not to individual slide
+sources.
+
+Rules:
+- Do not place long, thin rounded bars, address-bar-like strips, brand pills, or
+  section rails near the top edge of ordinary slides.
+- Do not make `.brand-mark`, `.section-no`, or similar visible chrome direct
+  children of `.slide`. `html-contract.md` owns the direct-child rule; the
+  layout reason is that top-edge chrome visually competes with runtime controls
+  and can read as a rendering artifact.
+- If a small brand/section cue is genuinely needed, integrate it into the real
+  slide composition: as a kicker above the title, a caption/source mark, or a
+  small in-stage label with a content role. It should never span the viewport
+  or sit alone at the extreme top.
+- In QA overview, any repeated top strip or full-width pill near the viewport
+  edge is a visual issue even if the CSS is valid.
+
 ### Repetition Rule
 
 Reliability does not mean repeating one visual formula. In a 30-slide deck:

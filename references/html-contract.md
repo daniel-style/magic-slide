@@ -44,6 +44,15 @@ first headline is still perceptible.
 - No DOCTYPE, `<html>`, `<head>`, `<body>` tags
 - File naming: `slide-01.html`, `slide-02.html`, ... (zero-padded two digits)
 
+**Direct child discipline:**
+- The ordinary content wrapper must be the only non-background direct child:
+  `<div class="slide-content">...</div>`.
+- Full-bleed decorative/background layers may be direct children only when they
+  use class `.bg`, are `aria-hidden="true"`, and sit behind `.slide-content`.
+- Do not put brand marks, page numbers, section counters, labels, or other
+  visible slide chrome as direct children of `.slide`. Put necessary marks
+  inside `.slide-content` or omit them.
+
 ## Layout Contract
 
 These rules are non-negotiable because unconstrained HTML/CSS generation is the fastest way to get broken layouts.
@@ -81,6 +90,25 @@ Rules:
   thumbnails.
 - Do not use body background or overview-item fallback color as a substitute for
   a real slide background.
+
+## Slide Chrome Contract
+
+Generated source must not create UI that looks like browser chrome, a preview
+toolbar, or a broken runtime control. The runtime already owns navigation,
+progress, counters, edit controls, and the preview toolbar.
+
+Rules:
+- Do not generate long, thin rounded bars near the top edge, fake address bars,
+  browser-toolbar strips, full-width brand pills, or top rails with a small
+  brand name inside. These read as bugs in rendered decks.
+- Do not create repeated per-slide `brand-mark` / `section-no` chrome as direct
+  children of `.slide`. If a brand or section cue is genuinely useful, make it
+  a small text mark inside the slide's composition, source/caption area, or a
+  real heading/kicker with enough surrounding context.
+- Repeated brand/page marks must not be used as `data-magic-id` anchors. They
+  are presentation chrome, not content relay.
+- Keep ordinary content away from the extreme top runtime-control zone unless
+  the slide is a deliberate dense table/timeline and has reserved space.
 
 ## Deck Tone Mode Contract
 
@@ -138,8 +166,8 @@ Rules:
 - Avoid repeated cards, ordinary memo grids, dense tables, or the same
   two-column layout used in subsequent slides.
 - The cover may share one semantic Magic Move element with slide 2, such as the
-  title, logo, or key phrase, but the rest of the composition should clearly
-  change role after the opening.
+  title/wordmark when it is the main cover text, or one key phrase, but the rest
+  of the composition should clearly change role after the opening.
 - The cover should have one primary focal object: hero title, product/object
   image when explicitly justified, typographic crop, or strong material field.
   Do not make a labeled process diagram, row of nodes, or card flow the cover's
@@ -152,8 +180,8 @@ Rules:
   `layout-guide.md`: no visible route, trace, dot, pseudo-element, or diagram
   mark may cut through the title, subtitle, wordmark, or chip row.
 - Do not put `data-magic-id` on cover-only diagram nodes, flow cards, arrows, or
-  decorative labels. Cover Magic Move should usually hand off only the title,
-  logo/wordmark, or one short key phrase into slide 2.
+  decorative labels. Cover Magic Move should usually hand off only the main
+  title/wordmark or one short key phrase into slide 2.
 - If the cover uses a subject image, it must be full-bleed, a wide hero panel,
   a mostly visible product/object, or an abstract material field. Do not crop a
   landscape image into a tall skinny strip or arbitrary object sliver.
@@ -310,6 +338,13 @@ decks should expose a real continuity spine across adjacent slides; if most
 transitions have no shared ids, revisit the outline or slide treatment rather
 than adding decorative placeholders.
 
+Do not add visible token rows, focus chips, magic labels, pills, badges, or
+other body labels solely to manufacture Magic Move. A short label can carry
+`data-magic-id` only when it is already necessary content, such as a real
+status, timeline date, row label, card title, or diagram node label. If the
+label would make the reader ask "what does this tag mean here?", remove the
+magic-id or remove the label.
+
 ## Style Requirements
 
 **style.css must include:**
@@ -432,12 +467,30 @@ placement, design-canvas scaling, and overflow/collision policy.
    - Fix: add `fill="none"` and fallback stroke attributes to the source SVG path
    - Avoid: complex masks/filters/blend modes or decorative filled path blobs
 
+14. **Top brand pill becomes a full-width bug bar**
+   - Fix: remove direct-child slide chrome, put any necessary mark inside
+     `.slide-content`, and avoid long thin top rails entirely
+   - Avoid: `.brand-mark` / `.section-no` direct children or browser-bar-like
+     strips near the viewport edge
+
+15. **Magic Move labels added only for motion**
+   - Fix: move `data-magic-id` to real content such as a heading phrase, card
+     title, metric, image/object, or diagram node, or use a hard cut
+   - Avoid: repeated `.focus-token`, token rows, chips, or pills appended to
+     the body just to create a shared element
+
 ## Verification
 
 Before delivery, check:
 - [ ] Every slide maps to one approved primary layout primitive
 - [ ] All slides use `<section>`, not `<div>`
 - [ ] All slides have required attributes
+- [ ] Each slide has one real `.slide-content` direct child; any full-bleed
+      direct child uses `.bg` and `aria-hidden="true"`; no visible brand marks,
+      counters, labels, or other chrome are direct children of `.slide`
+- [ ] No generated slide source contains browser/address-bar-like top chrome,
+      long thin top rails, or full-width brand pills that could be mistaken for
+      runtime UI or a rendering bug
 - [ ] Root `.slide` backgrounds and any full-bleed decorative/image layers
       visibly cover the full viewport in slide view and overview thumbnails,
       including wide-screen windows; no `.slide-content`-bounded background
@@ -458,7 +511,8 @@ Before delivery, check:
 - [ ] Content text uses opacity/alpha high enough to stay readable; hierarchy is mostly color/token based, not transparency based
 - [ ] Magic Move anchors satisfy `flip-engine.md`, including semantic adjacent
       continuity, identical visible text, stable wrap/no-wrap behavior, and no
-      decorative-only placeholders
+      decorative-only placeholders, Magic-only token rows, or body labels whose
+      main purpose is motion
 - [ ] style.css has :root variables and animations
 - [ ] Files named slide-01.html, slide-02.html, etc.
 - [ ] Layout, text-fit, vertical-balance, source-note, and overlap checks satisfy `layout-guide.md`

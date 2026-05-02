@@ -49,7 +49,8 @@ For a newly generated deck, the gate has three ordered phases:
    layout overflow, clipped or cropped content, text/image overlap, cramped
    grids, unreadable text or weak color contrast, broken/cropped image
    treatment, weak cover framing, blank/unloaded cards, visibly unfinished
-   diagrams, or global stage-fit failures from `layout-guide.md`. Fix those
+   diagrams, top-edge browser/address-bar-like chrome, Magic-only token rows,
+   or global stage-fit failures from `layout-guide.md`. Fix those
    obvious issues in modular sources, re-run
    `merge-slides.py` and `inject-runtime.py`, refresh or restart `serve.py` if
    needed, and repeat the single QA overview longshot check until the
@@ -145,12 +146,17 @@ Triage rules:
    genuinely dense enough to fill the height budget.
    Treat oversized framed panels around low-density content as visual issues per
    `layout-guide.md`; shrink the frame, remove it, or make the diagram complete.
+   Treat repeated top strips, full-width brand pills, fake address bars, and
+   direct-child slide chrome as visual issues. They often look like runtime
+   bugs rather than slide design.
 4. `design-system.md` passes: visual world is specific, palette/readability are clean, and the cover is a distinct opening composition.
 5. `images.md` passes when images are used: assets load, content images are integrated, and cover imagery follows policy.
 6. `flip-engine.md` passes: Magic Move ids are semantic, adjacent, and animate smoothly.
    Compare the rendered deck against the continuity map created before HTML;
    final QA should catch implementation misses, not invent the Magic Move
-   structure after the deck is already built.
+   structure after the deck is already built. Body token rows, focus chips, or
+   labels whose main job is movement fail this check even if the animation is
+   technically smooth.
 7. Runtime controls work: arrows, space, click navigation, progress bar, slide counter, and edit mode.
 
 **Subjective review:**

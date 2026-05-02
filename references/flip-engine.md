@@ -87,14 +87,15 @@ is revealed. In the no-wrap label path, these constraints are scaled to the
 visual rect just like font size, line height, and padding, so clones inside
 runtime-scaled slide wrappers still match the target at cleanup.
 
-Short, chrome-like text marks such as `.deck-mark`, `.small-mono`, tags,
-badges, `.section-tag`, `.mini-label`, `.mini`, `.endpoint`,
-`.feature-plate`, and simple inline-flex/inline-block labels use the no-wrap
-label path. Their animated clone keeps `white-space: nowrap` and animates
-fixed geometry, font size, line height, padding, and border widths instead of
-relying on a single transform scale. This keeps one-line marks from wrapping or
-snapping to a different text metric when the clone is replaced by the real
-target element on cleanup.
+Short text marks such as `.small-mono`, tags, badges, `.section-tag`,
+`.mini-label`, `.mini`, `.endpoint`, `.feature-plate`, legacy `.deck-mark`, and
+simple inline-flex/inline-block labels use the no-wrap label path when they
+already exist in a deck. Their animated clone keeps `white-space: nowrap` and
+animates fixed geometry, font size, line height, padding, and border widths
+instead of relying on a single transform scale. This keeps one-line marks from
+wrapping or snapping to a different text metric when the clone is replaced by
+the real target element on cleanup. This runtime support is not permission to
+invent Magic-only labels or deck chrome.
 
 Use `data-magic-nowrap="true"` on any short custom label/chip that must remain
 one line but does not use one of the standard label classes. The source and
@@ -202,14 +203,34 @@ map -> zoom, compare -> case, metric -> implication, or question -> answer.
 
 Long display titles are usually poor Magic Move anchors when the target is a
 small deck mark or navigation label. Let the hero title wrap and behave like
-normal slide typography; put `data-magic-id` on a shorter stable mark, chip,
-brand word, or section label instead. A one-line forced `h1` is not worth the
-overflow risk.
+normal slide typography; put `data-magic-id` on a shorter stable phrase inside
+real content, or skip the move. A one-line forced `h1` or artificial chip is
+not worth the overflow or ambiguity risk.
+
+### No Magic-only labels
+
+Do not create visible labels whose main job is to become Magic Move targets.
+Labels, chips, badges, pills, and token rows are legitimate only when they are
+already necessary content: a real status, category, timeline date, card title,
+diagram node label, or row label. If a label would be ambiguous in the body
+without the animation, remove it or keep it non-magic.
+
+Avoid these patterns:
+- Repeated `.focus-token` / token rows appended near the bottom of body slides.
+- "Next topic" chips that preview the following slide.
+- Small brand marks, footers, page numbers, or chapter pills used as primary
+  anchors.
+- A deck-wide "magic label" system that exists mainly to satisfy transition
+  density.
+
+Use Magic Move on the content the audience is already reading: a heading phrase,
+card title, metric, image/object, comparison row, timeline date, or diagram
+node. If there is no natural shared content, use a hard cut with a story reason
+or revise the slide sequence.
 
 **Good recurring anchors:**
-- Deck title or section label that keeps travelling through the deck
 - Agenda/list items that expand into full section headings
-- Card titles, chips, or keywords that move from overview to detail
+- Card titles or key phrases that move from overview to detail
 - Numbers, dates, and short labels that become hero stats
 - Reused product shots, diagrams, or illustrations that change crop or scale
 
@@ -217,15 +238,16 @@ overflow risk.
 - Most adjacent slides with overlapping subject matter should share at least 1 meaningful element
 - For decks with 5+ slides, aim for primary Magic Move anchors on a majority of adjacent pairs unless the outline has explicit hard cuts
 - Overview/detail or zoom-in sequences often support 1 primary anchor plus 1-3 supporting anchors
-- The cover should usually hand off one stable title, mark, image, or key phrase into slide 2, then the ordinary deck should continue with its own recurring anchors
-- A tiny global deck mark that persists on every slide is useful, but it does
-  not count as a primary anchor or as the deck's Magic Move selling point by
-  itself. Add local/content anchors that change scale, position, or role
-  between adjacent slides.
+- The cover should usually hand off one stable title, image, or key phrase into slide 2, then the ordinary deck should continue with its own recurring content anchors
+- A tiny global deck mark, footer, page number, or section chip should normally
+  stay non-magic. If it persists, it does not count as a primary anchor or as
+  the deck's Magic Move selling point by itself. Add local/content anchors that
+  change scale, position, or role between adjacent slides.
 - If an audit shows only one or two shared pairs in a normal-length deck, revise the outline or slide treatment before final polish
 - If only one small part of a block is truly stable, animate that sub-element instead of the whole wrapper
 - Tag changes are fine when the semantic entity is clearly the same and the visible text still matches
-- Do not add placeholder duplicates purely to manufacture motion
+- Do not add placeholder duplicates, body token rows, or Magic-only labels
+  purely to manufacture motion
 
 ---
 

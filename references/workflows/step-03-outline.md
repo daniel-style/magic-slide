@@ -65,6 +65,12 @@ remain reserved for final deliverables (`index.html` and `assets/`) plus the
    contrast, or resolution. Magic Move should shape continuity and slide order;
    it must not distort facts or manufacture fake repeated labels.
 
+   Do not describe the spine as a reusable visual token system, such as
+   "rounded pipe tokens", "focus chips", "magic labels", or a recurring bottom
+   token row. Those are design devices, not story continuity. The spine should
+   name real content objects that would still belong on the slide if Magic Move
+   did not exist.
+
 6. **Slide-level content relay fields** - Each slide entry must name its
    content role, what it inherits from the prior slide, what it passes to the
    next slide, and the primary Magic Move anchor when there is continuity.
@@ -76,9 +82,11 @@ remain reserved for final deliverables (`index.html` and `assets/`) plus the
    have one primary anchor that is visually meaningful in at least one of the
    two slides: a main card, heading phrase, hero metric, image/object, timeline
    date, comparison row, or diagram node. Small deck marks, footers, corner
-   labels, watermarks, and pure chapter chips may be supporting anchors, but
-   they do not satisfy the primary relay by themselves. Use `flip-engine.md`
-   for the full primary-anchor quality standard.
+   labels, watermarks, pure chapter chips, and invented body labels do not
+   satisfy the relay by themselves. Treat them as non-magic by default; use a
+   short label as a supporting anchor only when it is already necessary content
+   such as a real status, timeline date, card title, or diagram node label. Use
+   `flip-engine.md` for the full primary-anchor quality standard.
 
 8. **Magic Move Storyboard** - Before asking for outline confirmation, include
    a compact adjacent-pair storyboard. This is where you prove the deck has
@@ -100,8 +108,9 @@ remain reserved for final deliverables (`index.html` and `assets/`) plus the
 11. **Cover relay stays simple** - For company, product, AI, infrastructure,
    SaaS, and developer-tool decks, do not plan a labeled process flow,
    architecture map, or explanatory node/card diagram on Slide 1. Slide 1 may
-   hand off the title, logo/wordmark, or one short key phrase into Slide 2; the
-   working system map should begin on Slide 2 or later.
+   hand off the title/wordmark when it is the main cover text, or one short key
+   phrase into Slide 2; the working system map should begin on Slide 2 or
+   later.
 
 12. **Each slide must advance the argument** - Not just list information. If a slide only says "this also exists", merge it or sharpen it.
 
@@ -111,6 +120,9 @@ Magic Move should influence slide order and content grouping. Prefer sequences
 like index -> focused detail, small metric -> hero metric, system map -> zoomed
 node, or comparison row -> evidence slide. Do not add fake repeated labels just
 to animate; instead, arrange the argument so real repeated entities can move.
+Do not append token rows or "next topic" chips to body slides as the continuity
+system; if the label would be ambiguous without the animation, it should not be
+there.
 For product/AI/infrastructure covers, start complex system-map continuity on
 Slide 2 instead of making Slide 1 carry readable diagram nodes.
 

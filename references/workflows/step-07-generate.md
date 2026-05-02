@@ -28,6 +28,10 @@ Before writing files, make a concise internal plan based on Brief Lite:
   `.slide`, which full-bleed layers are direct `.slide > .bg` children, and
   which images are ordinary content images. No apparent background may be inside
   `.slide-content` or another max-width wrapper.
+- Slide chrome gate: confirm each slide has exactly one real `.slide-content`
+  direct child plus optional `.bg` direct children only. Do not plan
+  browser/address-bar-like top strips, full-width brand pills, or direct-child
+  `brand-mark` / `section-no` chrome.
 - Cover copy split: concise H1 plus any terse subtitle/chips needed for scope
 - Primary deck tone mode and named inverse-tone exceptions, if any
 - Slide family/primitives
@@ -60,7 +64,8 @@ Before writing files, make a concise internal plan based on Brief Lite:
   relationship, primary vs supporting anchors, planned `data-magic-id` names,
   exact visible text, source/target element type, source/target visual role,
   wrap policy (`nowrap` label vs matching multiline heading/body), and
-  intentional hard cuts
+  intentional hard cuts. The map must identify real content anchors, not
+  appended focus-token rows or labels created mainly for motion.
 - Slides that need diagrams, images, dense text, or split treatment
 - Slides, if any, that truly need top alignment, with a reason. Default every
   slide to vertically centered content; only dense matrices/tables/timelines
@@ -94,15 +99,19 @@ notes, or intermediate files created during generation must also live under
   subject matter should share a primary semantic anchor; overview/detail or
   zoom-in sequences should often add 1-3 supporting anchors. Use hard cuts only
   for clear chapter breaks, tone shifts, or visual resets.
-- Prefer semantic recurring elements: short deck marks, chapter labels,
-  agenda/list items, product/entity names, key numbers, dates, image frames,
-  diagram nodes, and card titles. Do not use decorative blobs, ghost marks, or
-  invented duplicates as Magic Move targets.
-- Keep short Magic Move labels stable while moving. For chips, badges, section
-  tags, deck marks, mini labels, and other short one-line anchors, use
-  `data-magic-nowrap="true"` or an approved label class and ensure both source
-  and target share a one-line width policy. Do not let a label wrap during the
-  clone animation and then snap back to one line on cleanup.
+- Prefer semantic recurring elements that are already central to the body:
+  heading phrases, agenda/list items, product/entity names, key numbers, dates,
+  image frames, diagram nodes, comparison rows, and card titles. Treat short
+  deck marks, chapter chips, footer marks, and brand chrome as non-magic by
+  default. Do not use decorative blobs, ghost marks, invented duplicates, or
+  body token rows as Magic Move targets.
+- Keep short Magic Move labels stable while moving. For short content labels
+  such as timeline dates, status badges, row labels, card tags, or diagram node
+  labels, use `data-magic-nowrap="true"` or an approved label class and ensure
+  both source and target share a one-line width policy. This is only for labels
+  that are already necessary content; do not create labels or token rows merely
+  so they can move. Do not let a label wrap during the clone animation and then
+  snap back to one line on cleanup.
 
 **Avoid repetition:**
 - Vary layout primitives across slides
@@ -142,6 +151,10 @@ notes, or intermediate files created during generation must also live under
   the source must stay vertically centered.
 - Apply `html-contract.md` for slide structure, root backgrounds, SVG, file
   naming, deck tone mode, and final verification.
+- Do not put visible chrome such as `.brand-mark`, `.section-no`, page counters,
+  or label rails as direct children of `.slide`. Direct children should be
+  `.slide-content` plus optional `.bg` layers only. Avoid long thin top bars,
+  fake address bars, and full-width brand pills entirely.
 - Apply `images.md` before generating or placing images, including cover-image
   and uploadable-wrapper policy.
 - If a slide uses a cover/photo/material background, implement it as the root
@@ -152,8 +165,8 @@ notes, or intermediate files created during generation must also live under
 - If the confirmed outline does not provide enough legitimate shared anchors,
   revise the slide treatment before writing HTML: turn a flat list into an
   index-to-detail sequence, split an overloaded slide into setup/detail, or
-  carry a chapter marker or key number forward. Keep visible text identical for
-  shared ids.
+  carry a real heading phrase, card title, metric, diagram node, or key number
+  forward. Keep visible text identical for shared ids.
 - If a shared text anchor would be one line on one slide and multiline on the
   other, either make both sides share the same line-break behavior, add
   `data-magic-nowrap="true"` for a short label that genuinely fits, or move the
@@ -164,6 +177,10 @@ notes, or intermediate files created during generation must also live under
   slide order or treatment until the primary anchors are content-bearing. A
   supporting anchor can reinforce continuity, but it cannot replace the primary
   content relay.
+- Hard stop before HTML: if the proposed implementation uses `.focus-token`,
+  token rows, "magic labels", pills, or chips appended near the bottom of body
+  slides mainly as transition handles, remove that system and move the
+  `data-magic-id` plan back onto real content.
 
 ### 5d. Handle images (if requested)
 

@@ -155,7 +155,8 @@ Avoid repeated visible skeletons. In a 30-slide deck:
 - `title + three cards` should be rare and justified.
 - `image left + text right` should vary by crop, hierarchy, or purpose.
 - Chips and badges should act as navigation, status, grouping, or data labels,
-  not decoration.
+  not decoration, and not as Magic Move handles invented after the content is
+  written.
 - If three consecutive slides share the same title block, accent line, grid, and
   card treatment, rewrite one before continuing.
 
@@ -198,6 +199,11 @@ Avoid:
 Good components are semantic: timeline, source note, comparison, risk map,
 teardown, image frame, data strip, chapter rail, quote, decision map, or another
 role that belongs to the deck.
+
+Avoid generating slide chrome that resembles runtime UI: long top pills, fake
+browser/address bars, full-width brand rails, or direct-child `brand-mark` /
+`section-no` elements. `html-contract.md` owns the verifiable chrome and
+direct-child rules.
 
 ## Images
 
@@ -248,8 +254,9 @@ The continuity map should include:
 - Primary vs supporting anchors. Use `flip-engine.md` as the authority for the
   primary-anchor quality standard.
 - Planned id names, exact visible text, and element type on both sides.
-- The motion role: travel, shrink, expand, zoom into detail, remain as deck
-  mark, or carry chapter context.
+- The motion role: travel, shrink, expand, zoom into detail, carry evidence
+  forward, or shift a real content role. Repeated deck marks or chapter context
+  are supporting cues at most, not primary anchors.
 - Any intentional hard cut, with a story reason.
 
 Default density target:
@@ -261,15 +268,16 @@ Default density target:
   supporting anchors.
 - A deck where only the cover title moves once is underusing the skill. Fix
   the outline or slide treatment before polishing CSS.
-- Never add decorative duplicates, hidden ghosts, or fake repeated labels just
-  to satisfy density. The fix is content arrangement: stable labels, chapter
-  markers, card titles, key numbers, images, and diagram nodes that are truly
-  the same thing.
+- Never add decorative duplicates, hidden ghosts, fake repeated labels, or body
+  token rows just to satisfy density. The fix is content arrangement: real
+  heading phrases, card titles, key numbers, images, comparison rows, and
+  diagram nodes that are truly the same thing.
 - Hard stop before HTML: if the continuity map mostly says "none" or repeats
   only a footer, corner label, tiny global deck mark, watermark, or pure
-  chapter chip, do not proceed. Re-sequence the content into index-to-detail,
-  setup-to-reveal, map-to-zoom, or compare-to-case beats until the Magic Move
-  opportunities are real.
+  chapter chip, or if it depends on appended focus chips / magic labels, do not
+  proceed. Re-sequence the content into index-to-detail, setup-to-reveal,
+  map-to-zoom, or compare-to-case beats until the Magic Move opportunities are
+  real.
 
 ## Objective QA
 
