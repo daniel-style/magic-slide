@@ -21,9 +21,12 @@ Magic Slide is a Codex skill that generates polished, self-contained HTML presen
 6. Merge slides into single HTML
 7. Inject FLIP engine and runtime
 8. Launch the Magic Slide preview server, capture one QA overview longshot
-   first, fix obvious rendered issues visible in the overview, then stop for
-   the mandatory user `Revise slide` marking pass before final repairs and
-   delivery. Do not run single-slide screenshot repair before that pause.
+   first for newly generated decks, fix obvious rendered issues visible in the
+   overview, then stop for the mandatory user `Revise slide` marking pass
+   before final repairs and delivery. Do not run single-slide screenshot repair
+   before that pause. When resuming from saved `visual-issues.json` notes, read
+   JSON and source files first, repair marked slides, then screenshot only for
+   ambiguity or verification.
 
 **Why this works:** User controls information gathering and reviews structure before generation. Brief Lite gives the deck an art direction without returning to the old long prototype loop. Read design guidelines once, generate all slides in main thread. Fast and simple with clear checkpoints.
 
@@ -68,10 +71,10 @@ All scripts are in `scripts/` directory:
 8. merge-slides.py combines them into index.html
 9. inject-runtime.py adds FLIP + navigation to index.html
 10. serve.py launches preview and remains running for QA/editing
-11. Open `?ms_qa=overview&ms_qa_capture=1`, capture one full-page scrolling QA
-    overview longshot, fix obvious rendered issues visible in the overview,
-    then stop for the mandatory user `Revise slide` marking pass. Do not run
-    single-slide screenshot repair before that pause.
+11. For newly generated decks, open `?ms_qa=overview&ms_qa_capture=1`, capture
+    one full-page scrolling QA overview longshot, fix obvious rendered issues
+    visible in the overview, then stop for the mandatory user `Revise slide`
+    marking pass. Do not run single-slide screenshot repair before that pause.
 ```
 
 ### Running Scripts
@@ -100,8 +103,12 @@ remaining slide changes with `Revise slide`, then return to continue.
 For chat follow-up edits after a deck has been generated, treat `sources/` as
 the source of truth: edit `[topic]/sources/style.css`,
 `[topic]/sources/slide-XX.html`, or source-local helpers, then re-run merge and
-inject. Do not patch `[topic]/index.html` directly unless the user explicitly
-asks for a merged-HTML patch or the change comes from browser edit mode Save.
+inject. If `[topic]/sources/qa/visual-issues.json` has unresolved notes, use
+those notes plus the matching source slide/CSS as the repair entry point before
+capturing fresh screenshots; screenshots are for ambiguous notes, verification,
+or finding additional issues on unmarked slides. Do not patch
+`[topic]/index.html` directly unless the user explicitly asks for a merged-HTML
+patch or the change comes from browser edit mode Save.
 
 ## File Structure
 

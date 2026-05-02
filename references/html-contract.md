@@ -215,8 +215,9 @@ Rules:
   visually inspect cards by slide number for escaped labels, cramped rows,
   unreadable wrapping/contrast, overlap, clipping, cropped media, and blank or
   unloaded cards. If `visual-issues.json` already has unresolved revision
-  notes, skip those marked cards during new-problem screenshot triage and
-  inspect the unmarked cards for additional issues.
+  notes, repair those marked slides from JSON/source context first. Then use
+  the rendered overview as verification, skipping marked cards during
+  new-problem triage unless the repair still looks questionable.
 
 ## SVG Contract
 
@@ -475,5 +476,6 @@ Before delivery, check:
       then checked by slide number for cramped card rows, escaped labels,
       unreadable wrapping/contrast, overlap, clipping, cropped media, and blank
       or unloaded cards; unresolved `sources/qa/visual-issues.json` notes are
-      treated as known repair targets
+      repaired from JSON/source context before screenshots are used for
+      verification or ambiguous-note context
 - [ ] Inline SVG connector paths include `fill="none"` and fallback stroke attributes

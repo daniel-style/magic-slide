@@ -64,13 +64,17 @@ For a newly generated deck, the gate has three ordered phases:
    proceed to final QA or delivery until the user replies.
 3. **Resume from saved revision notes.** When the user returns, read unresolved
    notes from `{topic}/sources/qa/visual-issues.json` first and make a set of
-   known slide numbers. Those notes are the known revision queue. Use the saved
-   notes plus any newly discovered screenshot findings, open marked or
-   questionable slides at full size as needed, fix modular source files, then
+   known slide numbers. Those notes are the repair queue. For each marked
+   slide, open the matching `{topic}/sources/slide-XX.html` plus
+   `{topic}/sources/style.css` and repair the modular sources before taking any
+   fresh screenshots. Use targeted screenshots only when a saved note is too
+   ambiguous to interpret from JSON/source context. After source repairs,
    re-run `merge-slides.py`, `inject-runtime.py`, `serve.py` if needed, and the
-   QA overview gate. After screenshot verification, automatically mark repaired
-   requests as `resolved: true` in `visual-issues.json`, with `resolvedAt`,
-   `resolvedInRevision`, `resolution`, and `changedFiles`.
+   QA overview gate as verification; use that verification pass to inspect
+   unmarked slides for additional problems. After visual verification,
+   automatically mark repaired requests as `resolved: true` in
+   `visual-issues.json`, with `resolvedAt`, `resolvedInRevision`,
+   `resolution`, and `changedFiles`.
 
 Revision notes are stored in `{topic}/sources/qa/visual-issues.json`. They are
 human/agent visual review notes, not runtime diagnostics and not pass/fail
@@ -88,11 +92,12 @@ Triage rules:
 - The overview longshot is judged page by page. Report and repair visual
   problems by slide number, focusing on rendered layout, readability, color
   contrast, image/diagram treatment, and whether any card is blank or unloaded.
-- Revision notes and screenshot triage are complementary: notes identify known
-  pages to repair; screenshots scan the remaining pages for missed layout,
-  color, text, image, diagram, or transition problems.
-- During resume, skip already marked slides while discovering new screenshot
-  issues so the same human note is not reported twice.
+- Revision notes are a source-first repair queue, not a reason to screenshot
+  before fixing. Use screenshots before repair only when a saved note is
+  ambiguous; otherwise repair marked source slides first, then screenshot the
+  rendered deck for verification and missed issues on unmarked slides.
+- During post-repair verification, skip already marked slides while discovering
+  new screenshot issues so the same human note is not reported twice.
 - Do not inject revision notes into `index.html`. QA cards only read/write
   `sources/qa/visual-issues.json`; the merged HTML remains generated output.
 - Do not ask the user to clear resolved issues. The agent resolves them in JSON
@@ -195,8 +200,10 @@ When the user asks for changes in the conversation after a deck has already
 been generated:
 
 1. Read `{topic}/sources/qa/visual-issues.json` first. If it contains unresolved
-   revision requests, treat their slides as known repair targets and use a fresh
-   QA overview longshot to inspect the unmarked slides for additional issues.
+   revision requests, treat their slides as known repair targets. Open the
+   matching source slides and CSS, then fix those known targets before taking a
+   fresh QA overview longshot. Use screenshots before repair only when a note is
+   too ambiguous to interpret from JSON and source context.
 2. Edit `{topic}/sources/style.css`, `{topic}/sources/slide-XX.html`, and any
    relevant source-local helpers first.
 3. Re-run merge:
@@ -204,8 +211,10 @@ been generated:
 4. Re-run runtime injection:
    `python3 "$SKILL_DIR/scripts/inject-runtime.py" {topic}/index.html --lang {language}`
 5. Refresh or restart the Magic Slide preview server and give the user the URL.
-6. Re-run the QA overview gate as a verification pass. For pure text edits, at
-   minimum confirm the touched slides still look correct in the overview.
+6. Re-run the QA overview gate as a verification pass. Use this rendered pass to
+   confirm touched slides and inspect unmarked slides for additional issues. For
+   pure text edits, at minimum confirm the touched slides still look correct in
+   the overview.
 7. If unresolved revision requests were repaired, update their JSON records to
    `resolved: true` with the repair revision and changed files.
 

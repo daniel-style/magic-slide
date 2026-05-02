@@ -136,10 +136,11 @@ Rules:
   `overflow-wrap:break-word` on card contents so long words wrap inside the
   intended card instead of escaping or forcing overflow.
 - QA overview should be used as a visual wall for this failure mode. Add
-  revision notes for labels or paragraphs escaping their cards, and for four or more
-  cards compressed into a narrow region below the readable-width budget. When
-  repairing, read those notes first, then use fresh screenshots to check
-  unmarked slides for similar missed problems before revising the source layout.
+  revision notes for labels or paragraphs escaping their cards, and for four or
+  more cards compressed into a narrow region below the readable-width budget.
+  When repairing existing notes, read the JSON and source files first, revise
+  the marked source slides, then use fresh screenshots as verification and to
+  check unmarked slides for similar missed problems.
 
 ### Vertical Balance Rule
 

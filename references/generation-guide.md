@@ -302,13 +302,14 @@ After generating the full deck:
   issues by slide number, then stop for the mandatory user `Revise slide`
   marking pass without doing single-slide screenshot repair.
 - When the user returns, read unresolved revision notes first. Treat those
-  slides as known repair targets, then review the QA overview longshot for
-  additional visual problems on unmarked slides. The overview is intentionally
-  not a rule-based detector; it exists to make the remaining rendered deck easy
-  to inspect.
-- When repairing, use both the JSON notes and any new screenshot findings, fix
-  `sources/`, then merge, inject, preview, and capture the QA overview longshot
-  again.
+  slides as known repair targets and repair from the JSON notes plus the
+  matching source slide/CSS before taking fresh screenshots. The overview is
+  intentionally not a rule-based detector; it exists to verify the rendered
+  repairs and make the remaining deck easy to inspect.
+- When repairing, start with JSON notes and source files; use screenshots before
+  repair only when a note is ambiguous. After fixing `sources/`, merge, inject,
+  preview, and capture the QA overview longshot as verification and as a scan
+  for additional visual problems on unmarked slides.
 - After verification, mark repaired JSON records `resolved: true`; do not write
   revision notes into `index.html`.
 - Use the scrolling QA overview longshot as the primary all-slide visual check.
