@@ -66,6 +66,10 @@ Rules:
   Do not choose mixed/alternating tone just to create visual variety.
 - Type/color/material must assign jobs to colors; do not let one brand color
   dominate every surface.
+- Type/color/material must include a style-controlled type promise: display,
+  body, and optional mono/label font stacks or font characters; why they fit the
+  requested style; and any language/script constraints. If the user specified a
+  style, the typography must visibly change with that style.
 - Type/color/material must include a palette hygiene promise: the dominant field
   hue or material, the high-contrast accent treatment, and what prevents the
   deck from becoming gray, foggy, or washed out.
@@ -109,6 +113,9 @@ Before writing CSS, reject the brief and revise it if it depends on:
 - White, cream, pale-gray, or translucent text on a light/paper/canvas field.
 - Condensed all-caps display type plus ominous dark gradients unless the user
   explicitly requested a scary/dystopian mood.
+- A type plan that ignores the requested style, uses the same generic UI stack
+  for every aesthetic, or applies a Latin display-font idea to CJK headings
+  without a language-appropriate fallback.
 
 For investor, SaaS, infrastructure, and developer-tool decks, prefer calm
 editorial, operating manual, market memo, architecture monograph, product

@@ -31,7 +31,9 @@ Before writing files, make a concise internal plan based on Brief Lite:
 - Cover copy split: concise H1 plus any terse subtitle/chips needed for scope
 - Primary deck tone mode and named inverse-tone exceptions, if any
 - Slide family/primitives
-- Type/color/material logic
+- Type/color/material logic, including the style-to-type contract from
+  `design-system.md`: display/body/optional mono stacks, why the type fits the
+  requested style, and any language/script adjustments
 - Footer/source-note strategy
 - Width allocation for card groups, comparison cells, and evidence bands,
   especially where a split layout would otherwise squeeze cards into one column
@@ -75,6 +77,10 @@ notes, or intermediate files created during generation must also live under
 - Use the same CSS variables and classes
 - Follow the same layout patterns
 - Maintain the same visual language
+- Implement the Brief Lite type promise in `style.css`. Define explicit
+  `--font-display`, `--font-body`, and `--font-mono` variables, apply them to
+  the hierarchy, and tune weights, case, line height, and label/data treatment
+  so the chosen aesthetic is visible in typography, not only in colors.
 - Keep ordinary slides in the primary deck tone. Generate inverse-tone slides
   only when they were named in Brief Lite or the internal production plan.
 - Build the Magic Move spine from the outline's content relay instead of

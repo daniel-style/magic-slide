@@ -107,7 +107,7 @@ confirmation and the web-search yes/no question; see
 1. **Step 1: Gather requirements** — Ask ALL 4 question groups: topic/audience-lens, aesthetic style, **language** (REQUIRED - never infer from user's message language), images
 2. **Step 2: Web search** — Ask user if they want online search (optional). If they say yes, run `scripts/websearch.py` first; built-in agent search is only a fallback after the script fails or returns no usable results.
 3. **Step 3: Generate outline** — Create `{topic}/sources/outline.md` with MANDATORY elements: thesis spine, audience/lens, chapter arc, closing idea, and Magic Move content-relay spine. Get user confirmation (required checkpoint)
-4. **Step 4: Write Brief Lite** — Output a compact design brief before CSS/HTML: visual world, rejected tropes, cover promise, tone mode, type/color/material logic, slide families, and Magic Move content-relay motion grammar
+4. **Step 4: Write Brief Lite** — Output a compact design brief before CSS/HTML: visual world, rejected tropes, cover promise, tone mode, style-controlled type/color/material logic, slide families, and Magic Move content-relay motion grammar
 5. **Step 5: Generate production sources** — Create `style.css` and all `slide-XX.html` files directly from the confirmed outline and Brief Lite, after making a primary/supporting continuity map for adjacent slide pairs
 6. **Step 6: Merge slides** — Combine modular sources into single HTML
 7. **Step 7: Inject runtime** — Run the existing injector unchanged; preserve injected behavior/results unless the user explicitly asks otherwise

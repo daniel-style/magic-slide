@@ -120,6 +120,9 @@ composition, typography, image strategy, and narrative structure.
 
 Choose type from the brief:
 
+- The user's requested aesthetic style must change the type system. Do not keep
+  the same display/body pairing when the user moves between luxury, brutalist,
+  playful, academic, editorial, operational, cinematic, or other named styles.
 - A display face should express the deck's voice: archival, engineered,
   elegant, raw, technical, literary, playful, institutional, etc.
 - A body face should remain readable at slide distance and support dense
@@ -143,6 +146,26 @@ Define a type hierarchy contract before writing CSS:
 - Caption/source: quiet but legible; never the same emphasis as body copy.
 - Data: numbers, units, and labels sized from the container they occupy.
 - Labels/chips: navigation or grouping; not decorative confetti.
+
+The type contract must translate style into concrete choices:
+
+- Name the intended font character, not just a family name: high-contrast serif,
+  humanist sans, grotesque, slab, rounded sans, condensed editorial display,
+  monospaced technical label, calligraphic accent, or another precise voice.
+- Pick CSS font stacks that can plausibly render in a self-contained deck.
+  Remote font imports are not available; use system and installed-family stacks,
+  with sensible fallbacks.
+- Adjust weight, case, line height, tracking, numeral treatment, and heading
+  scale to fit the chosen style. A font-family swap without hierarchy changes
+  is usually not enough.
+- Respect the presentation language and script. For CJK decks, use CJK-capable
+  display/body stacks and tune line-height, weight, and character count instead
+  of applying a Latin display-font idea to Chinese or Japanese headings. For
+  multilingual decks, choose compatible stacks and avoid mixing fonts that make
+  scripts feel unrelated.
+- Match the audience and content burden. Investor, technical, classroom,
+  luxury, and playful decks need different body readability, label density,
+  numeral emphasis, and heading rhythm even when they share a visual style.
 
 For technology or company decks, avoid defaulting to the common "Inter or system
 UI plus JetBrains Mono" pairing. It can work only when the surrounding editorial

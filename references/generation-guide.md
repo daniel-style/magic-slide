@@ -171,7 +171,9 @@ Include:
 
 - `:root` variables for motion, core colors, typography, and reusable spacing.
 - Base slide and `.slide-content` layout.
-- Typography hierarchy.
+- Typography hierarchy that implements the style-to-type contract from Brief
+  Lite and `design-system.md`, including explicit display/body/mono variables
+  and language-appropriate font stacks.
 - The deck-specific components actually needed by the story.
 - Motion keyframes used by slide transitions and non-Magic Move entrances.
 - Responsive text and container rules.

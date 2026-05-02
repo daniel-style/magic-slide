@@ -322,6 +322,9 @@ than adding decorative placeholders.
   --text: [primary text];
   --subtext: [secondary text];
   --accent: [purposeful accent];
+  --font-display: [style-specific display stack];
+  --font-body: [readable body stack];
+  --font-mono: [optional data/code/label stack];
 }
 ```
 
