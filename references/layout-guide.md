@@ -73,6 +73,47 @@ Rules:
   designed composition. It is not allowed as accidental dead space inside a
   bordered wrapper.
 
+### Global Stage Fit Rule
+
+A repeated failure is the "wide tray, tiny payload" slide: a title block plus a
+wide pale/white rounded panel that spans most of the slide, while the actual
+nodes, cards, labels, or mini-flow occupy only the middle strip and both sides
+of the panel are empty. This is a generation-time layout failure, not a polish
+note for later screenshots.
+
+Before writing markup, choose one footprint for the primary object:
+
+- **Compact stage:** Use for one focal metric, a two-to-five node flow, a short
+  chip row, or a small table. Size the stage to the object, such as
+  `inline-size:min(100%, 54rem)` to `min(100%, 78rem)`, and align it with the
+  slide title or optical center. Do not wrap it in a full-width frame.
+- **Wide evidence band:** Use for real multi-card rows, comparisons, or tables
+  whose children can use the width. The band should have explicit grid tracks,
+  lanes, or callouts that make the width meaningful.
+- **Full visual frame:** Use only when the frame contains a complete diagram,
+  image, map, teardown, or art-directed composition whose meaningful marks
+  reach across the surface.
+
+Rules:
+- The primary object inside a visible frame or band should occupy most of the
+  frame's inline width after padding. If it sits in the center third or center
+  half while left and right gutters are empty, shrink the frame, remove it, or
+  add meaningful structure.
+- Frame padding should be proportional to internal gaps. Blank left/right
+  gutters should not be wider than the visible object unless the composition
+  deliberately uses that space for hierarchy, labels, image crop, or motion.
+- Do not let `title + subtitle + full-width pale card + tiny centered row`
+  become the default deck skeleton. If two adjacent slides already use that
+  footprint, change the next slide's primitive, stage size, or visual treatment.
+- Author `style.css` with intentional stage sizes or variables, such as
+  compact, medium, wide, and full-frame roles. Do not make
+  `.visual-card { width:100%; min-height:... }` the default wrapper for every
+  diagram.
+- In the QA overview wall, scan for rows of cards or nodes floating in the
+  middle of a wide rectangle, panels with empty gutters on both sides, and
+  repeated pale slabs. Repair by changing the internal footprint; do not
+  globally shrink `.slide-content`.
+
 ### Viewport Budget Rule
 
 Before writing markup, count vertical zones:
@@ -340,6 +381,9 @@ Rules:
 - Use internal composition objects for visual tightness: a `.stage`,
   `.composition`, panel, diagram group, or evidence band may have its own
   `max-width`, columns, or grouping behavior inside `.slide-content`.
+- Treat stage fit as part of authoring. A compact object should get a compact
+  stage; a wide stage must have content, lanes, labels, or imagery that makes
+  the width feel used.
 - If a slide looks too loose in QA overview, do not globally shrink
   `.slide-content`. Tighten the slide's internal primitive: group related
   cards, reduce a split gap, put a card row in a shared panel, use a central
@@ -665,6 +709,9 @@ Before generating, ensure:
       squeezed below roughly `16ch` while nearby horizontal space is empty
 - [ ] Framed main visuals have real internal occupancy; no oversized bordered
       wrapper surrounds a tiny row, sparse chips, or a low-density mini-flow
+- [ ] Compact diagrams, chip rows, and mini-flows use compact stages; no
+      full-width pale tray contains a tiny centered payload with empty gutters
+      on both sides
 - [ ] Spacing uses clamp() for responsive gaps
 - [ ] No absolute positioning chaos
 - [ ] Layout works at different screen sizes

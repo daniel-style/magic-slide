@@ -110,7 +110,10 @@ For every slide:
 4. Decide whether each text block wraps or stays on one line.
 5. Set real width budgets for large numbers, labels, captions, and titles.
 6. Reserve a place for source notes, captions, or legends when they are needed.
-7. Only then write the HTML.
+7. Choose the primary footprint from `layout-guide.md`: compact stage, wide
+   evidence band, or full visual frame. Do this before CSS so sparse mini-flows
+   do not end up inside full-width trays.
+8. Only then write the HTML.
 
 If a slide needs two root layouts at once, split it into two slides.
 If a horizontal split wants three or more cards in one column, it is no longer
@@ -131,6 +134,9 @@ Keep ordinary slides vertically centered. Add top alignment only for genuinely
 dense tables, matrices, long timelines, or complex diagrams that fill most of
 the usable slide height. A compact scorecard or card grid with a large empty
 area below is a broken vertical-balance slide, not a dense slide.
+
+Apply the global stage-fit rule from `layout-guide.md` during generation; if a
+sparse object violates it, change the footprint before continuing.
 
 `layout-guide.md` is the authority for primitives, text fit, overflow,
 collision budgets, vertical balance, and source-note placement. `html-contract.md`

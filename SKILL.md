@@ -190,7 +190,7 @@ rules in this file or workflow steps.
 
 - [design-system.md](references/design-system.md) — aesthetic direction and anti-template guardrails
 - [generation-guide.md](references/generation-guide.md) — production planning and generation strategy
-- [layout-guide.md](references/layout-guide.md) — layout primitives, overflow, vertical balance, and source-note placement
+- [layout-guide.md](references/layout-guide.md) — layout primitives, stage fit, overflow, vertical balance, and source-note placement
 - [html-contract.md](references/html-contract.md) — required slide structure, deck tone mode, root backgrounds, SVG contract, file naming, and verification checklist
 - [flip-engine.md](references/flip-engine.md) — Magic Move / `data-magic-id` planning and reliability rules
 - [images.md](references/images.md) — generated image use, uploadable wrappers, and cover-image policy
@@ -210,7 +210,7 @@ rules in this file or workflow steps.
 7. **Fast iteration** — If something's wrong, revise CSS and affected source slides quickly, then merge/inject again.
 8. **Merged HTML is an artifact** — Treat `{topic}/index.html` as generated output. Direct HTML edits are only for explicit one-off patches or the browser edit mode Save flow.
 9. **Layout reliability is mandatory** — Follow `layout-guide.md` for
-   primitives, overflow, vertical balance, and source-note placement.
+   primitives, stage fit, overflow, vertical balance, and source-note placement.
 
 **Quality bar:** Every deck should feel distinctive and intentional, not like the first thing that came to mind. If another topic could use the same design unchanged, the design is too generic.
 

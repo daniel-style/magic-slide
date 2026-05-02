@@ -412,9 +412,10 @@ placement, design-canvas scaling, and overflow/collision policy.
    - Fix: move the card group into a full-width evidence band, widen the layout
      track, reduce the card count, or split the slide
 
-10. **Oversized frame around sparse content**
-   - Fix: apply `layout-guide.md`'s framed content occupancy rule; shrink or
-     remove the frame, or expand the diagram with meaningful internal structure
+10. **Oversized frame or wide tray around sparse content**
+   - Fix: apply `layout-guide.md`'s framed content occupancy and global
+     stage-fit rules; shrink or remove the frame, use a compact stage, or
+     expand the diagram with meaningful internal structure
 
 11. **Cover uses an explanatory mini-diagram**
    - Fix: remove labeled nodes/cards/arrows from slide 1; keep title, terse
@@ -467,6 +468,9 @@ Before delivery, check:
       into unreadably narrow columns while nearby horizontal space is empty
 - [ ] Framed main visuals satisfy `layout-guide.md` occupancy rules; no large
       bordered panel is mostly empty around sparse content
+- [ ] Sparse mini-flows, chip rows, and small node diagrams satisfy
+      `layout-guide.md` stage-fit rules; no full-width pale tray contains a
+      tiny centered payload with empty gutters on both sides
 - [ ] Ordinary scorecard, comparison, KPI, evidence, and split slides are
       vertically centered unless their main content genuinely fills the height
       budget
@@ -474,8 +478,9 @@ Before delivery, check:
       groups are not squeezed into half-width columns
 - [ ] The QA overview longshot was captured only after iframe-loaded readiness,
       then checked by slide number for cramped card rows, escaped labels,
-      unreadable wrapping/contrast, overlap, clipping, cropped media, and blank
-      or unloaded cards; unresolved `sources/qa/visual-issues.json` notes are
-      repaired from JSON/source context before screenshots are used for
-      verification or ambiguous-note context
+      unreadable wrapping/contrast, overlap, clipping, cropped media,
+      wide-tray/tiny-payload layouts, and blank or unloaded cards; unresolved
+      `sources/qa/visual-issues.json` notes are repaired from JSON/source
+      context before screenshots are used for verification or ambiguous-note
+      context
 - [ ] Inline SVG connector paths include `fill="none"` and fallback stroke attributes

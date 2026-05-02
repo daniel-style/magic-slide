@@ -48,8 +48,9 @@ For a newly generated deck, the gate has three ordered phases:
    the slide numbers with obvious rendered visual problems:
    layout overflow, clipped or cropped content, text/image overlap, cramped
    grids, unreadable text or weak color contrast, broken/cropped image
-   treatment, weak cover framing, blank/unloaded cards, or visibly unfinished
-   diagrams. Fix those obvious issues in modular sources, re-run
+   treatment, weak cover framing, blank/unloaded cards, visibly unfinished
+   diagrams, or global stage-fit failures from `layout-guide.md`. Fix those
+   obvious issues in modular sources, re-run
    `merge-slides.py` and `inject-runtime.py`, refresh or restart `serve.py` if
    needed, and repeat the single QA overview longshot check until the
    first-pass visible problems are repaired. Do not capture full-size
@@ -128,6 +129,8 @@ Triage rules:
    far from their related content as visual issues. Repair by grouping content,
    constraining the internal `.stage`, reducing split gaps, or redesigning the
    primitive; do not treat global `.slide-content` shrinkage as the default fix.
+   Also apply `layout-guide.md`'s global stage-fit rule; those failures are
+   visual issues even when nothing overflows.
    Treat cramped card rows with word-by-word wrapping as a visual issue when
    nearby horizontal space is empty; revise the source layout to use the
    available width or split the slide. Find these problems from the rendered QA
