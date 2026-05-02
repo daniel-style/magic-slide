@@ -211,10 +211,12 @@ Rules:
 - If the full text cannot fit, reduce the max font size, widen the container, allow wrapping, or split the slide.
 - Do not hide text overflow with `overflow:hidden`, `overflow:clip`, masks, or
   fades. If content needs hiding to look tidy, the slide is over budget.
-- In QA overview screenshots, visually inspect cards for escaped labels,
-  cramped rows, and unreadable wrapping. If `visual-issues.json` already has
-  unresolved revision notes, skip those marked cards during new-problem
-  screenshot triage and inspect the unmarked cards for additional issues.
+- In the QA overview longshot, first confirm iframe-loaded readiness, then
+  visually inspect cards by slide number for escaped labels, cramped rows,
+  unreadable wrapping/contrast, overlap, clipping, cropped media, and blank or
+  unloaded cards. If `visual-issues.json` already has unresolved revision
+  notes, skip those marked cards during new-problem screenshot triage and
+  inspect the unmarked cards for additional issues.
 
 ## SVG Contract
 
@@ -464,7 +466,9 @@ Before delivery, check:
       budget
 - [ ] Metric/card labels do not collide with neighboring cards; four-card
       groups are not squeezed into half-width columns
-- [ ] QA overview screenshots have been checked for cramped card rows,
-      escaped labels, and unreadable wrapping on unmarked slides; unresolved
-      `sources/qa/visual-issues.json` notes are treated as known repair targets
+- [ ] The QA overview longshot was captured only after iframe-loaded readiness,
+      then checked by slide number for cramped card rows, escaped labels,
+      unreadable wrapping/contrast, overlap, clipping, cropped media, and blank
+      or unloaded cards; unresolved `sources/qa/visual-issues.json` notes are
+      treated as known repair targets
 - [ ] Inline SVG connector paths include `fill="none"` and fallback stroke attributes

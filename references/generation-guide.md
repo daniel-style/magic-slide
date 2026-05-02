@@ -294,21 +294,24 @@ After generating the full deck:
 - Inject runtime with `inject-runtime.py`.
 - Preview with `serve.py`.
 - Run the QA overview gate from `step-10-preview.md` before detailed viewport
-  checks. For newly generated decks, first capture QA overview screenshots and
-  repair the most obvious rendered issues, then stop for the mandatory user
-  `Revise slide` marking pass.
+  checks. For newly generated decks, first capture one QA overview longshot from
+  `?ms_qa=overview&ms_qa_capture=1` only after the QA wall reports iframe-loaded
+  readiness. Repair the most obvious rendered visual issues by slide number,
+  then stop for the mandatory user `Revise slide` marking pass.
 - When the user returns, read unresolved revision notes first. Treat those
-  slides as known repair targets, then review QA overview screenshots for
+  slides as known repair targets, then review the QA overview longshot for
   additional visual problems on unmarked slides. The overview is intentionally
   not a rule-based detector; it exists to make the remaining rendered deck easy
   to inspect.
 - When repairing, use both the JSON notes and any new screenshot findings, fix
-  `sources/`, then merge, inject, preview, and capture QA overview again.
+  `sources/`, then merge, inject, preview, and capture the QA overview longshot
+  again.
 - After verification, mark repaired JSON records `resolved: true`; do not write
   revision notes into `index.html`.
-- Use the scrolling QA overview as the primary all-slide visual check. Capture
-  full-size single-slide screenshots only for slides that look problematic,
-  ambiguous, marked by the user, or representative of a risky layout family.
+- Use the scrolling QA overview longshot as the primary all-slide visual check.
+  Capture full-size single-slide screenshots only for slides that look
+  problematic, ambiguous, marked by the user, or representative of a risky
+  layout family.
 - Check for overflow, clipped text, broken images, dead zones, unbalanced
   columns, sparse framed panels, and runtime fit issues using
   `step-10-preview.md` as the delivery checklist.

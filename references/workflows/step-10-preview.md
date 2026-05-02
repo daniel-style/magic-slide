@@ -28,18 +28,32 @@ review wall and revision-note capture surface, not an automatic scoring gate.
 
 For a newly generated deck, the gate has three ordered phases:
 
-1. **Autonomous screenshot pass.** Open the preview URL with `?ms_qa=overview`,
-   or press `Q` in the running preview. Scroll the QA grid until every
-   `.qa-card` has `data-scanned="1"` and capture the scrolling QA overview
-   screenshots first. Use that full visual wall to find the most obvious
-   rendered problems: clipping, overlap, cramped grids, unreadable text, broken
-   image treatment, weak cover framing, or visibly unfinished diagrams. Only
-   after this overview triage should you capture full-size single-slide
-   screenshots, and only for slides that looked problematic, ambiguous, or
-   high-risk in the overview. Fix those obvious issues in modular sources,
-   re-run `merge-slides.py` and `inject-runtime.py`, refresh or restart
-   `serve.py` if needed, and repeat the QA overview screenshot check until the
-   first-pass visible problems are repaired.
+1. **Autonomous overview-longshot pass.** Open the preview URL with
+   `?ms_qa=overview&ms_qa_capture=1`. This capture mode turns the QA wall into
+   a real scrollable page so a browser full-page screenshot becomes one tall
+   image of all slide cards. Do not screenshot immediately after navigation:
+   wait for the embedded slide iframes to finish loading and settle. The
+   runtime readiness signal is `body.ms-qa-ready` with
+   `body[data-ms-qa-pending="0"]`; `body[data-ms-qa-timeouts]` should also be
+   `"0"` before capture, and `body[data-ms-qa-errors]` should be `"0"` unless
+   you are explicitly investigating a frame load failure. In Playwright, wait
+   for the selector/state, then wait a short extra frame-settle delay before
+   `fullPage` screenshot. If cards are blank, still showing loading frames, or
+   have timed out/errored, the screenshot is invalid for visual QA; wait/reload
+   or inspect the affected slides before using it. Capture one
+   full-page/scrolling QA overview screenshot first. If a tool cannot save one
+   very tall image, capture the minimum number of vertical chunks of the QA
+   wall; do not open every slide individually. Use that visual wall to identify
+   the slide numbers with obvious rendered visual problems:
+   layout overflow, clipped or cropped content, text/image overlap, cramped
+   grids, unreadable text or weak color contrast, broken/cropped image
+   treatment, weak cover framing, blank/unloaded cards, or visibly unfinished
+   diagrams. Only after this overview triage may you capture full-size
+   single-slide screenshots, and only for slides that looked problematic,
+   ambiguous, or high-risk in the overview. Fix those obvious issues in modular
+   sources, re-run `merge-slides.py` and `inject-runtime.py`, refresh or restart
+   `serve.py` if needed, and repeat the single QA overview longshot check until
+   the first-pass visible problems are repaired.
 2. **Mandatory user revision pause.** After the autonomous pass, reopen or leave
    the deck in QA Overview and stop. Tell the user they can mark slide-level
    changes by clicking `Revise slide` on a QA card, entering a free-text note,
@@ -69,6 +83,9 @@ Triage rules:
 
 - QA overview is a visual review wall, not a rule-based diagnostic surface.
   Cards should not contain pass/fail status labels or enumerated issue tags.
+- The overview longshot is judged page by page. Report and repair visual
+  problems by slide number, focusing on rendered layout, readability, color
+  contrast, image/diagram treatment, and whether any card is blank or unloaded.
 - Revision notes and screenshot triage are complementary: notes identify known
   pages to repair; screenshots scan the remaining pages for missed layout,
   color, text, image, diagram, or transition problems.
@@ -78,11 +95,11 @@ Triage rules:
   `sources/qa/visual-issues.json`; the merged HTML remains generated output.
 - Do not ask the user to clear resolved issues. The agent resolves them in JSON
   after repairing and visually verifying the relevant slides.
-- After the overview pass, do targeted full-size screenshots or rendered slide
-  checks only for slides that need closer inspection: the cover if its framing
-  is uncertain, dense/content slides, diagrams/images, marked revision slides,
-  and any cards that looked questionable in the visual wall. Do not capture
-  every slide individually by default.
+- After the overview longshot pass, do targeted full-size screenshots or
+  rendered slide checks only for slides that need closer inspection: the cover
+  if its framing is uncertain, dense/content slides, diagrams/images, marked
+  revision slides, and any cards that looked questionable in the visual wall.
+  Do not capture every slide individually by default.
 
 ### 10b. Final QA checklist
 
@@ -138,7 +155,7 @@ Triage rules:
 Tell the user:
 - Preview is running at the displayed URL from `scripts/serve.py`
 - Final HTML is at `{topic}/index.html`
-- QA overview result, such as `QA overview: 40 slides captured for visual review`
+- QA overview result, such as `QA overview longshot: 40 slides captured for visual review`
 - Unresolved revision-note status from `{topic}/sources/qa/visual-issues.json`,
   if any remain
 - Visual issues found and repaired, by slide number, or a short note that the
@@ -167,8 +184,8 @@ When the user asks for changes in the conversation after a deck has already
 been generated:
 
 1. Read `{topic}/sources/qa/visual-issues.json` first. If it contains unresolved
-   revision requests, treat their slides as known repair targets and use fresh
-   QA overview screenshots to inspect the unmarked slides for additional issues.
+   revision requests, treat their slides as known repair targets and use a fresh
+   QA overview longshot to inspect the unmarked slides for additional issues.
 2. Edit `{topic}/sources/style.css`, `{topic}/sources/slide-XX.html`, and any
    relevant source-local helpers first.
 3. Re-run merge:

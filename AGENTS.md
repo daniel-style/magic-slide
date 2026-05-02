@@ -20,8 +20,8 @@ Magic Slide is a Codex skill that generates polished, self-contained HTML presen
 5. Read reference files, make a compact internal style/layout plan with primary/supporting Magic Move continuity, and generate all modular HTML sources directly
 6. Merge slides into single HTML
 7. Inject FLIP engine and runtime
-8. Launch the Magic Slide preview server, capture scrolling QA overview
-   screenshots first, use full-size single-slide screenshots only for
+8. Launch the Magic Slide preview server, capture one QA overview longshot
+   first, use full-size single-slide screenshots only for
    problematic/questionable slides, then stop for the mandatory user
    `Revise slide` marking pass before final repairs and delivery
 
@@ -68,10 +68,10 @@ All scripts are in `scripts/` directory:
 8. merge-slides.py combines them into index.html
 9. inject-runtime.py adds FLIP + navigation to index.html
 10. serve.py launches preview and remains running for QA/editing
-11. Open QA Overview, capture scrolling screenshots, fix obvious rendered
-    issues, and only capture full-size single slides when the overview shows a
-    problem or ambiguity. Then stop for the mandatory user `Revise slide`
-    marking pass
+11. Open `?ms_qa=overview&ms_qa_capture=1`, capture one full-page scrolling QA
+    overview longshot, fix obvious rendered issues, and only capture full-size
+    single slides when the overview shows a problem or ambiguity. Then stop for
+    the mandatory user `Revise slide` marking pass
 ```
 
 ### Running Scripts
@@ -93,7 +93,7 @@ running and the user has the displayed URL. The in-browser editor depends on
 image replacement, and close/shutdown behavior.
 
 For newly generated decks, delivery has an extra required pause: after the
-agent captures QA Overview screenshots and fixes the most obvious visible
+agent captures one QA Overview longshot and fixes the most obvious visible
 issues, it must stop with QA Overview available and tell the user to mark any
 remaining slide changes with `Revise slide`, then return to continue.
 
