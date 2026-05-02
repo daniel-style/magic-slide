@@ -21,9 +21,9 @@ Magic Slide is a Codex skill that generates polished, self-contained HTML presen
 6. Merge slides into single HTML
 7. Inject FLIP engine and runtime
 8. Launch the Magic Slide preview server, capture one QA overview longshot
-   first, use full-size single-slide screenshots only for
-   problematic/questionable slides, then stop for the mandatory user
-   `Revise slide` marking pass before final repairs and delivery
+   first, fix obvious rendered issues visible in the overview, then stop for
+   the mandatory user `Revise slide` marking pass before final repairs and
+   delivery. Do not run single-slide screenshot repair before that pause.
 
 **Why this works:** User controls information gathering and reviews structure before generation. Brief Lite gives the deck an art direction without returning to the old long prototype loop. Read design guidelines once, generate all slides in main thread. Fast and simple with clear checkpoints.
 
@@ -69,9 +69,9 @@ All scripts are in `scripts/` directory:
 9. inject-runtime.py adds FLIP + navigation to index.html
 10. serve.py launches preview and remains running for QA/editing
 11. Open `?ms_qa=overview&ms_qa_capture=1`, capture one full-page scrolling QA
-    overview longshot, fix obvious rendered issues, and only capture full-size
-    single slides when the overview shows a problem or ambiguity. Then stop for
-    the mandatory user `Revise slide` marking pass
+    overview longshot, fix obvious rendered issues visible in the overview,
+    then stop for the mandatory user `Revise slide` marking pass. Do not run
+    single-slide screenshot repair before that pause.
 ```
 
 ### Running Scripts

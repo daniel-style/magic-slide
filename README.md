@@ -154,9 +154,9 @@ The topic root is reserved for deliverables. Process files stay inside
 7. Inject the Magic Move runtime and editing helpers.
 8. Launch the preview server, open the QA capture URL
    `?ms_qa=overview&ms_qa_capture=1`, take one full-page overview longshot for
-   first-pass visual triage, let revision notes be captured in
-   `sources/qa/visual-issues.json` when needed, then fix visible issues with
-   layout, color, text, images, diagrams, or transitions.
+   first-pass visual triage, fix obvious visible issues, then stop for the
+   user to add `Revise slide` notes. Do not run single-slide screenshot repair
+   before that human revision step.
 
 ## Core Scripts
 
@@ -257,8 +257,8 @@ Before delivery, verify:
 - Slides render without errors.
 - QA overview has been captured as one full-page visual wall, unresolved
   `sources/qa/visual-issues.json` notes are treated as known revisions, and
-  targeted screenshots have been checked for additional issues on unmarked
-  slides.
+  new-deck first-pass repairs stop at the human `Revise slide` step before any
+  targeted single-slide screenshot checks.
 - Text does not overflow or overlap.
 - Slide backgrounds cover the full viewport.
 - Magic Move transitions are smooth and semantically meaningful.
