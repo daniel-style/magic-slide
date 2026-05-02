@@ -363,7 +363,7 @@ than adding decorative placeholders.
 ```
 
 Use `layout-guide.md` for centering, dense-slide exceptions, source-note
-placement, and overflow/collision policy.
+placement, design-canvas scaling, and overflow/collision policy.
 
 ## What NOT to Include
 
@@ -460,6 +460,8 @@ Before delivery, check:
 - [ ] style.css has :root variables and animations
 - [ ] Files named slide-01.html, slide-02.html, etc.
 - [ ] Layout, text-fit, vertical-balance, source-note, and overlap checks satisfy `layout-guide.md`
+- [ ] `.slide-content` is a stable 16:9 design-canvas wrapper; visual tightness
+      comes from internal stages/groups rather than global viewport reflow
 - [ ] Card groups use available slide width and do not compress paragraph cards
       into unreadably narrow columns while nearby horizontal space is empty
 - [ ] Framed main visuals satisfy `layout-guide.md` occupancy rules; no large

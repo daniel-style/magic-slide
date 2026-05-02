@@ -35,6 +35,10 @@ Before writing files, make a concise internal plan based on Brief Lite:
   `design-system.md`: display/body/optional mono stacks, why the type fits the
   requested style, and any language/script adjustments
 - Footer/source-note strategy
+- Design-canvas scaling strategy from `layout-guide.md`: keep `.slide-content`
+  as the stable 16:9 design-canvas wrapper and rely on runtime/overview scaling
+  for rendered sizes; use internal stages, groups, panels, and evidence bands
+  to make individual slides feel tight.
 - Width allocation for card groups, comparison cells, and evidence bands,
   especially where a split layout would otherwise squeeze cards into one column
 - Card-count gate for split layouts: if one half of a horizontal split would
@@ -111,6 +115,12 @@ notes, or intermediate files created during generation must also live under
 - Do not leave large horizontal dead zones while text cards overflow or wrap
   word-by-word. Use the slide width, convert cramped card rows into full-width
   evidence bands, or split the slide.
+- Do not solve a loose-looking slide by globally shrinking `.slide-content` or
+  making it heavily `vw`-dependent. In QA overview, repeated edge-hugging
+  headings, panels at opposite corners, or tiny card islands scattered across
+  the slide are layout failures. Fix the internal primitive instead: group
+  related items, reduce split gaps, wrap card rows in a shared panel, constrain
+  a `.stage`, or redesign the slide.
 - Do not leave an orphan final row in a known even card group. Avoid
   `auto-fit`/`auto-fill` for four-card and six-card groups unless QA proves the
   rendered breakpoint cannot produce `3+1` or `5+1`.

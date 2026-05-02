@@ -315,14 +315,39 @@ slides:**
 - `justify-content: center` — Centers ordinary slides by default; only truly
   dense slides may override to `flex-start`
 - `align-items: stretch` — Gives each primitive a predictable width budget
-- `max-width: 1680px` — Uses a wide 16:9 content budget without letting text
-  become unmanageably long
+- `max-width: 1680px` — Provides a stable 1920-design-canvas content budget.
+  Runtime and overview scaling adapt this canvas to smaller rendered sizes.
 - `min-height: 100vh` — Fill viewport height
 - `padding: 4rem` — Breathing room on all sides
 - Evidence, comparison, metrics, image+text, and source-noted slides should
   remain centered unless their main content fills most of the viewport. Use a
   top-aligned variant such as `.slide-dense` only for genuinely dense tables,
   large matrices, long timelines, or complex diagrams with an explicit reason.
+
+### Design Canvas Scaling Rule
+
+Author slide layouts against a stable 16:9 design canvas, then let the Magic
+Slide runtime scale the result to the actual viewport and QA overview card
+size. Do not make the root composition continuously reflow across every
+possible viewport width; that turns one designed slide into many accidental
+layouts and often makes content look scattered.
+
+Rules:
+- Keep `.slide-content` as the stable design canvas wrapper. Prefer
+  `width:100%; max-width:1680px; margin:0 auto; padding:clamp(2.5rem,5vw,5rem)`
+  rather than a narrow `vw`-driven root frame.
+- Use internal composition objects for visual tightness: a `.stage`,
+  `.composition`, panel, diagram group, or evidence band may have its own
+  `max-width`, columns, or grouping behavior inside `.slide-content`.
+- If a slide looks too loose in QA overview, do not globally shrink
+  `.slide-content`. Tighten the slide's internal primitive: group related
+  cards, reduce a split gap, put a card row in a shared panel, use a central
+  stage max-width, or redesign the layout.
+- Use fluid breakpoints only for true device adaptation. They should preserve
+  the intended composition, not create a different wide-screen layout.
+- Runtime fit is a safety net for slight overflow, not a license to overfill
+  slides. Author text and cards to fit the design canvas first, then verify the
+  scaled output in QA overview.
 
 ## Slide Type Patterns
 

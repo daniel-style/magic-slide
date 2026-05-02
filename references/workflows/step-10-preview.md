@@ -116,6 +116,13 @@ Triage rules:
    Check wide-screen coverage: cover/photo/material backgrounds must reach all
    four viewport edges and must not be bounded by `.slide-content` max-width.
 3. `layout-guide.md` passes: no overflow, clipped text, collisions, unplanned top-heavy layouts, or source-note collisions.
+   Check the design-canvas scaling rule in the QA overview wall: ordinary
+   slides should preserve their intended 16:9 composition when scaled down into
+   overview cards. Treat repeated edge-hugging titles, split panels drifting to
+   opposite slide edges, stretched card rows with tiny islands, or source notes
+   far from their related content as visual issues. Repair by grouping content,
+   constraining the internal `.stage`, reducing split gaps, or redesigning the
+   primitive; do not treat global `.slide-content` shrinkage as the default fix.
    Treat cramped card rows with word-by-word wrapping as a visual issue when
    nearby horizontal space is empty; revise the source layout to use the
    available width or split the slide. Find these problems from the rendered QA
