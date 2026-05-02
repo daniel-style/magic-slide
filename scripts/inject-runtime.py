@@ -271,11 +271,11 @@ body{background-color:var(--bg, var(--field, #0a0c16));color:var(--text, var(--i
 
 /* Slide visibility & positioning (FLIP engine requirement) */
 .slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:stretch;padding:0;opacity:0;pointer-events:none;visibility:hidden}
-.slide>div:not(.bg){width:100%}
-.slide>div:not(.bg).ms-fit-top{justify-content:flex-start!important;padding-top:clamp(1.5rem,3vh,3rem)!important;padding-bottom:clamp(1.5rem,3vh,3rem)!important}
-.slide>div:not(.bg).ms-fit-scale{transform:scale(var(--ms-fit-scale,1));transform-origin:top center;will-change:transform}
-.slide>div:not(.bg).ms-hero-balance{justify-content:center!important;align-items:center!important;text-align:center!important}
-.slide>div:not(.bg).ms-sparse-balance{justify-content:center!important}
+.slide>.slide-content,.slide>[data-ms-content-root="true"]{width:100%}
+.slide>.slide-content.ms-fit-top,.slide>[data-ms-content-root="true"].ms-fit-top{justify-content:flex-start!important;padding-top:clamp(1.5rem,3vh,3rem)!important;padding-bottom:clamp(1.5rem,3vh,3rem)!important}
+.slide>.slide-content.ms-fit-scale,.slide>[data-ms-content-root="true"].ms-fit-scale{transform:scale(var(--ms-fit-scale,1));transform-origin:top center;will-change:transform}
+.slide>.slide-content.ms-hero-balance,.slide>[data-ms-content-root="true"].ms-hero-balance{justify-content:center!important;align-items:center!important;text-align:center!important}
+.slide>.slide-content.ms-sparse-balance,.slide>[data-ms-content-root="true"].ms-sparse-balance{justify-content:center!important}
 .slide.active{opacity:1;pointer-events:auto;visibility:visible}
 .slide-center{justify-content:center}
 svg path:not([fill])[class*="route"],svg path:not([fill])[class*="connector"],svg path:not([fill])[class*="edge"],svg path:not([fill])[class*="flow"],svg path:not([fill])[class*="arc"],svg path:not([fill])[class*="curve"],svg path:not([fill])[class*="rail"],svg path:not([fill])[class*="trace"],svg path:not([fill])[class*="arrow"],svg path:not([fill])[class*="link"],svg line:not([fill]),svg polyline:not([fill]){fill:none}
@@ -804,13 +804,28 @@ function updateCursorColor(){
   document.documentElement.style.setProperty('--cursor-glow',glowColor);
   document.documentElement.style.setProperty('--cursor-border',borderColor);
 }
+function isRuntimeContentFallback(el){
+  if(!el||!el.classList)return false;
+  if(el.classList.contains('bg')||el.classList.contains('brand-mark')||el.classList.contains('section-no'))return false;
+  if(el.getAttribute('aria-hidden')==='true')return false;
+  if(el.dataset&&(el.dataset.slideChrome==='true'||el.dataset.msChrome==='true'))return false;
+  return true;
+}
 function getSlideWrappers(slide){
   if(!slide)return [];
-  return Array.from(slide.children).filter(function(ch){return !ch.classList.contains('bg')});
+  var primary=slide.querySelector(':scope > .slide-content');
+  if(primary)return [primary];
+  var fallback=Array.from(slide.children).find(isRuntimeContentFallback);
+  if(fallback)fallback.setAttribute('data-ms-content-root','true');
+  return fallback?[fallback]:[];
 }
 function getSlideContent(slide){
   if(!slide)return null;
-  return slide.querySelector(':scope > .slide-content')||slide.querySelector('.slide-content')||slide.querySelector(':scope > div:not(.bg)')||slide;
+  var primary=slide.querySelector(':scope > .slide-content')||slide.querySelector('.slide-content');
+  if(primary)return primary;
+  var fallback=Array.from(slide.children).find(isRuntimeContentFallback);
+  if(fallback)fallback.setAttribute('data-ms-content-root','true');
+  return fallback||slide;
 }
 function isFadeTransition(name){
   name=(name||'fade').toLowerCase();
