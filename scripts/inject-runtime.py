@@ -357,7 +357,7 @@ h1 .magic-phrase[data-magic-id],h2 .magic-phrase[data-magic-id],h3 .magic-phrase
 .overview-close:hover{background:rgba(10,12,22,0.95);transform:scale(1.1);border-color:var(--accent,#7fc8ff)}
 
 /* QA overview panel */
-#qa-overview{position:fixed;inset:0;background:rgba(9,10,13,0.96);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);z-index:1300;display:none;opacity:0;visibility:hidden;pointer-events:none;transition:opacity 0.24s ease,backdrop-filter 0.24s ease,-webkit-backdrop-filter 0.24s ease;font-family:var(--font-body,system-ui,-apple-system,sans-serif);color:#edf1f7}
+#qa-overview{position:fixed;inset:0;background:rgba(9,10,13,0.96);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);z-index:1300;display:none;opacity:0;visibility:hidden;pointer-events:none;cursor:default;transition:opacity 0.24s ease,backdrop-filter 0.24s ease,-webkit-backdrop-filter 0.24s ease;font-family:var(--font-body,system-ui,-apple-system,sans-serif);color:#edf1f7}
 #qa-overview.showing{display:block}
 #qa-overview.show{opacity:1;visibility:visible;pointer-events:auto}
 .qa-shell{position:absolute;inset:0;display:flex;flex-direction:column;min-width:0}
@@ -400,7 +400,7 @@ h1 .magic-phrase[data-magic-id],h2 .magic-phrase[data-magic-id],h3 .magic-phrase
 .qa-issue-actions button:hover{background:rgba(255,255,255,0.10);color:#fff}
 .qa-issue-actions .qa-issue-save{background:rgba(251,191,36,0.18);border-color:rgba(251,191,36,0.44);color:#fde68a}
 .qa-issue-error{min-height:1em;color:#fca5a5;font-size:12px;line-height:1.3}
-body.ms-qa-capture{overflow:auto;user-select:auto;-webkit-user-select:auto;-moz-user-select:auto;-ms-user-select:auto;background:#090a0d}
+body.ms-qa-capture{overflow:auto;user-select:auto;-webkit-user-select:auto;-moz-user-select:auto;-ms-user-select:auto;background:#090a0d;cursor:auto}
 body.ms-qa-capture #deck,body.ms-qa-capture #ms-toolbar,body.ms-qa-capture #ms-rich-toolbar,body.ms-qa-capture #slide-dock,body.ms-qa-capture #dock-tip,body.ms-qa-capture #dock-hover-preview,body.ms-qa-capture .nav-btn,body.ms-qa-capture .progress,body.ms-qa-capture .counter,body.ms-qa-capture #slide-overview{display:none!important}
 body.ms-qa-capture #qa-overview{position:relative;inset:auto;display:block!important;opacity:1!important;visibility:visible!important;pointer-events:auto;min-height:100vh;background:#090a0d;backdrop-filter:none;-webkit-backdrop-filter:none;transition:none}
 body.ms-qa-capture .qa-shell{position:relative;inset:auto;display:block;min-height:100vh}
@@ -475,8 +475,8 @@ body.ms-qa-capture .qa-issue-editor{position:fixed}
 @keyframes ms-zoom-in{from{opacity:0;transform:var(--ms-stagger-base-transform,translateZ(0)) scale(0.8)}to{opacity:var(--ms-stagger-final-opacity,1);transform:var(--ms-stagger-base-transform,translateZ(0)) scale(1)}}
 
 /* Apply to JS-marked stagger elements */
-.ms-stagger-item{animation:ms-fade-in-up var(--ms-stagger-duration,0.5s) var(--ms-ease,cubic-bezier(0.25,1,0.5,1)) both;animation-delay:calc(var(--ms-stagger-base-delay,70ms) + var(--stagger-index,0) * var(--ms-stagger-step,58ms))}
-.ms-stagger-text{--ms-stagger-y:52px;--ms-stagger-duration:0.64s}
+.ms-stagger-item{animation:ms-fade-in-up var(--ms-stagger-duration,0.44s) var(--ms-ease,cubic-bezier(0.25,1,0.5,1)) both;animation-delay:calc(var(--ms-stagger-base-delay,50ms) + var(--stagger-index,0) * var(--ms-stagger-step,46ms))}
+.ms-stagger-text{--ms-stagger-y:44px;--ms-stagger-duration:0.56s}
 .slide[data-stagger="fade-in"] .ms-stagger-item{animation-name:ms-fade-in}
 .slide[data-stagger="fade-in-down"] .ms-stagger-item{animation-name:ms-fade-in-down}
 .slide[data-stagger="fade-in-left"] .ms-stagger-item{animation-name:ms-fade-in-left}
@@ -1229,13 +1229,13 @@ function go(from,to){
 
   function staggerTiming(count){
     if(count<=0)return 0;
-    var baseDelay=70;
-    var defaultStep=58;
-    var minStep=22;
-    var maxSpread=680;
+    var baseDelay=50;
+    var defaultStep=46;
+    var minStep=12;
+    var maxSpread=480;
     var slots=Math.max(1,count-1);
     var step=count===1?0:Math.min(defaultStep,Math.max(minStep,Math.floor(maxSpread/slots)));
-    return {baseDelay:baseDelay,step:step,cleanupMs:baseDelay+slots*step+760};
+    return {baseDelay:baseDelay,step:step,cleanupMs:baseDelay+slots*step+660};
   }
 
   // Shared stagger marking function — returns total stagger cleanup time in ms.
@@ -1469,7 +1469,7 @@ function go(from,to){
   // Trigger stagger only after the visible slide swap has committed. If we add
   // stagger classes while the FROM slide is still on top, the entrance animation
   // can finish under the old slide and appear to be missing.
-  var staggerN=applyStagger(toSlide);
+  var staggerDoneMs=applyStagger(toSlide);
   void toSlide.offsetHeight;
 
   // === PHASE 6: Animate (double rAF to ensure styles are committed) ===
@@ -1511,8 +1511,10 @@ function go(from,to){
       el.style.removeProperty('--ms-stagger-final-opacity');
       el.style.removeProperty('--ms-stagger-base-transform');
       });
+      toSlide.style.removeProperty('--ms-stagger-base-delay');
+      toSlide.style.removeProperty('--ms-stagger-step');
       animating=false;
-  },Math.max(dur+40,staggerN*80+550));
+  },Math.max(dur+40,staggerDoneMs));
 
   cur=to;updateUI();updateHash();
 }
