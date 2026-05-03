@@ -209,9 +209,41 @@ def read_qa_issues(deck: Deck) -> dict:
 def write_qa_issues(deck: Deck, data: dict) -> None:
     if not isinstance(data, dict) or not isinstance(data.get("issues"), list):
         raise ValueError("qa issue payload must contain an issues array")
-    data.setdefault("schemaVersion", 1)
-    data.setdefault("qaRevision", 0)
-    data.setdefault("updatedAt", None)
+    existing = read_qa_issues(deck)
+    existing_by_id = {
+        issue.get("id"): issue
+        for issue in existing.get("issues", [])
+        if isinstance(issue, dict) and issue.get("id")
+    }
+    incoming_ids = set()
+    merged_issues = []
+    for issue in data["issues"]:
+        if not isinstance(issue, dict):
+            continue
+        merged = dict(issue)
+        issue_id = merged.get("id")
+        if issue_id:
+            incoming_ids.add(issue_id)
+        existing_issue = existing_by_id.get(issue_id)
+        if existing_issue and existing_issue.get("resolved") is True and merged.get("resolved") is not True:
+            merged["resolved"] = True
+            for key in ("resolvedAt", "resolvedInRevision", "resolution", "changedFiles"):
+                if existing_issue.get(key) not in (None, "", []):
+                    merged[key] = existing_issue.get(key)
+        merged_issues.append(merged)
+
+    for issue in existing.get("issues", []):
+        if isinstance(issue, dict) and issue.get("id") and issue.get("id") not in incoming_ids:
+            merged_issues.append(issue)
+
+    existing_revision = existing.get("qaRevision", 0) if isinstance(existing.get("qaRevision"), int) else 0
+    incoming_revision = data.get("qaRevision", 0) if isinstance(data.get("qaRevision"), int) else 0
+    data = dict(data)
+    data["issues"] = merged_issues
+    data["schemaVersion"] = data.get("schemaVersion") if isinstance(data.get("schemaVersion"), int) else 1
+    data["qaRevision"] = max(existing_revision, incoming_revision)
+    if not isinstance(data.get("updatedAt"), str):
+        data["updatedAt"] = existing.get("updatedAt") if isinstance(existing.get("updatedAt"), str) else None
     path = qa_issues_path(deck)
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.name + ".tmp")

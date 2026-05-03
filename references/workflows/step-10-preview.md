@@ -82,6 +82,10 @@ Revision notes are stored in `{topic}/sources/qa/visual-issues.json`. They are
 human/agent visual review notes, not runtime diagnostics and not pass/fail
 statuses.
 
+QA cards also expose a `Resolve` button for manually marking an unresolved
+slide note as fixed when the repair happened outside the normal agent resume
+flow.
+
 The mandatory user revision pause happens once after the autonomous first pass
 for a newly generated deck. After the user returns and those notes are repaired,
 later QA overview runs are verification passes unless the user explicitly asks

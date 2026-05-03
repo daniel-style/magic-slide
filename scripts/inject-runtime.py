@@ -385,9 +385,13 @@ h1 .magic-phrase[data-magic-id],h2 .magic-phrase[data-magic-id],h3 .magic-phrase
 .qa-page strong{font-size:12px;line-height:1;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:#f8fafc}
 .qa-note-preview{display:none;max-width:44ch;color:rgba(237,241,247,0.66);font-size:11px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .qa-card.has-issue .qa-note-preview{display:block}
-.qa-issue-btn{flex-shrink:0;max-width:10rem;border:1px solid rgba(237,241,247,0.14);background:rgba(255,255,255,0.055);color:rgba(237,241,247,0.82);border-radius:8px;padding:7px 9px;font-size:10px;font-weight:900;line-height:1;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;cursor:pointer;transition:background 0.16s ease,border-color 0.16s ease,color 0.16s ease,transform 0.16s ease}
-.qa-issue-btn:hover{background:rgba(255,255,255,0.10);border-color:rgba(237,241,247,0.30);color:#fff;transform:translateY(-1px)}
+.qa-card-actions{display:flex;align-items:flex-start;justify-content:flex-end;gap:7px;flex-shrink:0}
+.qa-issue-btn,.qa-resolve-btn{flex-shrink:0;max-width:10rem;border:1px solid rgba(237,241,247,0.14);background:rgba(255,255,255,0.055);color:rgba(237,241,247,0.82);border-radius:8px;padding:7px 9px;font-size:10px;font-weight:900;line-height:1;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;cursor:pointer;transition:background 0.16s ease,border-color 0.16s ease,color 0.16s ease,transform 0.16s ease,opacity 0.16s ease}
+.qa-issue-btn:hover,.qa-resolve-btn:hover{background:rgba(255,255,255,0.10);border-color:rgba(237,241,247,0.30);color:#fff;transform:translateY(-1px)}
+.qa-issue-btn:disabled,.qa-resolve-btn:disabled{cursor:wait;opacity:0.56;transform:none}
 .qa-card.has-issue .qa-issue-btn{background:rgba(251,191,36,0.18);border-color:rgba(251,191,36,0.46);color:#fde68a}
+.qa-resolve-btn{display:none}
+.qa-card.has-issue .qa-resolve-btn{display:inline-flex;background:rgba(34,197,94,0.16);border-color:rgba(34,197,94,0.42);color:#bbf7d0}
 .qa-issue-editor[hidden]{display:none}
 .qa-issue-editor{position:absolute;inset:0;z-index:4;display:grid;place-items:center;padding:22px;background:rgba(9,10,13,0.56);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .qa-issue-dialog{width:min(560px,100%);border:1px solid rgba(237,241,247,0.16);border-radius:14px;background:rgba(16,18,24,0.98);box-shadow:0 30px 90px rgba(0,0,0,0.48);padding:20px;display:grid;gap:14px}
@@ -410,7 +414,7 @@ body.ms-qa-capture .qa-grid{position:relative;top:auto;right:auto;bottom:auto;le
 body.ms-qa-capture .qa-card{break-inside:avoid;page-break-inside:avoid}
 body.ms-qa-capture .qa-card:hover{transform:none}
 body.ms-qa-capture .qa-issue-editor{position:fixed}
-@media(max-width:720px){.qa-toolbar{height:auto;min-height:74px;align-items:flex-start;flex-direction:column;padding:16px 18px}.qa-actions{width:100%;justify-content:space-between}.qa-grid{top:128px;grid-template-columns:1fr;padding:18px}.qa-title{width:100%;justify-content:space-between}#qa-summary{white-space:normal;text-align:right}.qa-card-head{align-items:stretch;flex-direction:column}.qa-issue-btn{max-width:none;width:100%}}
+@media(max-width:720px){.qa-toolbar{height:auto;min-height:74px;align-items:flex-start;flex-direction:column;padding:16px 18px}.qa-actions{width:100%;justify-content:space-between}.qa-grid{top:128px;grid-template-columns:1fr;padding:18px}.qa-title{width:100%;justify-content:space-between}#qa-summary{white-space:normal;text-align:right}.qa-card-head{align-items:stretch;flex-direction:column}.qa-card-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}.qa-issue-btn,.qa-resolve-btn{max-width:none;width:100%;justify-content:center}.qa-resolve-btn{display:none}.qa-card.has-issue .qa-resolve-btn{display:inline-flex}}
 
 /* Navigation buttons */
 .nav-btn{position:fixed;top:50%;width:44px;height:44px;border-radius:50%;background:rgba(10,12,22,0.72);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.1);color:#e8edf7;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:300;opacity:0;pointer-events:none;transition:opacity 0.25s ease,transform 0.25s ease}
@@ -2219,6 +2223,10 @@ fitSlideLayout(slides[cur]);
     var slideNo=idx+1;
     return qaIssues.issues.find(function(issue){return issue.slide===slideNo&&!issue.resolved;})||null;
   }
+  function unresolvedIssuesForSlide(idx){
+    var slideNo=idx+1;
+    return qaIssues.issues.filter(function(issue){return issue.slide===slideNo&&!issue.resolved;});
+  }
   function unresolvedIssueCount(){
     return qaIssues.issues.filter(function(issue){return !issue.resolved;}).length;
   }
@@ -2228,6 +2236,10 @@ fitSlideLayout(slides[cur]);
   }
   function nowIso(){
     return new Date().toISOString();
+  }
+  function nextQaRevision(){
+    qaIssues.qaRevision=(Number.isInteger(qaIssues.qaRevision)?qaIssues.qaRevision:0)+1;
+    return qaIssues.qaRevision;
   }
   function issueIdForSlide(idx){
     var stamp=nowIso().replace(/[-:.TZ]/g,'').slice(0,14);
@@ -2263,6 +2275,7 @@ fitSlideLayout(slides[cur]);
     var idx=editingIssueIdx;
     var now=nowIso();
     var issue=activeIssueForSlide(idx);
+    nextQaRevision();
     if(issue){
       issue.note=note;
       issue.slideId=slideIdForIndex(idx);
@@ -2296,6 +2309,54 @@ fitSlideLayout(slides[cur]);
         if(issueSave)issueSave.disabled=false;
       });
   }
+  function setQaCardSaving(idx,saving){
+    if(!grid)return;
+    var item=grid.querySelector('.qa-card[data-idx="'+idx+'"]');
+    if(!item)return;
+    item.classList.toggle('is-saving',!!saving);
+    item.querySelectorAll('.qa-issue-btn,.qa-resolve-btn').forEach(function(btn){
+      btn.disabled=!!saving;
+    });
+  }
+  function resolveIssuesForSlide(idx){
+    var issues=unresolvedIssuesForSlide(idx);
+    if(!issues.length)return;
+    var previous=issues.map(function(issue){return Object.assign({},issue);});
+    var previousRevision=qaIssues.qaRevision;
+    var previousUpdatedAt=qaIssues.updatedAt;
+    var now=nowIso();
+    var revision=nextQaRevision();
+    issues.forEach(function(issue){
+      issue.resolved=true;
+      issue.updatedAt=now;
+      issue.resolvedAt=now;
+      issue.resolvedInRevision=revision;
+      issue.resolution=issue.resolution||'Manually marked resolved in QA Overview';
+    });
+    qaIssues.updatedAt=now;
+    setQaCardSaving(idx,true);
+    applyQaIssuesToCards();
+    updateQaSummary();
+    saveQaIssues()
+      .then(function(){
+        if(typeof showToast==='function')showToast('QA revision marked resolved');
+      })
+      .catch(function(err){
+        console.warn(err);
+        previous.forEach(function(snapshot){
+          var issue=qaIssues.issues.find(function(item){return item.id===snapshot.id;});
+          if(issue)Object.assign(issue,snapshot);
+        });
+        qaIssues.qaRevision=previousRevision;
+        qaIssues.updatedAt=previousUpdatedAt;
+        applyQaIssuesToCards();
+        updateQaSummary();
+        if(typeof showToast==='function')showToast('Could not mark QA revision resolved. Confirm the preview server is running.');
+      })
+      .finally(function(){
+        setQaCardSaving(idx,false);
+      });
+  }
   function applyQaIssuesToCards(){
     if(!grid)return;
     grid.querySelectorAll('.qa-card').forEach(function(item){
@@ -2313,6 +2374,11 @@ fitSlideLayout(slides[cur]);
       if(btn){
         btn.textContent=hasIssue?'Revision saved':'Revise slide';
         btn.setAttribute('aria-label',(hasIssue?'Edit revision request for slide ':'Request revision for slide ')+(idx+1));
+      }
+      var resolveBtn=item.querySelector('.qa-resolve-btn');
+      if(resolveBtn){
+        resolveBtn.hidden=!hasIssue;
+        resolveBtn.setAttribute('aria-label','Mark slide '+(idx+1)+' revision resolved');
       }
     });
   }
@@ -2548,6 +2614,8 @@ fitSlideLayout(slides[cur]);
       var note=document.createElement('div');
       note.className='qa-note-preview';
       page.appendChild(note);
+      var cardActions=document.createElement('div');
+      cardActions.className='qa-card-actions';
       var issueBtn=document.createElement('button');
       issueBtn.type='button';
       issueBtn.className='qa-issue-btn';
@@ -2557,8 +2625,20 @@ fitSlideLayout(slides[cur]);
         e.stopPropagation();
         openIssueEditor(idx);
       });
+      var resolveBtn=document.createElement('button');
+      resolveBtn.type='button';
+      resolveBtn.className='qa-resolve-btn';
+      resolveBtn.textContent='Resolve';
+      resolveBtn.hidden=true;
+      resolveBtn.addEventListener('click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        resolveIssuesForSlide(idx);
+      });
+      cardActions.appendChild(issueBtn);
+      cardActions.appendChild(resolveBtn);
       head.appendChild(page);
-      head.appendChild(issueBtn);
+      head.appendChild(cardActions);
       item.appendChild(head);
 
       item.addEventListener('click',function(e){
