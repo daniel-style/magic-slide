@@ -37,11 +37,14 @@ For a newly generated deck, the gate has three ordered phases:
    runtime readiness signal is `body.ms-qa-ready` with
    `body[data-ms-qa-pending="0"]`; `body[data-ms-qa-timeouts]` should also be
    `"0"` before capture, and `body[data-ms-qa-errors]` should be `"0"` unless
-   you are explicitly investigating a frame load failure. In Playwright, wait
-   for the selector/state, then wait a short extra frame-settle delay before
-   `fullPage` screenshot. If cards are blank, still showing loading frames, or
-   have timed out/errored, the screenshot is invalid for visual QA; wait/reload
-   or inspect the affected slides before using it. Capture one
+   you are explicitly investigating a frame load failure. Use any browser,
+   browser-automation, or scrolling-screenshot tool that can capture the full
+   QA wall after those readiness flags are set. For Playwright specifically,
+   wait for the selector/state, then wait a short extra frame-settle delay
+   before taking a `fullPage` screenshot. If cards are blank, still showing
+   loading frames, or have timed out/errored, the screenshot is invalid for
+   visual QA; wait/reload or inspect the affected slides before using it.
+   Capture one
    full-page/scrolling QA overview screenshot first. If a tool cannot save one
    very tall image, capture the minimum number of vertical chunks of the QA
    wall; do not open every slide individually. Use that visual wall to identify
