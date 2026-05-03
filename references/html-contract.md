@@ -252,10 +252,11 @@ Rules:
 - In the QA overview longshot, first confirm iframe-loaded readiness, then
   visually inspect cards by slide number for escaped labels, cramped rows,
   unreadable wrapping/contrast, overlap, clipping, cropped media, and blank or
-  unloaded cards. If `visual-issues.json` already has unresolved revision
-  notes, repair those marked slides from JSON/source context first. Then use
-  the rendered overview as verification, skipping marked cards during
-  new-problem triage unless the repair still looks questionable.
+  unloaded cards. If `visual-issues.json` already has open revision notes,
+  repair those marked slides from JSON/source context first. After repairing
+  saved notes, mark them `fixed_pending_confirmation` and use QA Overview as
+  the user confirmation surface instead of running an agent screenshot
+  verification pass, unless the user explicitly asks for visual verification.
 
 ## SVG Contract
 
@@ -577,8 +578,8 @@ Before delivery, check:
 - [ ] The QA overview longshot was captured only after iframe-loaded readiness,
       then checked by slide number for cramped card rows, escaped labels,
       unreadable wrapping/contrast, overlap, clipping, cropped media,
-      wide-tray/tiny-payload layouts, and blank or unloaded cards; unresolved
+      wide-tray/tiny-payload layouts, and blank or unloaded cards; open
       `sources/qa/visual-issues.json` notes are repaired from JSON/source
-      context before screenshots are used for verification or ambiguous-note
-      context
+      context, then marked `fixed_pending_confirmation` for user confirmation
+      instead of screenshot verification
 - [ ] Inline SVG connector paths include `fill="none"` and fallback stroke attributes

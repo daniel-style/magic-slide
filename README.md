@@ -142,6 +142,8 @@ The topic root is reserved for deliverables. Process files stay inside
 
 ## Generation Workflow
 
+Before step 1, create a visible TODO/plan for the `$magic-slide` run and update
+it as each stage progresses.
 1. Gather requirements: topic, visual direction, language, and whether generated
    images should be used.
 2. Optionally run PipeLLM web search when the deck needs fresh or source-backed
@@ -156,7 +158,9 @@ The topic root is reserved for deliverables. Process files stay inside
    `?ms_qa=overview&ms_qa_capture=1`, take one full-page overview longshot for
    first-pass visual triage, fix obvious visible issues, then stop for the
    user to add `Revise slide` notes. Do not run single-slide screenshot repair
-   before that human revision step.
+   before that human revision step. After saved notes are repaired, mark them
+   `fixed_pending_confirmation` and return to QA Overview for user confirmation
+   instead of running a screenshot verification pass.
 
 ## Core Scripts
 
@@ -199,6 +203,17 @@ python3 scripts/serve.py ./my-deck/index.html
 
 Starts the Magic Slide preview server. Use this server for preview and editing;
 it supports features that direct file opening and generic static servers do not.
+
+### Mark repaired QA notes
+
+```bash
+python3 scripts/mark-qa-repaired.py ./my-deck/sources/qa/visual-issues.json \
+  --changed-files ./my-deck/sources/slide-03.html ./my-deck/sources/style.css
+```
+
+Marks open `Revise slide` notes as fixed and awaiting user confirmation. The
+preview server opens QA Overview automatically while pending confirmations
+exist.
 
 ### Generate an image with PipeLLM
 
@@ -255,10 +270,11 @@ based on Anthropic's public skill:
 Before delivery, verify:
 
 - Slides render without errors.
-- QA overview has been captured as one full-page visual wall, unresolved
+- QA overview has been captured as one full-page visual wall, open
   `sources/qa/visual-issues.json` notes are treated as known revisions, and
   new-deck first-pass repairs stop at the human `Revise slide` step before any
-  targeted single-slide screenshot checks.
+  targeted single-slide screenshot checks. Repaired notes are marked
+  `fixed_pending_confirmation` and confirmed by the user in QA Overview.
 - Text does not overflow or overlap.
 - Slide backgrounds cover the full viewport.
 - Magic Move transitions are smooth and semantically meaningful.

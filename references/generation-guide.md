@@ -321,17 +321,18 @@ After generating the full deck:
   reports iframe-loaded readiness. Repair the most obvious rendered visual
   issues by slide number, then stop for the mandatory user `Revise slide`
   marking pass without doing single-slide screenshot repair.
-- When the user returns, read unresolved revision notes first. Treat those
+- When the user returns, read open revision notes first. Treat those
   slides as known repair targets and repair from the JSON notes plus the
-  matching source slide/CSS before taking fresh screenshots. The overview is
-  intentionally not a rule-based detector; it exists to verify the rendered
-  repairs and make the remaining deck easy to inspect.
+  matching source slide/CSS. Use screenshots only when the JSON/source context
+  is too ambiguous to repair confidently. The overview is intentionally not a
+  rule-based detector; after repair it is the user's confirmation surface.
 - When repairing, start with JSON notes and source files; use screenshots before
   repair only when a note is ambiguous. After fixing `sources/`, merge, inject,
-  preview, and capture the QA overview longshot as verification and as a scan
-  for additional visual problems on unmarked slides.
-- After verification, mark repaired JSON records `resolved: true`; do not write
-  revision notes into `index.html`.
+  mark repaired JSON records `status: "fixed_pending_confirmation"` with
+  `resolved: false`, and preview/open QA Overview for the user to confirm.
+  Do not capture a QA overview longshot as verification unless explicitly
+  requested.
+- Do not write revision notes into `index.html`.
 - Use the scrolling QA overview longshot as the primary all-slide visual check.
   Do not capture full-size single-slide screenshots during the newly generated
   deck's autonomous first pass before the user revision pause. After the user

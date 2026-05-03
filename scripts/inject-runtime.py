@@ -41,6 +41,33 @@ UI_STRINGS = {
         'editing':       '✓ 编辑中',
         'unsaved':       '● 未保存',
         'loading_preview': '载入预览中…',
+        'qa_title':      'QA 总览',
+        'qa_summary_scanning': '正在扫描幻灯片…',
+        'qa_issue_title': '请求修改幻灯片',
+        'qa_issue_help': '描述哪里不对、希望怎样调整，或继续补充新的修改需求。',
+        'qa_issue_placeholder': '这页需要改什么？',
+        'qa_cancel':     '取消',
+        'qa_save_request': '保存需求',
+        'qa_revise_slide': '修改此页',
+        'qa_revision_saved': '已记录需求',
+        'qa_revise_again': '继续提需求',
+        'qa_confirm_fix': '确认',
+        'qa_status_requested': '待修改',
+        'qa_status_pending_confirmation': '已修改，待确认',
+        'qa_slides': '页',
+        'qa_revision_request_one': '个修改需求',
+        'qa_revision_request_many': '个修改需求',
+        'qa_pending_confirmation_one': '个待确认',
+        'qa_pending_confirmation_many': '个待确认',
+        'qa_loading_frames': '个预览载入中',
+        'qa_timed_out': '超时',
+        'qa_ready': '可进行视觉检查',
+        'qa_frame_error_one': '个预览错误',
+        'qa_frame_error_many': '个预览错误',
+        'qa_error_empty_note': '请先描述这页需要怎样修改。',
+        'qa_error_save': '无法保存修改需求。请确认预览服务器正在运行。',
+        'qa_toast_confirmed': 'QA 修改已确认',
+        'qa_toast_confirm_failed': '无法确认 QA 修改。请确认预览服务器正在运行。',
     },
     'en': {
         'save':          'Save HTML',
@@ -58,6 +85,33 @@ UI_STRINGS = {
         'editing':       '✓ Editing',
         'unsaved':       '● Unsaved',
         'loading_preview': 'Loading preview…',
+        'qa_title':      'QA Overview',
+        'qa_summary_scanning': 'Scanning slides...',
+        'qa_issue_title': 'Request slide revision',
+        'qa_issue_help': 'Describe what feels off, what should change, or any follow-up issue.',
+        'qa_issue_placeholder': 'What should change on this slide?',
+        'qa_cancel':     'Cancel',
+        'qa_save_request': 'Save request',
+        'qa_revise_slide': 'Revise slide',
+        'qa_revision_saved': 'Revision saved',
+        'qa_revise_again': 'Revise again',
+        'qa_confirm_fix': 'Confirm',
+        'qa_status_requested': 'Revision requested',
+        'qa_status_pending_confirmation': 'Fixed - pending confirmation',
+        'qa_slides': 'slides',
+        'qa_revision_request_one': 'revision request',
+        'qa_revision_request_many': 'revision requests',
+        'qa_pending_confirmation_one': 'pending confirmation',
+        'qa_pending_confirmation_many': 'pending confirmations',
+        'qa_loading_frames': 'loading frames',
+        'qa_timed_out': 'timed out',
+        'qa_ready': 'ready for visual review',
+        'qa_frame_error_one': 'frame error',
+        'qa_frame_error_many': 'frame errors',
+        'qa_error_empty_note': 'Please describe what should change before saving.',
+        'qa_error_save': 'Could not save the revision request. Confirm the preview server is running.',
+        'qa_toast_confirmed': 'QA revision confirmed',
+        'qa_toast_confirm_failed': 'Could not confirm the QA revision. Confirm the preview server is running.',
     },
 }
 
@@ -381,10 +435,14 @@ h1 .magic-phrase[data-magic-id],h2 .magic-phrase[data-magic-id],h3 .magic-phrase
 .qa-frame-content{position:absolute;top:0;left:0;width:1920px;height:1080px;transform-origin:top left;pointer-events:none;background:transparent}
 .qa-frame-content iframe{width:1920px;height:1080px;border:0;display:block;pointer-events:none;background:transparent}
 .qa-card.has-issue{border-color:rgba(251,191,36,0.56);box-shadow:0 0 0 1px rgba(251,191,36,0.26),0 18px 50px rgba(0,0,0,0.28)}
+.qa-card.is-awaiting-confirmation{border-color:rgba(34,197,94,0.58);box-shadow:0 0 0 1px rgba(34,197,94,0.24),0 18px 50px rgba(0,0,0,0.28)}
 .qa-card.is-editing{border-color:rgba(127,200,255,0.70);box-shadow:0 0 0 2px rgba(127,200,255,0.38),0 20px 62px rgba(0,0,0,0.36)}
 .qa-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:12px 14px 13px;border-top:1px solid rgba(237,241,247,0.10);background:rgba(11,12,16,0.92)}
 .qa-page{display:flex;flex-direction:column;gap:6px;min-width:0}
 .qa-page strong{font-size:12px;line-height:1;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:#f8fafc}
+.qa-status-badge{display:none;align-self:flex-start;border:1px solid rgba(251,191,36,0.40);border-radius:999px;background:rgba(251,191,36,0.14);color:#fde68a;padding:4px 7px;font-size:10px;font-weight:900;line-height:1;letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap}
+.qa-card.has-issue .qa-status-badge{display:inline-flex}
+.qa-card.is-awaiting-confirmation .qa-status-badge{border-color:rgba(34,197,94,0.44);background:rgba(34,197,94,0.16);color:#bbf7d0}
 .qa-note-preview{display:none;max-width:44ch;color:rgba(237,241,247,0.66);font-size:11px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .qa-card.has-issue .qa-note-preview{display:block}
 .qa-card-actions{display:flex;align-items:flex-start;justify-content:flex-end;gap:7px;flex-shrink:0}
@@ -392,8 +450,9 @@ h1 .magic-phrase[data-magic-id],h2 .magic-phrase[data-magic-id],h3 .magic-phrase
 .qa-issue-btn:hover,.qa-resolve-btn:hover{background:rgba(255,255,255,0.10);border-color:rgba(237,241,247,0.30);color:#fff;transform:translateY(-1px)}
 .qa-issue-btn:disabled,.qa-resolve-btn:disabled{cursor:wait;opacity:0.56;transform:none}
 .qa-card.has-issue .qa-issue-btn{background:rgba(251,191,36,0.18);border-color:rgba(251,191,36,0.46);color:#fde68a}
+.qa-card.is-awaiting-confirmation .qa-issue-btn{background:rgba(255,255,255,0.055);border-color:rgba(237,241,247,0.14);color:rgba(237,241,247,0.82)}
 .qa-resolve-btn{display:none}
-.qa-card.has-issue .qa-resolve-btn{display:inline-flex;background:rgba(34,197,94,0.16);border-color:rgba(34,197,94,0.42);color:#bbf7d0}
+.qa-card.is-awaiting-confirmation .qa-resolve-btn{display:inline-flex;background:rgba(34,197,94,0.16);border-color:rgba(34,197,94,0.42);color:#bbf7d0}
 .qa-issue-editor[hidden]{display:none}
 .qa-issue-editor{position:fixed;top:var(--qa-issue-top,94px);left:var(--qa-issue-left,24px);z-index:4;width:min(420px,calc(100vw - 32px));max-height:calc(100vh - 32px);padding:0;background:transparent;pointer-events:none}
 .qa-issue-editor::before{content:'';position:absolute;top:var(--qa-issue-arrow-top,28px);left:-7px;width:12px;height:12px;background:rgba(16,18,24,0.98);border-left:1px solid rgba(237,241,247,0.16);border-bottom:1px solid rgba(237,241,247,0.16);transform:rotate(45deg);pointer-events:none}
@@ -421,7 +480,7 @@ body.ms-qa-capture .qa-grid{position:relative;top:auto;right:auto;bottom:auto;le
 body.ms-qa-capture .qa-card{break-inside:avoid;page-break-inside:avoid}
 body.ms-qa-capture .qa-card:hover{transform:none}
 body.ms-qa-capture .qa-issue-editor{position:fixed}
-@media(max-width:720px){.qa-toolbar{height:auto;min-height:74px;align-items:flex-start;flex-direction:column;padding:16px 18px}.qa-actions{width:100%;justify-content:space-between}.qa-grid{top:128px;grid-template-columns:1fr;padding:18px}.qa-title{width:100%;justify-content:space-between}#qa-summary{white-space:normal;text-align:right}.qa-card-head{align-items:stretch;flex-direction:column}.qa-card-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}.qa-issue-btn,.qa-resolve-btn{max-width:none;width:100%;justify-content:center}.qa-resolve-btn{display:none}.qa-card.has-issue .qa-resolve-btn{display:inline-flex}.qa-issue-editor{width:calc(100vw - 24px);max-height:calc(100vh - 24px)}}
+@media(max-width:720px){.qa-toolbar{height:auto;min-height:74px;align-items:flex-start;flex-direction:column;padding:16px 18px}.qa-actions{width:100%;justify-content:space-between}.qa-grid{top:128px;grid-template-columns:1fr;padding:18px}.qa-title{width:100%;justify-content:space-between}#qa-summary{white-space:normal;text-align:right}.qa-card-head{align-items:stretch;flex-direction:column}.qa-card-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}.qa-issue-btn,.qa-resolve-btn{max-width:none;width:100%;justify-content:center}.qa-resolve-btn{display:none}.qa-card.is-awaiting-confirmation .qa-resolve-btn{display:inline-flex}.qa-issue-editor{width:calc(100vw - 24px);max-height:calc(100vh - 24px)}}
 
 /* Navigation buttons */
 .nav-btn{position:fixed;top:50%;width:44px;height:44px;border-radius:50%;background:rgba(10,12,22,0.72);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.1);color:#e8edf7;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:300;opacity:0;pointer-events:none;transition:opacity 0.25s ease,transform 0.25s ease}
@@ -543,7 +602,7 @@ def make_runtime_html(ui: dict) -> str:
 <div id="qa-overview" aria-hidden="true">
   <div class="qa-shell">
     <div class="qa-toolbar">
-      <div class="qa-title"><strong>QA Overview</strong><span id="qa-summary">Scanning slides...</span></div>
+      <div class="qa-title"><strong>{qa_title}</strong><span id="qa-summary">{qa_summary_scanning}</span></div>
       <div class="qa-actions">
         <button class="qa-close" type="button" aria-label="Close QA overview">×</button>
       </div>
@@ -552,14 +611,14 @@ def make_runtime_html(ui: dict) -> str:
     <div class="qa-issue-editor" hidden>
       <form class="qa-issue-dialog" role="dialog" aria-labelledby="qa-issue-title">
         <div>
-          <h3 id="qa-issue-title">Request slide revision</h3>
-          <p>Describe what feels off or what should change. Ask for regeneration, a different layout, or visual fixes.</p>
+          <h3 id="qa-issue-title">{qa_issue_title}</h3>
+          <p>{qa_issue_help}</p>
         </div>
-        <textarea id="qa-issue-note" required placeholder="What should change on this slide?"></textarea>
+        <textarea id="qa-issue-note" required placeholder="{qa_issue_placeholder}"></textarea>
         <div class="qa-issue-error" aria-live="polite"></div>
         <div class="qa-issue-actions">
-          <button class="qa-issue-cancel" type="button">Cancel</button>
-          <button class="qa-issue-save" type="submit">Save request</button>
+          <button class="qa-issue-cancel" type="button">{qa_cancel}</button>
+          <button class="qa-issue-save" type="submit">{qa_save_request}</button>
         </div>
       </form>
     </div>
@@ -2169,6 +2228,25 @@ fitSlideLayout(slides[cur]);
   function emptyQaIssues(){
     return {schemaVersion:1,qaRevision:0,updatedAt:null,issues:[]};
   }
+  function qaText(key,fallback){
+    return (window.MS_UI&&typeof window.MS_UI[key]==='string')?window.MS_UI[key]:fallback;
+  }
+  function qaPlural(count,oneKey,manyKey,oneFallback,manyFallback){
+    return count===1?qaText(oneKey,oneFallback):qaText(manyKey,manyFallback);
+  }
+  function normalizeIssueStatus(issue){
+    var status=issue&&typeof issue.status==='string'?issue.status:'';
+    if(issue&&issue.resolved===true)return 'confirmed';
+    if(status==='fixed_pending_confirmation'||status==='awaiting_confirmation'||status==='pending_confirmation'||status==='repaired_pending_confirmation')return 'fixed_pending_confirmation';
+    if(status==='confirmed'||status==='resolved')return 'confirmed';
+    return 'open';
+  }
+  function issueAwaitingConfirmation(issue){
+    return !!issue&&!issue.resolved&&issue.status==='fixed_pending_confirmation';
+  }
+  function issueOpen(issue){
+    return !!issue&&!issue.resolved&&issue.status!=='fixed_pending_confirmation';
+  }
   function qaIssueApiUrl(){
     var m=window.location.pathname.match(/^\/deck\/[^/]+/);
     return m?m[0]+'/qa-issues':'';
@@ -2181,17 +2259,24 @@ fitSlideLayout(slides[cur]);
       doc.updatedAt=typeof data.updatedAt==='string'?data.updatedAt:null;
       if(Array.isArray(data.issues)){
         doc.issues=data.issues.filter(function(issue){return issue&&typeof issue==='object';}).map(function(issue){
+          var status=normalizeIssueStatus(issue);
           return {
             id:String(issue.id||''),
             slide:parseInt(issue.slide,10)||0,
             slideId:typeof issue.slideId==='string'?issue.slideId:'',
             note:typeof issue.note==='string'?issue.note:'',
-            resolved:issue.resolved===true,
+            resolved:issue.resolved===true||status==='confirmed',
+            status:status,
             createdAt:typeof issue.createdAt==='string'?issue.createdAt:'',
             updatedAt:typeof issue.updatedAt==='string'?issue.updatedAt:'',
             resolvedAt:typeof issue.resolvedAt==='string'?issue.resolvedAt:null,
             resolvedInRevision:Number.isInteger(issue.resolvedInRevision)?issue.resolvedInRevision:null,
             resolution:typeof issue.resolution==='string'?issue.resolution:null,
+            repairedAt:typeof issue.repairedAt==='string'?issue.repairedAt:null,
+            repairedInRevision:Number.isInteger(issue.repairedInRevision)?issue.repairedInRevision:null,
+            repairSummary:typeof issue.repairSummary==='string'?issue.repairSummary:null,
+            confirmationRequestedAt:typeof issue.confirmationRequestedAt==='string'?issue.confirmationRequestedAt:null,
+            confirmedAt:typeof issue.confirmedAt==='string'?issue.confirmedAt:null,
             changedFiles:Array.isArray(issue.changedFiles)?issue.changedFiles.filter(function(file){return typeof file==='string';}):[]
           };
         });
@@ -2245,14 +2330,17 @@ fitSlideLayout(slides[cur]);
   }
   function activeIssueForSlide(idx){
     var slideNo=idx+1;
-    return qaIssues.issues.find(function(issue){return issue.slide===slideNo&&!issue.resolved;})||null;
+    return qaIssues.issues.find(function(issue){return issue.slide===slideNo&&issueOpen(issue);})||qaIssues.issues.find(function(issue){return issue.slide===slideNo&&!issue.resolved;})||null;
   }
   function unresolvedIssuesForSlide(idx){
     var slideNo=idx+1;
     return qaIssues.issues.filter(function(issue){return issue.slide===slideNo&&!issue.resolved;});
   }
-  function unresolvedIssueCount(){
-    return qaIssues.issues.filter(function(issue){return !issue.resolved;}).length;
+  function openIssueCount(){
+    return qaIssues.issues.filter(issueOpen).length;
+  }
+  function pendingConfirmationCount(){
+    return qaIssues.issues.filter(issueAwaitingConfirmation).length;
   }
   function slideIdForIndex(idx){
     var slide=slides[idx];
@@ -2385,7 +2473,7 @@ fitSlideLayout(slides[cur]);
     if(editingIssueIdx===null||!issueTextarea)return;
     var note=issueTextarea.value.trim();
     if(!note){
-      setIssueError('Please describe what should change before saving.');
+      setIssueError(qaText('qa_error_empty_note','Please describe what should change before saving.'));
       issueTextarea.focus();
       return;
     }
@@ -2396,7 +2484,18 @@ fitSlideLayout(slides[cur]);
     if(issue){
       issue.note=note;
       issue.slideId=slideIdForIndex(idx);
+      issue.resolved=false;
+      issue.status='open';
       issue.updatedAt=now;
+      issue.resolvedAt=null;
+      issue.resolvedInRevision=null;
+      issue.resolution=null;
+      issue.repairedAt=null;
+      issue.repairedInRevision=null;
+      issue.repairSummary=null;
+      issue.confirmationRequestedAt=null;
+      issue.confirmedAt=null;
+      issue.changedFiles=[];
     }else{
       qaIssues.issues.push({
         id:issueIdForSlide(idx),
@@ -2404,11 +2503,17 @@ fitSlideLayout(slides[cur]);
         slideId:slideIdForIndex(idx),
         note:note,
         resolved:false,
+        status:'open',
         createdAt:now,
         updatedAt:now,
         resolvedAt:null,
         resolvedInRevision:null,
         resolution:null,
+        repairedAt:null,
+        repairedInRevision:null,
+        repairSummary:null,
+        confirmationRequestedAt:null,
+        confirmedAt:null,
         changedFiles:[]
       });
     }
@@ -2420,7 +2525,7 @@ fitSlideLayout(slides[cur]);
       })
       .catch(function(err){
         console.warn(err);
-        setIssueError('Could not save the revision request. Confirm the preview server is running.');
+        setIssueError(qaText('qa_error_save','Could not save the revision request. Confirm the preview server is running.'));
       })
       .finally(function(){
         if(issueSave)issueSave.disabled=false;
@@ -2435,8 +2540,8 @@ fitSlideLayout(slides[cur]);
       btn.disabled=!!saving;
     });
   }
-  function resolveIssuesForSlide(idx){
-    var issues=unresolvedIssuesForSlide(idx);
+  function confirmIssuesForSlide(idx){
+    var issues=unresolvedIssuesForSlide(idx).filter(issueAwaitingConfirmation);
     if(!issues.length)return;
     var previous=issues.map(function(issue){return Object.assign({},issue);});
     var previousRevision=qaIssues.qaRevision;
@@ -2445,10 +2550,12 @@ fitSlideLayout(slides[cur]);
     var revision=nextQaRevision();
     issues.forEach(function(issue){
       issue.resolved=true;
+      issue.status='confirmed';
       issue.updatedAt=now;
+      issue.confirmedAt=now;
       issue.resolvedAt=now;
       issue.resolvedInRevision=revision;
-      issue.resolution=issue.resolution||'Manually marked resolved in QA Overview';
+      issue.resolution=issue.resolution||'User confirmed repaired in QA Overview';
     });
     qaIssues.updatedAt=now;
     setQaCardSaving(idx,true);
@@ -2456,7 +2563,7 @@ fitSlideLayout(slides[cur]);
     updateQaSummary();
     saveQaIssues()
       .then(function(){
-        if(typeof showToast==='function')showToast('QA revision marked resolved');
+        if(typeof showToast==='function')showToast(qaText('qa_toast_confirmed','QA revision confirmed'));
       })
       .catch(function(err){
         console.warn(err);
@@ -2468,7 +2575,7 @@ fitSlideLayout(slides[cur]);
         qaIssues.updatedAt=previousUpdatedAt;
         applyQaIssuesToCards();
         updateQaSummary();
-        if(typeof showToast==='function')showToast('Could not mark QA revision resolved. Confirm the preview server is running.');
+        if(typeof showToast==='function')showToast(qaText('qa_toast_confirm_failed','Could not confirm the QA revision. Confirm the preview server is running.'));
       })
       .finally(function(){
         setQaCardSaving(idx,false);
@@ -2480,8 +2587,18 @@ fitSlideLayout(slides[cur]);
       var idx=parseInt(item.dataset.idx,10);
       var issue=activeIssueForSlide(idx);
       var hasIssue=!!issue;
+      var awaiting=issueAwaitingConfirmation(issue);
+      var open=issueOpen(issue);
       item.classList.toggle('has-issue',hasIssue);
+      item.classList.toggle('has-open-issue',open);
+      item.classList.toggle('is-awaiting-confirmation',awaiting);
       item.dataset.issueId=hasIssue?issue.id:'';
+      item.dataset.issueStatus=hasIssue?issue.status:'';
+      var status=item.querySelector('.qa-status-badge');
+      if(status){
+        status.textContent=awaiting?qaText('qa_status_pending_confirmation','Fixed - pending confirmation'):qaText('qa_status_requested','Revision requested');
+        status.hidden=!hasIssue;
+      }
       var note=item.querySelector('.qa-note-preview');
       if(note){
         note.textContent=hasIssue?issue.note:'';
@@ -2489,13 +2606,14 @@ fitSlideLayout(slides[cur]);
       }
       var btn=item.querySelector('.qa-issue-btn');
       if(btn){
-        btn.textContent=hasIssue?'Revision saved':'Revise slide';
+        btn.textContent=awaiting?qaText('qa_revise_again','Revise again'):(hasIssue?qaText('qa_revision_saved','Revision saved'):qaText('qa_revise_slide','Revise slide'));
         btn.setAttribute('aria-label',(hasIssue?'Edit revision request for slide ':'Request revision for slide ')+(idx+1));
       }
       var resolveBtn=item.querySelector('.qa-resolve-btn');
       if(resolveBtn){
-        resolveBtn.hidden=!hasIssue;
-        resolveBtn.setAttribute('aria-label','Mark slide '+(idx+1)+' revision resolved');
+        resolveBtn.textContent=qaText('qa_confirm_fix','Confirm');
+        resolveBtn.hidden=!awaiting;
+        resolveBtn.setAttribute('aria-label','Confirm slide '+(idx+1)+' repair');
       }
     });
   }
@@ -2685,12 +2803,21 @@ fitSlideLayout(slides[cur]);
     var pending=cards.filter(function(item){return item.dataset.scanned!=='1';}).length;
     var timedOut=cards.filter(function(item){return item.dataset.status==='timeout'&&item.dataset.scanned!=='1';}).length;
     var errored=cards.filter(function(item){return item.dataset.status==='error';}).length;
-    var issueCount=unresolvedIssueCount();
-    summary.textContent=slides.length+' slides'+(issueCount?' - '+issueCount+' revision request'+(issueCount===1?'':'s'):'')+(pending?' - '+pending+' loading frames'+(timedOut?' ('+timedOut+' timed out)':''):' - ready for visual review')+(errored?' - '+errored+' frame error'+(errored===1?'':'s'):'');
+    var openCount=openIssueCount();
+    var confirmCount=pendingConfirmationCount();
+    var parts=[slides.length+' '+qaText('qa_slides','slides')];
+    if(openCount)parts.push(openCount+' '+qaPlural(openCount,'qa_revision_request_one','qa_revision_request_many','revision request','revision requests'));
+    if(confirmCount)parts.push(confirmCount+' '+qaPlural(confirmCount,'qa_pending_confirmation_one','qa_pending_confirmation_many','pending confirmation','pending confirmations'));
+    if(pending)parts.push(pending+' '+qaText('qa_loading_frames','loading frames')+(timedOut?' ('+timedOut+' '+qaText('qa_timed_out','timed out')+')':''));
+    else parts.push(qaText('qa_ready','ready for visual review'));
+    if(errored)parts.push(errored+' '+qaPlural(errored,'qa_frame_error_one','qa_frame_error_many','frame error','frame errors'));
+    summary.textContent=parts.join(' - ');
     document.body.dataset.msQaSlides=String(slides.length);
     document.body.dataset.msQaPending=String(pending);
     document.body.dataset.msQaTimeouts=String(timedOut);
     document.body.dataset.msQaErrors=String(errored);
+    document.body.dataset.msQaOpenIssues=String(openCount);
+    document.body.dataset.msQaPendingConfirmation=String(confirmCount);
     document.body.classList.toggle('ms-qa-ready',pending===0&&timedOut===0&&errored===0);
   }
   function applyQaFilter(){
@@ -2728,6 +2855,10 @@ fitSlideLayout(slides[cur]);
       var title=document.createElement('strong');
       title.textContent='Slide '+(idx+1)+' / '+slides.length;
       page.appendChild(title);
+      var status=document.createElement('span');
+      status.className='qa-status-badge';
+      status.hidden=true;
+      page.appendChild(status);
       var note=document.createElement('div');
       note.className='qa-note-preview';
       page.appendChild(note);
@@ -2736,7 +2867,7 @@ fitSlideLayout(slides[cur]);
       var issueBtn=document.createElement('button');
       issueBtn.type='button';
       issueBtn.className='qa-issue-btn';
-      issueBtn.textContent='Revise slide';
+      issueBtn.textContent=qaText('qa_revise_slide','Revise slide');
       issueBtn.addEventListener('click',function(e){
         e.preventDefault();
         e.stopPropagation();
@@ -2745,12 +2876,12 @@ fitSlideLayout(slides[cur]);
       var resolveBtn=document.createElement('button');
       resolveBtn.type='button';
       resolveBtn.className='qa-resolve-btn';
-      resolveBtn.textContent='Resolve';
+      resolveBtn.textContent=qaText('qa_confirm_fix','Confirm');
       resolveBtn.hidden=true;
       resolveBtn.addEventListener('click',function(e){
         e.preventDefault();
         e.stopPropagation();
-        resolveIssuesForSlide(idx);
+        confirmIssuesForSlide(idx);
       });
       cardActions.appendChild(issueBtn);
       cardActions.appendChild(resolveBtn);
@@ -2863,6 +2994,11 @@ fitSlideLayout(slides[cur]);
   window.openQaOverview=openQaOverview;
   window.toggleQaOverview=toggleQaOverview;
   if(MS_QA_MODE)setTimeout(openQaOverview,80);
+  else setTimeout(function(){
+    loadQaIssues(true).then(function(){
+      if(pendingConfirmationCount()>0)openQaOverview();
+    });
+  },140);
 })();
 }
 

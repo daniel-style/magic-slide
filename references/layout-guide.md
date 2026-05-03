@@ -180,8 +180,9 @@ Rules:
   revision notes for labels or paragraphs escaping their cards, and for four or
   more cards compressed into a narrow region below the readable-width budget.
   When repairing existing notes, read the JSON and source files first, revise
-  the marked source slides, then use fresh screenshots as verification and to
-  check unmarked slides for similar missed problems.
+  the marked source slides, then mark the notes `fixed_pending_confirmation`
+  for user confirmation. Do not run screenshot verification after saved-note
+  repairs unless the user explicitly asks.
 
 ### Vertical Balance Rule
 

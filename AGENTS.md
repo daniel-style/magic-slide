@@ -11,6 +11,8 @@ Magic Slide is a Codex skill that generates polished, self-contained HTML presen
 ### Generation Model
 
 **Multi-phase workflow with user confirmation:**
+Before step 1, create and maintain a visible TODO/plan for every
+`$magic-slide` invocation; the detailed rule lives in `SKILL.md`.
 1. Ask user about topic, aesthetic style, language, images
 2. Ask if user wants web search (optional). If yes, run `scripts/websearch.py`
    first; agent/default web search is only a fallback after the script path
@@ -25,8 +27,9 @@ Magic Slide is a Codex skill that generates polished, self-contained HTML presen
    overview, then stop for the mandatory user `Revise slide` marking pass
    before final repairs and delivery. Do not run single-slide screenshot repair
    before that pause. When resuming from saved `visual-issues.json` notes, read
-   JSON and source files first, repair marked slides, then screenshot only for
-   ambiguity or verification.
+   JSON and source files first, repair marked slides, then mark those JSON
+   records fixed and awaiting user confirmation. Do not run screenshot
+   verification after repairing saved JSON notes unless the user explicitly asks.
 
 **Why this works:** User controls information gathering and reviews structure before generation. Brief Lite gives the deck an art direction without returning to the old long prototype loop. Read design guidelines once, generate all slides in main thread. Fast and simple with clear checkpoints.
 
@@ -56,6 +59,8 @@ All scripts are in `scripts/` directory:
 
 **Utilities:**
 - `extract-slides.py` — Decomposes merged HTML back to modular sources
+- `mark-qa-repaired.py` — Marks saved QA revision notes fixed and awaiting
+  user confirmation without running screenshot verification
 
 ### Build Flow
 
@@ -103,10 +108,12 @@ remaining slide changes with `Revise slide`, then return to continue.
 For chat follow-up edits after a deck has been generated, treat `sources/` as
 the source of truth: edit `[topic]/sources/style.css`,
 `[topic]/sources/slide-XX.html`, or source-local helpers, then re-run merge and
-inject. If `[topic]/sources/qa/visual-issues.json` has unresolved notes, use
+inject. If `[topic]/sources/qa/visual-issues.json` has open notes, use
 those notes plus the matching source slide/CSS as the repair entry point before
-capturing fresh screenshots; screenshots are for ambiguous notes, verification,
-or finding additional issues on unmarked slides. Do not patch
+capturing fresh screenshots; screenshots are only for ambiguous notes. After
+repairing saved notes, update them to `status: "fixed_pending_confirmation"`
+with `resolved: false`, reopen QA Overview for user confirmation, and do not
+run a screenshot verification pass unless the user explicitly asks. Do not patch
 `[topic]/index.html` directly unless the user explicitly asks for a merged-HTML
 patch or the change comes from browser edit mode Save.
 
@@ -149,6 +156,7 @@ same runtime rule. Keep each detailed rule in its authoritative reference file
 and use short pointers elsewhere:
 
 - Workflow/checkpoints: `SKILL.md` and `references/workflows/`
+- Visible TODO/plan behavior for every `$magic-slide` invocation: `SKILL.md`
 - Brief Lite format: `references/workflows/step-04-design-brief.md`
 - Visual direction and anti-template rules: `references/design-system.md`
 - Generation strategy: `references/generation-guide.md`

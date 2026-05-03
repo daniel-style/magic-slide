@@ -35,6 +35,12 @@ HEARTBEAT_TIMEOUT = 120
 INITIAL_DECK_GRACE_TIMEOUT = 300
 SERVICE_KIND = "magic-slide-preview"
 QA_ISSUES_FILENAME = "visual-issues.json"
+QA_PENDING_CONFIRMATION_STATUSES = {
+    "fixed_pending_confirmation",
+    "awaiting_confirmation",
+    "pending_confirmation",
+    "repaired_pending_confirmation",
+}
 
 
 @dataclass
@@ -170,8 +176,26 @@ def register_with_running_service(port: int, html_path: Path) -> Optional[dict]:
     )
 
 
-def deck_route(deck: Deck) -> str:
-    return f"http://localhost:{server_port}/{deck.url_path().lstrip('/')}"  # type: ignore[name-defined]
+def has_pending_qa_confirmation(deck: Deck) -> bool:
+    try:
+        data = read_qa_issues(deck)
+    except Exception:
+        return False
+    for issue in data.get("issues", []):
+        if not isinstance(issue, dict) or issue.get("resolved") is True:
+            continue
+        if str(issue.get("status") or "").strip() in QA_PENDING_CONFIRMATION_STATUSES:
+            return True
+    return False
+
+
+def deck_url(deck: Deck, *, qa_overview: bool = False) -> str:
+    url = f"http://localhost:{server_port}{deck.url_path()}"  # type: ignore[name-defined]
+    return f"{url}?ms_qa=overview" if qa_overview else url
+
+
+def deck_open_url(deck: Deck) -> str:
+    return deck_url(deck, qa_overview=has_pending_qa_confirmation(deck))
 
 
 def empty_qa_issues() -> dict:
@@ -227,7 +251,8 @@ def write_qa_issues(deck: Deck, data: dict) -> None:
         existing_issue = existing_by_id.get(issue_id)
         if existing_issue and existing_issue.get("resolved") is True and merged.get("resolved") is not True:
             merged["resolved"] = True
-            for key in ("resolvedAt", "resolvedInRevision", "resolution", "changedFiles"):
+            merged["status"] = existing_issue.get("status") or "confirmed"
+            for key in ("resolvedAt", "resolvedInRevision", "resolution", "confirmedAt", "changedFiles"):
                 if existing_issue.get(key) not in (None, "", []):
                     merged[key] = existing_issue.get(key)
         merged_issues.append(merged)
@@ -314,7 +339,8 @@ def main():
                 "deck_id": deck.deck_id,
                 "filename": deck.filename,
                 "html_path": str(deck.html_path),
-                "url": f"http://localhost:{server_port}{deck.url_path()}",
+                "url": deck_url(deck),
+                "open_url": deck_open_url(deck),
                 "last_heartbeat": deck.last_heartbeat,
             }
             for deck in registry.values()
@@ -490,7 +516,8 @@ def main():
                     {
                         "service": SERVICE_KIND,
                         "deck_id": deck.deck_id,
-                        "url": f"http://localhost:{server_port}{deck.url_path()}",
+                        "url": deck_open_url(deck),
+                        "deck_url": deck_url(deck),
                     },
                 )
                 return
@@ -601,7 +628,7 @@ def main():
                 server.shutdown()
                 return
 
-    initial_url = f"http://localhost:{server_port}{initial_deck.url_path()}"
+    initial_url = deck_open_url(initial_deck)
     print(f"  Magic Slide service → http://localhost:{server_port}")
     print(f"  Initial deck:          {initial_url}")
     print(f"  Auto-stop:             {HEARTBEAT_TIMEOUT}s after the last preview tab stops sending heartbeats")

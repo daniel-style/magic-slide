@@ -12,18 +12,43 @@ Generate polished HTML presentations with smooth Magic Move transitions — elem
 
 The user invoked this skill with: `$ARGUMENTS`
 
+## Visible TODO Requirement
+
+Whenever this skill is invoked, create a visible TODO/plan before the first
+meaningful action and keep it updated until the turn stops.
+
+- Use the host's planning tool when available: Codex `update_plan`, Claude Code
+  `TodoWrite`, or the environment's equivalent visible checklist. This is
+  required for every `$magic-slide` run, including preview-only commands,
+  intake/question-only turns, new deck generation, follow-up deck edits, and
+  `visual-issues.json` repair passes.
+- Keep the list short and concrete: 3-7 items that match the current mode.
+  Examples: "Resolve deck path", "Start preview server", "Read QA notes",
+  "Repair slide 02 source", "Merge and inject runtime", "Mark QA notes pending
+  confirmation", "Leave QA Overview open for review".
+- Update item statuses as work advances. Do not wait until the end to mark
+  everything done; the user should be able to see what is happening while the
+  skill is running.
+- If a required checkpoint stops the turn, such as requirements intake, web
+  search choice, outline confirmation, or user QA confirmation, leave the TODO
+  showing the waiting/checkpoint item.
+- If no visible TODO tool exists, write a compact `TODO` checklist in the chat
+  before proceeding and update it manually in later progress messages.
+
 When invoked as `/magic-slide preview [topic]` in Claude Code or
 `$magic-slide preview [topic]` in Codex, run the preview fast path:
 
-1. Treat the argument after `preview` as the topic/deck directory. If omitted,
+1. Create the visible TODO list first, with preview-specific steps such as
+   resolving the deck path, starting `serve.py`, and reporting the URL.
+2. Treat the argument after `preview` as the topic/deck directory. If omitted,
    use `.`. Preview the `index.html` inside that directory. If the user passes
    an explicit `.html` file, preview that file directly.
-2. Locate this skill directory if needed:
+3. Locate this skill directory if needed:
    `SKILL_DIR=$(find ~ -type d -name "magic-slide-skill" 2>/dev/null | head -1)`
-3. Start the preview server with the existing script:
+4. Start the preview server with the existing script:
    `python3 "$SKILL_DIR/scripts/serve.py" "$DECK_PATH"`
-4. Keep the server process running and give the user the displayed URL.
-5. Do not ask deck-generation questions, create an outline, merge slides, or
+5. Keep the server process running and give the user the displayed URL.
+6. Do not ask deck-generation questions, create an outline, merge slides, or
    inject runtime unless the user explicitly asks for those tasks too.
 
 For any other `magic-slide` invocation arguments, treat the arguments as the
@@ -36,6 +61,9 @@ generating slides for any non-preview deck request, complete Step 1 in
 `references/workflows/step-01-requirements.md`.
 
 Hard gate:
+- The visible TODO requirement still runs before this gate. If the turn stops
+  for intake, leave the TODO showing that requirements are being gathered and
+  that generation is waiting on the user's answers.
 - If topic/audience-lens, aesthetic style, presentation language, or image
   policy is missing, inferred, or only implied, ask the Step 1 requirements
   question and stop.
@@ -96,6 +124,8 @@ changing it; only modify runtime behavior when the user requested that change.
 **Default to the balanced path.** Keep the outline checkpoint, write a short
 design brief, then generate the full deck in one production pass. Do not build
 a separate prototype unless the user explicitly asks for that slower workflow.
+The visible TODO requirement applies before Step 1 and should be refreshed when
+the workflow changes from intake to outline, generation, QA, or repair.
 
 **USER INTERACTION RULE:** All user confirmations MUST use the AskUserQuestion
 tool. Text-based questions are ONLY a fallback if the tool is unavailable or
@@ -111,13 +141,13 @@ confirmation and the web-search yes/no question; see
 5. **Step 5: Generate production sources** — Create `style.css` and all `slide-XX.html` files directly from the confirmed outline and Brief Lite, after making a primary/supporting continuity map for adjacent slide pairs
 6. **Step 6: Merge slides** — Combine modular sources into single HTML
 7. **Step 7: Inject runtime** — Run the existing injector unchanged; preserve injected behavior/results unless the user explicitly asks otherwise
-8. **Step 8: Preview, autonomous overview QA repair, mandatory user revision pause, revision-note repair, final QA, and delivery** — ALWAYS launch the skill preview server with `scripts/serve.py`, open the runtime QA capture URL, take one QA overview longshot for first-pass repair, then stop so the user can mark slide revisions before final QA and delivery
+8. **Step 8: Preview, autonomous overview QA repair, mandatory user revision pause, revision-note repair, user confirmation, and delivery** — ALWAYS launch the skill preview server with `scripts/serve.py`, open the runtime QA capture URL, take one QA overview longshot for first-pass repair, then stop so the user can mark slide revisions. After repairing saved revision notes, mark them fixed and awaiting user confirmation instead of running a screenshot verification pass.
 
 **NON-NEGOTIABLE DELIVERY RULE:** After generating or updating a deck, do not finish until `python3 "$SKILL_DIR/scripts/serve.py" {topic}/index.html` is running and you have given the user the preview URL. Opening the HTML file directly is not enough: edit mode, save, image replacement, and close/shutdown controls require the Magic Slide preview server. Never substitute `python3 -m http.server`, `npx serve`, or a file URL for the skill server.
 
-**NON-NEGOTIABLE QA GATE:** After `serve.py` is running for a newly generated deck, open `?ms_qa=overview&ms_qa_capture=1`, wait until the QA wall reports iframe-loaded readiness, capture one full-page/scrolling QA overview longshot, and repair the most obvious rendered visual issues by slide number first. During this autonomous first pass, do not capture full-size single-slide screenshots after the overview repair. Follow `references/workflows/step-10-preview.md` for the detailed triage order. Then reopen/leave QA Overview running and stop: tell the user to mark slide changes with `Revise slide` on the QA cards and return when ready. This user revision pause is mandatory before final QA or delivery. When continuing repairs, first read unresolved JSON notes from `{topic}/sources/qa/visual-issues.json`.
+**NON-NEGOTIABLE QA GATE:** After `serve.py` is running for a newly generated deck, open `?ms_qa=overview&ms_qa_capture=1`, wait until the QA wall reports iframe-loaded readiness, capture one full-page/scrolling QA overview longshot, and repair the most obvious rendered visual issues by slide number first. During this autonomous first pass, do not capture full-size single-slide screenshots after the overview repair. Follow `references/workflows/step-10-preview.md` for the detailed triage order. Then reopen/leave QA Overview running and stop: tell the user to mark slide changes with `Revise slide` on the QA cards and return when ready. This user revision pause is mandatory before final QA or delivery. When continuing repairs, first read open JSON notes from `{topic}/sources/qa/visual-issues.json`.
 
-**NON-NEGOTIABLE UPDATE RULE:** When the user continues in chat after a deck has been generated and asks for changes, read `{topic}/sources/qa/visual-issues.json` first and prioritize unresolved revision requests when present. If unresolved notes exist, repair from the saved JSON plus the corresponding `{topic}/sources/slide-XX.html` and `{topic}/sources/style.css` before taking fresh screenshots; screenshots are only for ambiguous notes that need visual context, post-repair verification, or scanning unmarked slides for additional problems. Edit the modular source files first, then re-run `merge-slides.py`, re-run the existing `inject-runtime.py` unchanged, refresh or restart the Magic Slide preview server, and re-run the QA overview gate as a verification pass before delivery. Do not edit `{topic}/index.html` directly for agent-driven follow-up changes unless the user explicitly asks to patch the merged HTML, or the change comes from the browser edit mode Save flow.
+**NON-NEGOTIABLE UPDATE RULE:** When the user continues in chat after a deck has been generated and asks for changes, read `{topic}/sources/qa/visual-issues.json` first and prioritize open revision requests when present. If open notes exist, repair from the saved JSON plus the corresponding `{topic}/sources/slide-XX.html` and `{topic}/sources/style.css`; screenshots are only for notes that are too ambiguous to interpret from JSON/source context. Edit the modular source files first, then re-run `merge-slides.py`, re-run the existing `inject-runtime.py` unchanged, mark repaired JSON records `status: "fixed_pending_confirmation"` with `resolved: false`, refresh or restart the Magic Slide preview server, and leave/open QA Overview for the user to confirm or continue requesting changes. Do not run a screenshot verification pass after repairing saved JSON notes unless the user explicitly asks for visual verification. Do not edit `{topic}/index.html` directly for agent-driven follow-up changes unless the user explicitly asks to patch the merged HTML, or the change comes from the browser edit mode Save flow.
 
 **Brief Lite is not optional.** It is the quality guardrail that prevents
 generic or frightening template output. Keep it concise. Only use the slower

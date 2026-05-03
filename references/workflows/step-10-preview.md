@@ -67,32 +67,36 @@ For a newly generated deck, the gate has three ordered phases:
    saving it, and then returning to the conversation to say they are ready for
    you to continue. This pause is required after new deck generation; do not
    proceed to final QA or delivery until the user replies.
-3. **Resume from saved revision notes.** When the user returns, read unresolved
+3. **Resume from saved revision notes.** When the user returns, read open
    notes from `{topic}/sources/qa/visual-issues.json` first and make a set of
    known slide numbers. Those notes are the repair queue. For each marked
    slide, open the matching `{topic}/sources/slide-XX.html` plus
    `{topic}/sources/style.css` and repair the modular sources before taking any
    fresh screenshots. Use targeted screenshots only when a saved note is too
    ambiguous to interpret from JSON/source context. After source repairs,
-   re-run `merge-slides.py`, `inject-runtime.py`, `serve.py` if needed, and the
-   QA overview gate as verification; use that verification pass to inspect
-   unmarked slides for additional problems. After visual verification,
-   automatically mark repaired requests as `resolved: true` in
-   `visual-issues.json`, with `resolvedAt`, `resolvedInRevision`,
-   `resolution`, and `changedFiles`.
+   re-run `merge-slides.py` and `inject-runtime.py`, then mark repaired
+   requests as `status: "fixed_pending_confirmation"` and `resolved: false` in
+   `visual-issues.json`, with `repairedAt`, `repairedInRevision`,
+   `repairSummary`, `confirmationRequestedAt`, and `changedFiles`. Restart or
+   refresh `serve.py`; decks with pending confirmations auto-open QA Overview.
+   Stop there and ask the user to review QA Overview. Do not run a screenshot
+   verification pass after repairing saved JSON notes unless the user
+   explicitly asks for visual verification.
 
 Revision notes are stored in `{topic}/sources/qa/visual-issues.json`. They are
-human/agent visual review notes, not runtime diagnostics and not pass/fail
-statuses.
+human/agent visual review notes, not runtime diagnostics. Statuses are:
+`open` for user-requested work, `fixed_pending_confirmation` for agent-repaired
+work awaiting user confirmation, and `confirmed` after the user confirms in QA
+Overview.
 
-QA cards also expose a `Resolve` button for manually marking an unresolved
-slide note as fixed when the repair happened outside the normal agent resume
-flow.
+QA cards expose a `Confirm` button only for `fixed_pending_confirmation` notes.
+If the user is not satisfied, they can click `Revise slide` again and save a
+follow-up request; that returns the note to `open`.
 
 The mandatory user revision pause happens once after the autonomous first pass
 for a newly generated deck. After the user returns and those notes are repaired,
-later QA overview runs are verification passes unless the user explicitly asks
-for another marking round.
+the next QA Overview run is a user-confirmation surface, not an agent
+verification pass.
 
 Triage rules:
 
@@ -103,21 +107,20 @@ Triage rules:
   contrast, image/diagram treatment, and whether any card is blank or unloaded.
 - Revision notes are a source-first repair queue, not a reason to screenshot
   before fixing. Use screenshots before repair only when a saved note is
-  ambiguous; otherwise repair marked source slides first, then screenshot the
-  rendered deck for verification and missed issues on unmarked slides.
-- During post-repair verification, skip already marked slides while discovering
-  new screenshot issues so the same human note is not reported twice.
+  ambiguous; otherwise repair marked source slides first, then mark those notes
+  `fixed_pending_confirmation` for user review.
+- Do not run post-repair screenshot verification after saved-note repairs unless
+  the user explicitly asks for visual verification.
 - Do not inject revision notes into `index.html`. QA cards only read/write
   `sources/qa/visual-issues.json`; the merged HTML remains generated output.
-- Do not ask the user to clear resolved issues. The agent resolves them in JSON
-  after repairing and visually verifying the relevant slides.
+- Do not ask the user to clear repaired issues. The agent marks them pending
+  confirmation in JSON; the user confirms them in QA Overview.
 - For a newly generated deck, do not do targeted full-size screenshots after
   the autonomous overview-longshot repair pass; stop for the mandatory
   `Revise slide` marking pass. After the user returns, targeted full-size
-  screenshots or rendered slide checks may be used only for slides that need
-  closer inspection: marked revision slides, dense/content slides,
-  diagrams/images, and any cards that still look questionable in the visual
-  wall. Do not capture every slide individually by default.
+  screenshots may be used before repair only when a saved note is ambiguous, or
+  after repair only when the user explicitly requests visual verification. Do
+  not capture every slide individually by default.
 
 ### 10b. Final QA checklist
 
@@ -193,12 +196,11 @@ Triage rules:
 Tell the user:
 - Preview is running at the displayed URL from `scripts/serve.py`
 - Final HTML is at `{topic}/index.html`
-- QA overview result, such as `QA overview longshot: 40 slides captured for visual review`
-- Unresolved revision-note status from `{topic}/sources/qa/visual-issues.json`,
-  if any remain
+- QA overview result, such as `QA overview: open for user confirmation`
+- Open or pending-confirmation status from
+  `{topic}/sources/qa/visual-issues.json`, if any remain
 - Visual issues found and repaired, by slide number, or a short note that the
-  captured overview and targeted full-size checks did not reveal issues needing
-  source changes
+  saved notes were repaired and are awaiting user confirmation
 - Final assets, if any, are in `{topic}/assets/`
 - They can edit sources in `{topic}/sources/` and re-run merge/inject
 - Process files such as outline, helper scripts, and QA artifacts are kept in
@@ -221,24 +223,27 @@ source of truth for agent-driven follow-up changes.
 When the user asks for changes in the conversation after a deck has already
 been generated:
 
-1. Read `{topic}/sources/qa/visual-issues.json` first. If it contains unresolved
+1. Read `{topic}/sources/qa/visual-issues.json` first. If it contains open
    revision requests, treat their slides as known repair targets. Open the
-   matching source slides and CSS, then fix those known targets before taking a
-   fresh QA overview longshot. Use screenshots before repair only when a note is
-   too ambiguous to interpret from JSON and source context.
+   matching source slides and CSS, then fix those known targets. Use
+   screenshots before repair only when a note is too ambiguous to interpret
+   from JSON and source context.
 2. Edit `{topic}/sources/style.css`, `{topic}/sources/slide-XX.html`, and any
    relevant source-local helpers first.
 3. Re-run merge:
    `python3 "$SKILL_DIR/scripts/merge-slides.py" {topic}/sources/ --lang {language}`
 4. Re-run runtime injection:
    `python3 "$SKILL_DIR/scripts/inject-runtime.py" {topic}/index.html --lang {language}`
-5. Refresh or restart the Magic Slide preview server and give the user the URL.
-6. Re-run the QA overview gate as a verification pass. Use this rendered pass to
-   confirm touched slides and inspect unmarked slides for additional issues. For
-   pure text edits, at minimum confirm the touched slides still look correct in
-   the overview.
-7. If unresolved revision requests were repaired, update their JSON records to
-   `resolved: true` with the repair revision and changed files.
+5. If revision requests were repaired, update their JSON records to
+   `status: "fixed_pending_confirmation"` and `resolved: false` with the repair
+   revision and changed files. Prefer:
+   `python3 "$SKILL_DIR/scripts/mark-qa-repaired.py" {topic}/sources/qa/visual-issues.json --changed-files ...`
+6. Refresh or restart the Magic Slide preview server and give the user the URL.
+7. Open or leave QA Overview visible for the user. The preview server
+   auto-opens `?ms_qa=overview` when pending confirmations exist. Tell the user
+   to click `Confirm` if satisfied, or use `Revise slide`/chat to continue.
+   Do not run a screenshot verification pass after repairing saved JSON notes
+   unless the user explicitly requests it.
 
 Do not patch `{topic}/index.html` directly for normal follow-up edits. The
 merged HTML is generated output. Direct edits are allowed only when the user
