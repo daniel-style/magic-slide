@@ -78,6 +78,34 @@ The runtime must not replace a clone's entire inline `style` string. Magic-id te
 
 This prevents a label from wrapping during the animated clone phase and snapping back to one line when the real TO element is revealed.
 
+### Generated source contract for text anchors
+
+Every text element with `data-magic-id` must render as a stable box. Author
+text anchors with `display:inline-block` or a class that computes to
+`inline-block`; do not put `data-magic-id` on a raw inline `span`, `strong`, or
+`em` and expect the browser's inline line box to animate smoothly.
+
+For cover-title -> section-title or phrase -> title moves, the source and
+target must have compatible box roles:
+- Whole-heading anchors: use the whole heading on both slides, and make both
+  headings `display:inline-block`.
+- Phrase anchors inside headings or paragraphs: make the phrase element
+  `display:inline-block` on both slides, with identical visible text and
+  compatible `text-transform`, `white-space`, and width policy.
+- Short display headings that are intended to stay on one line should use a
+  one-line heading style on both sides, such as `display:inline-block;
+  white-space:nowrap`, plus a font-size cap or wider container that proves the
+  phrase fits. Do not use `data-magic-nowrap="true"` for heading phrases; that
+  attribute is reserved for labels/chips/badges.
+
+If a phrase appears as an inline word in a paragraph on slide N and becomes a
+large `h1`/`h2` on slide N+1, first decide whether it is a one-line display
+phrase or a multiline heading. If the destination would wrap while the source
+does not, either widen/lower the destination heading so it remains one line,
+split the phrase into semantic inline-block fragments, or remove the
+`data-magic-id`. A one-line phrase that breaks during the FLIP animation is a
+broken anchor, even when the final slide looks acceptable.
+
 The snapshot also includes size constraints (`min-width`, `min-height`,
 `max-width`, `max-height`, and inline-size equivalents). FLIP clones are moved
 to `body`, so selectors that depend on the slide ancestry no longer match.
@@ -110,6 +138,9 @@ Move. Before writing HTML, decide whether each shared text anchor is a
 one-line label or a multiline heading/body block:
 - One-line labels: use an approved label class or `data-magic-nowrap="true"`
   and keep both source and target to the same nowrap policy.
+- One-line display headings/phrases: use `display:inline-block` plus an
+  authored one-line width policy on both sides; do not use
+  `data-magic-nowrap="true"` unless the element is actually a label/chip.
 - Multiline headings/body text: let both sides wrap naturally with compatible
   widths, and do not add `data-magic-nowrap="true"` to the phrase. If the
   whole text block is too unstable, anchor a shorter phrase or split it into

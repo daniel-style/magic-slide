@@ -75,6 +75,12 @@ Rules:
   on `.slide` or `.slide[data-bg="..."]`.
 - Decorative full-bleed texture may use `.slide::before` / `.slide::after` with
   `position:absolute; inset:0; pointer-events:none`.
+- Full-slide decorative texture must read as an even material field, not as a
+  fixed guide line. Do not put a deck-wide vertical or horizontal hairline,
+  center divider, column seam, or 50% guide into `.slide::before` /
+  `.slide::after`. A gradient stop such as `transparent 0 48%, line 48.1%,
+  transparent 48.3%` will appear on every slide as a rendering bug unless it
+  belongs to one named slide composition and is visibly part of that content.
 - `.slide-content` is a layout wrapper only. It may constrain content width, but
   it must not create the visible page boundary.
 - A full-bleed decorative/image layer must be either the root `.slide`
@@ -489,13 +495,20 @@ runtime re-applies the centered 1680px content-canvas guard to the direct
    - Avoid: `.brand-mark` / `.section-no` direct children or browser-bar-like
      strips near the viewport edge
 
-16. **Magic Move labels added only for motion**
+16. **A vertical or horizontal seam appears on every slide**
+   - Fix: remove fixed-position pseudo-element hairlines from global `.slide`
+     backgrounds; use an even material texture, slide-local composition line,
+     or real layout divider only where the content explains it
+   - Avoid: deck-wide center rules, 48%/50% guide lines, and single-axis
+     gradient stops in `.slide::before` / `.slide::after`
+
+17. **Magic Move labels added only for motion**
    - Fix: move `data-magic-id` to real content such as a heading phrase, card
      title, metric, image/object, or diagram node, or use a hard cut
    - Avoid: repeated `.focus-token`, token rows, chips, or pills appended to
      the body just to create a shared element
 
-17. **Content canvas stretches across an ultra-wide browser**
+18. **Content canvas stretches across an ultra-wide browser**
    - Fix: keep the direct `.slide-content` centered with the runtime 1680px
      canvas guard; tighten individual slides with internal stages, groups,
      panels, or evidence bands
@@ -534,10 +547,13 @@ Before delivery, check:
 - [ ] No white/cream/pale-gray or low-opacity text appears on a light/paper field
 - [ ] Content text uses opacity/alpha high enough to stay readable; hierarchy is mostly color/token based, not transparency based
 - [ ] Magic Move anchors satisfy `flip-engine.md`, including semantic adjacent
-      continuity, identical visible text, stable wrap/no-wrap behavior, and no
-      decorative-only placeholders, Magic-only token rows, or body labels whose
-      main purpose is motion
+      continuity, identical visible text, `display:inline-block` for text
+      anchors, stable wrap/no-wrap behavior, and no decorative-only
+      placeholders, Magic-only token rows, or body labels whose main purpose is
+      motion
 - [ ] style.css has :root variables and animations
+- [ ] Global `.slide::before` / `.slide::after` textures do not introduce a
+      deck-wide vertical/horizontal seam, center guide, or unexplained divider
 - [ ] Files named slide-01.html, slide-02.html, etc.
 - [ ] Layout, text-fit, vertical-balance, source-note, and overlap checks satisfy `layout-guide.md`
 - [ ] `.slide-content` is a stable 16:9 design-canvas wrapper; visual tightness

@@ -194,6 +194,9 @@ Avoid:
 - Recoloring the same card under many names.
 - Making every block glow or every heading use the accent.
 - Using background effects as a substitute for composition.
+- Adding a deck-wide pseudo-element seam, center guide, or fixed vertical/
+  horizontal hairline as "texture"; global backgrounds should be material
+  fields, not visible alignment rulers.
 - Creating visual components that do not correspond to story roles.
 
 Good components are semantic: timeline, source note, comparison, risk map,
@@ -254,6 +257,9 @@ The continuity map should include:
 - Primary vs supporting anchors. Use `flip-engine.md` as the authority for the
   primary-anchor quality standard.
 - Planned id names, exact visible text, and element type on both sides.
+- The rendered text-box policy for every text anchor: `display:inline-block`
+  heading, `display:inline-block` phrase, nowrap label, or compatible multiline
+  block. Raw inline `span`/`strong` anchors are not stable enough for FLIP.
 - The motion role: travel, shrink, expand, zoom into detail, carry evidence
   forward, or shift a real content role. Repeated deck marks or chapter context
   are supporting cues at most, not primary anchors.

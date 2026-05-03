@@ -28,6 +28,10 @@ Before writing files, make a concise internal plan based on Brief Lite:
   `.slide`, which full-bleed layers are direct `.slide > .bg` children, and
   which images are ordinary content images. No apparent background may be inside
   `.slide-content` or another max-width wrapper.
+- Background texture gate: global `.slide::before` / `.slide::after` textures
+  may add grain, wash, or subtle pattern, but they must not add a deck-wide
+  vertical/horizontal seam, center guide, 48%/50% divider, or single fixed
+  hairline that appears on every slide.
 - Slide chrome gate: confirm each slide has exactly one real `.slide-content`
   direct child plus optional `.bg` direct children only. Do not plan
   browser/address-bar-like top strips, full-width brand pills, or direct-child
@@ -65,9 +69,10 @@ Before writing files, make a concise internal plan based on Brief Lite:
 - Magic Move continuity map for every adjacent slide pair: content
   relationship, primary vs supporting anchors, planned `data-magic-id` names,
   exact visible text, source/target element type, source/target visual role,
-  wrap policy (`nowrap` label vs matching multiline heading/body), and
-  intentional hard cuts. The map must identify real content anchors, not
-  appended focus-token rows or labels created mainly for motion.
+  rendered text-box policy (`display:inline-block` heading/phrase, `nowrap`
+  label, or matching multiline heading/body), wrap policy, and intentional hard
+  cuts. The map must identify real content anchors, not appended focus-token
+  rows or labels created mainly for motion.
 - Slides that need diagrams, images, dense text, or split treatment
 - Slides, if any, that truly need top alignment, with a reason. Default every
   slide to vertically centered content; only dense matrices/tables/timelines
@@ -114,6 +119,17 @@ notes, or intermediate files created during generation must also live under
   that are already necessary content; do not create labels or token rows merely
   so they can move. Do not let a label wrap during the clone animation and then
   snap back to one line on cleanup.
+- Keep text Magic Move anchors as stable boxes. Any `h1`-`h6`, paragraph
+  phrase, `span`, `strong`, or `em` with `data-magic-id` must compute to
+  `display:inline-block` on both sides of the move. Do not animate a raw inline
+  word from a paragraph into a block heading, or a cover `h1` into an inline
+  heading span, unless both sides have compatible inline-block geometry,
+  identical text transform, and the same one-line or multiline behavior.
+- For short display headings that should remain one line during Magic Move,
+  author the one-line heading style directly (`display:inline-block`,
+  `white-space:nowrap`, and enough width or a lower max font size). Do not use
+  `data-magic-nowrap="true"` on heading phrases; reserve it for true
+  labels/chips/badges.
 - Hard gate: do not put `data-magic-nowrap="true"` on heading phrases, card
   titles, hero-card titles, callout titles, or ordinary `.magic-phrase` spans
   inside `h1`-`h6`. Those are text layout, not labels. They must wrap naturally
@@ -178,6 +194,11 @@ notes, or intermediate files created during generation must also live under
   index-to-detail sequence, split an overloaded slide into setup/detail, or
   carry a real heading phrase, card title, metric, diagram node, or key number
   forward. Keep visible text identical for shared ids.
+- Before assigning `data-magic-id` to a text node, check the source and target
+  box role. A cover title -> next-slide phrase, or paragraph phrase -> closing
+  title, must use compatible `display:inline-block` boxes and either both stay
+  one line or both wrap intentionally. If that cannot be guaranteed, use a
+  shorter phrase fragment or skip the anchor.
 - If a shared text anchor would be one line on one slide and multiline on the
   other, either make both sides share the same line-break behavior, add
   `data-magic-nowrap="true"` only for a short label/chip that genuinely fits, or move the
