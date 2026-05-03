@@ -475,8 +475,8 @@ body.ms-qa-capture .qa-issue-editor{position:fixed}
 @keyframes ms-zoom-in{from{opacity:0;transform:var(--ms-stagger-base-transform,translateZ(0)) scale(0.8)}to{opacity:var(--ms-stagger-final-opacity,1);transform:var(--ms-stagger-base-transform,translateZ(0)) scale(1)}}
 
 /* Apply to JS-marked stagger elements */
-.ms-stagger-item{animation:ms-fade-in-up var(--ms-stagger-duration,0.5s) var(--ms-ease,cubic-bezier(0.25,1,0.5,1)) both;animation-delay:calc(var(--ms-stagger-base-delay,110ms) + var(--stagger-index,0) * 80ms)}
-.ms-stagger-text{--ms-stagger-y:58px;--ms-stagger-duration:0.72s}
+.ms-stagger-item{animation:ms-fade-in-up var(--ms-stagger-duration,0.5s) var(--ms-ease,cubic-bezier(0.25,1,0.5,1)) both;animation-delay:calc(var(--ms-stagger-base-delay,70ms) + var(--stagger-index,0) * var(--ms-stagger-step,58ms))}
+.ms-stagger-text{--ms-stagger-y:52px;--ms-stagger-duration:0.64s}
 .slide[data-stagger="fade-in"] .ms-stagger-item{animation-name:ms-fade-in}
 .slide[data-stagger="fade-in-down"] .ms-stagger-item{animation-name:ms-fade-in-down}
 .slide[data-stagger="fade-in-left"] .ms-stagger-item{animation-name:ms-fade-in-left}
@@ -592,11 +592,16 @@ var cur=0,animating=false;
 var MS_VIEW_PARAMS=new URLSearchParams(window.location.search);
 var MS_EMBED_MODE=MS_VIEW_PARAMS.get('ms_embed')||'';
 var MS_IS_OVERVIEW_EMBED=MS_EMBED_MODE==='overview';
-var MS_IS_MAGIC_SLIDE_PREVIEW=window.location.protocol==='http:'&&window.location.hostname==='localhost'&&/^\/deck\/[^/]+\//.test(window.location.pathname);
+var MS_IS_LOCAL_PREVIEW_HOST=window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1'||window.location.hostname==='::1';
+var MS_IS_MAGIC_SLIDE_PREVIEW=window.location.protocol==='http:'&&MS_IS_LOCAL_PREVIEW_HOST&&/^\/deck\/[^/]+\//.test(window.location.pathname);
 var MS_QA_ALLOWED=MS_IS_MAGIC_SLIDE_PREVIEW;
 var MS_QA_MODE=MS_QA_ALLOWED&&MS_VIEW_PARAMS.get('ms_qa')==='overview';
 var MS_QA_CAPTURE_MODE=MS_QA_MODE&&MS_VIEW_PARAMS.get('ms_qa_capture')==='1';
 document.body.classList.toggle('ms-qa-capture',MS_QA_CAPTURE_MODE);
+function msShortcutAllowed(name){
+  if(MS_IS_MAGIC_SLIDE_PREVIEW)return true;
+  return name==='overview'||name==='cursor'||name==='navigation';
+}
 function isCjkTokenProtectionCandidate(el){
   if(!el||el.dataset.cjkWrap==='off'||el.classList.contains('ms-cjk-protected'))return false;
   if(el.closest('[contenteditable="true"]'))return false;
@@ -1222,7 +1227,18 @@ function go(from,to){
   Object.keys(fromEls).forEach(function(id){if(toEls[id])sharedIds.push(id)});
   Object.keys(toEls).forEach(function(id){if(fromEls[id]&&sharedIds.indexOf(id)===-1)sharedIds.push(id)});
 
-  // Shared stagger marking function — returns stagger count for cleanup timing
+  function staggerTiming(count){
+    if(count<=0)return 0;
+    var baseDelay=70;
+    var defaultStep=58;
+    var minStep=22;
+    var maxSpread=680;
+    var slots=Math.max(1,count-1);
+    var step=count===1?0:Math.min(defaultStep,Math.max(minStep,Math.floor(maxSpread/slots)));
+    return {baseDelay:baseDelay,step:step,cleanupMs:baseDelay+slots*step+760};
+  }
+
+  // Shared stagger marking function — returns total stagger cleanup time in ms.
   function applyStagger(slide){
     var staggerMode=(slide.getAttribute('data-stagger')||'cascade').toLowerCase();
     if(staggerMode==='none'||staggerMode==='off')return 0;
@@ -1328,7 +1344,15 @@ function go(from,to){
       });
     }
     markStagger(toContent);
-    return staggerIndex;
+    var timing=staggerTiming(staggerIndex);
+    if(timing){
+      slide.style.setProperty('--ms-stagger-base-delay',timing.baseDelay+'ms');
+      slide.style.setProperty('--ms-stagger-step',timing.step+'ms');
+      return timing.cleanupMs;
+    }
+    slide.style.removeProperty('--ms-stagger-base-delay');
+    slide.style.removeProperty('--ms-stagger-step');
+    return 0;
   }
 
   if(sharedIds.length===0){
@@ -1336,7 +1360,7 @@ function go(from,to){
     toSlide.classList.add('active');
     toSlide.style.transition='none';toSlide.style.opacity='0';toSlide.style.visibility='visible';toSlide.style.zIndex='2';
     fitSlideLayout(toSlide);
-    var staggerN=applyStagger(toSlide);
+    var staggerDoneMs=applyStagger(toSlide);
     void toSlide.offsetHeight;
     if(isFadeTransition(txName)){
       toSlide.style.transition='opacity '+dur+'ms '+ease;toSlide.style.opacity='1';
@@ -1355,8 +1379,10 @@ function go(from,to){
         el.style.removeProperty('--ms-stagger-final-opacity');
         el.style.removeProperty('--ms-stagger-base-transform');
       });
+      toSlide.style.removeProperty('--ms-stagger-base-delay');
+      toSlide.style.removeProperty('--ms-stagger-step');
       animating=false;
-    },Math.max(dur+50,staggerN*80+550));
+    },Math.max(dur+50,staggerDoneMs));
     cur=to;updateUI();updateHash();return;
   }
 
@@ -2065,6 +2091,7 @@ fitSlideLayout(slides[cur]);
   // Keyboard shortcut: O key
   document.addEventListener('keydown',function(e){
     if(e.code==='Escape'&&overview.classList.contains('show')){
+      if(!msShortcutAllowed('panel-close'))return;
       e.preventDefault();
       closeOverview();
       return;
@@ -2825,6 +2852,7 @@ fitSlideLayout(slides[cur]);
   }
 
   document.addEventListener('keydown',function(e){
+    if(!msShortcutAllowed('save'))return;
     if(isMsTextEntryTarget(e.target)&&!isMsContentEditableTarget(e.target))return;
     var isSaveShortcut=(e.key==='s'||e.key==='S')&&(e.metaKey||e.ctrlKey)&&!e.altKey;
     if(!isSaveShortcut)return;
@@ -3402,6 +3430,7 @@ fitSlideLayout(slides[cur]);
     editBtn.addEventListener('click',function(e){e.stopPropagation();if(_ct){clearTimeout(_ct);_ct=null;}toggleEditMode();});
 
     document.addEventListener('keydown',function(e){
+      if(!msShortcutAllowed('edit'))return;
       if(e.code!=='KeyE'||e.ctrlKey||e.metaKey||e.altKey||isTextEntryTarget(e.target))return;
       e.preventDefault();
       e.stopPropagation();

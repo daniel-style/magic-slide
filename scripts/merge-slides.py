@@ -12,7 +12,9 @@ Arguments:
 
 Expected structure:
     <sources-dir>/
+      head.html     (optional metadata inserted into <head>)
       style.css
+      i18n.js       (optional site behavior inserted after slide-01)
       slide-01.html
       slide-02.html
       ...
@@ -131,6 +133,12 @@ def harden_inline_svg(fragment: str) -> str:
     return re.sub(r'<svg\b[\s\S]*?</svg>', _harden_svg_block, fragment, flags=re.IGNORECASE)
 
 
+def read_optional_source_file(path: Path) -> str:
+    if not path.exists():
+        return ""
+    return path.read_text(encoding='utf-8').strip()
+
+
 def main():
     parser = argparse.ArgumentParser(description='Merge modular slide sources into HTML')
     parser.add_argument('sources_dir', help='Directory containing style.css + slide-*.html files')
@@ -193,8 +201,11 @@ def main():
         for content in slides_html
     ]
 
+    head_extra = read_optional_source_file(sources_dir / 'head.html')
+    site_script = read_optional_source_file(sources_dir / 'i18n.js')
+
     # Generate complete HTML
-    html = assemble(css=css_content, slides=slides_html, lang=args.lang)
+    html = assemble(css=css_content, slides=slides_html, lang=args.lang, head_extra=head_extra, site_script=site_script)
 
     # Write output
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -202,15 +213,21 @@ def main():
     print(f"✓ Merged {len(slides_html)} slides → {output_path}")
 
 
-def assemble(css: str, slides: list, lang: str) -> str:
+def assemble(css: str, slides: list, lang: str, head_extra: str = "", site_script: str = "") -> str:
     """Generate complete HTML document from CSS and slide fragments."""
-    slides_joined = '\n'.join(slides)
+    head_extra_markup = f'\n{head_extra}' if head_extra else ''
+    slides_with_site_script = list(slides)
+    if site_script:
+        site_script_block = f'<script>\n{site_script}\n</script>'
+        insert_at = 1 if slides_with_site_script else 0
+        slides_with_site_script.insert(insert_at, site_script_block)
+    slides_joined = '\n'.join(slides_with_site_script)
 
     return f'''<!DOCTYPE html>
 <html lang="{lang}">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">{head_extra_markup}
   <style>
 {css}
   </style>
