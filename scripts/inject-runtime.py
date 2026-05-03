@@ -381,6 +381,7 @@ h1 .magic-phrase[data-magic-id],h2 .magic-phrase[data-magic-id],h3 .magic-phrase
 .qa-frame-content{position:absolute;top:0;left:0;width:1920px;height:1080px;transform-origin:top left;pointer-events:none;background:transparent}
 .qa-frame-content iframe{width:1920px;height:1080px;border:0;display:block;pointer-events:none;background:transparent}
 .qa-card.has-issue{border-color:rgba(251,191,36,0.56);box-shadow:0 0 0 1px rgba(251,191,36,0.26),0 18px 50px rgba(0,0,0,0.28)}
+.qa-card.is-editing{border-color:rgba(127,200,255,0.70);box-shadow:0 0 0 2px rgba(127,200,255,0.38),0 20px 62px rgba(0,0,0,0.36)}
 .qa-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:12px 14px 13px;border-top:1px solid rgba(237,241,247,0.10);background:rgba(11,12,16,0.92)}
 .qa-page{display:flex;flex-direction:column;gap:6px;min-width:0}
 .qa-page strong{font-size:12px;line-height:1;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:#f8fafc}
@@ -394,8 +395,13 @@ h1 .magic-phrase[data-magic-id],h2 .magic-phrase[data-magic-id],h3 .magic-phrase
 .qa-resolve-btn{display:none}
 .qa-card.has-issue .qa-resolve-btn{display:inline-flex;background:rgba(34,197,94,0.16);border-color:rgba(34,197,94,0.42);color:#bbf7d0}
 .qa-issue-editor[hidden]{display:none}
-.qa-issue-editor{position:absolute;inset:0;z-index:4;display:grid;place-items:center;padding:22px;background:rgba(9,10,13,0.56);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-.qa-issue-dialog{width:min(560px,100%);border:1px solid rgba(237,241,247,0.16);border-radius:14px;background:rgba(16,18,24,0.98);box-shadow:0 30px 90px rgba(0,0,0,0.48);padding:20px;display:grid;gap:14px}
+.qa-issue-editor{position:fixed;top:var(--qa-issue-top,94px);left:var(--qa-issue-left,24px);z-index:4;width:min(420px,calc(100vw - 32px));max-height:calc(100vh - 32px);padding:0;background:transparent;pointer-events:none}
+.qa-issue-editor::before{content:'';position:absolute;top:var(--qa-issue-arrow-top,28px);left:-7px;width:12px;height:12px;background:rgba(16,18,24,0.98);border-left:1px solid rgba(237,241,247,0.16);border-bottom:1px solid rgba(237,241,247,0.16);transform:rotate(45deg);pointer-events:none}
+.qa-issue-dialog{position:relative;width:100%;max-height:inherit;box-sizing:border-box;overflow:auto;border:1px solid rgba(237,241,247,0.16);border-radius:14px;background:rgba(16,18,24,0.98);box-shadow:0 22px 70px rgba(0,0,0,0.48),0 0 0 1px rgba(255,255,255,0.04) inset;padding:18px;display:grid;gap:14px;pointer-events:auto}
+.qa-issue-editor[data-placement="left"]::before{left:auto;right:-7px;border-left:0;border-bottom:0;border-right:1px solid rgba(237,241,247,0.16);border-top:1px solid rgba(237,241,247,0.16)}
+.qa-issue-editor[data-placement="below"]::before{top:-7px;left:var(--qa-issue-arrow-left,28px);border-left:1px solid rgba(237,241,247,0.16);border-bottom:0;border-right:0;border-top:1px solid rgba(237,241,247,0.16)}
+.qa-issue-editor[data-placement="above"]::before{top:auto;bottom:-7px;left:var(--qa-issue-arrow-left,28px);border-left:0;border-bottom:1px solid rgba(237,241,247,0.16);border-right:1px solid rgba(237,241,247,0.16);border-top:0}
+.qa-issue-editor[data-placement="float"]::before{display:none}
 .qa-issue-dialog h3{margin:0;color:#f8fafc;font-size:16px;line-height:1.2;font-weight:850}
 .qa-issue-dialog p{margin:0;color:rgba(237,241,247,0.62);font-size:12px;line-height:1.45}
 .qa-issue-dialog textarea{width:100%;min-height:132px;resize:vertical;box-sizing:border-box;border:1px solid rgba(237,241,247,0.16);border-radius:10px;background:rgba(255,255,255,0.055);color:#f8fafc;font:inherit;font-size:13px;line-height:1.45;padding:12px;outline:none}
@@ -415,7 +421,7 @@ body.ms-qa-capture .qa-grid{position:relative;top:auto;right:auto;bottom:auto;le
 body.ms-qa-capture .qa-card{break-inside:avoid;page-break-inside:avoid}
 body.ms-qa-capture .qa-card:hover{transform:none}
 body.ms-qa-capture .qa-issue-editor{position:fixed}
-@media(max-width:720px){.qa-toolbar{height:auto;min-height:74px;align-items:flex-start;flex-direction:column;padding:16px 18px}.qa-actions{width:100%;justify-content:space-between}.qa-grid{top:128px;grid-template-columns:1fr;padding:18px}.qa-title{width:100%;justify-content:space-between}#qa-summary{white-space:normal;text-align:right}.qa-card-head{align-items:stretch;flex-direction:column}.qa-card-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}.qa-issue-btn,.qa-resolve-btn{max-width:none;width:100%;justify-content:center}.qa-resolve-btn{display:none}.qa-card.has-issue .qa-resolve-btn{display:inline-flex}}
+@media(max-width:720px){.qa-toolbar{height:auto;min-height:74px;align-items:flex-start;flex-direction:column;padding:16px 18px}.qa-actions{width:100%;justify-content:space-between}.qa-grid{top:128px;grid-template-columns:1fr;padding:18px}.qa-title{width:100%;justify-content:space-between}#qa-summary{white-space:normal;text-align:right}.qa-card-head{align-items:stretch;flex-direction:column}.qa-card-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}.qa-issue-btn,.qa-resolve-btn{max-width:none;width:100%;justify-content:center}.qa-resolve-btn{display:none}.qa-card.has-issue .qa-resolve-btn{display:inline-flex}.qa-issue-editor{width:calc(100vw - 24px);max-height:calc(100vh - 24px)}}
 
 /* Navigation buttons */
 .nav-btn{position:fixed;top:50%;width:44px;height:44px;border-radius:50%;background:rgba(10,12,22,0.72);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.1);color:#e8edf7;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:300;opacity:0;pointer-events:none;transition:opacity 0.25s ease,transform 0.25s ease}
@@ -544,7 +550,7 @@ def make_runtime_html(ui: dict) -> str:
     </div>
     <div class="qa-grid"></div>
     <div class="qa-issue-editor" hidden>
-      <form class="qa-issue-dialog">
+      <form class="qa-issue-dialog" role="dialog" aria-labelledby="qa-issue-title">
         <div>
           <h3 id="qa-issue-title">Request slide revision</h3>
           <p>Describe what feels off or what should change. Ask for regeneration, a different layout, or visual fixes.</p>
@@ -2158,6 +2164,7 @@ fitSlideLayout(slides[cur]);
   var qaIssuesLoaded=false;
   var qaIssuesLoading=null;
   var editingIssueIdx=null;
+  var issuePositionFrame=null;
 
   function emptyQaIssues(){
     return {schemaVersion:1,qaRevision:0,updatedAt:null,issues:[]};
@@ -2265,21 +2272,114 @@ fitSlideLayout(slides[cur]);
   function setIssueError(text){
     if(issueError)issueError.textContent=text||'';
   }
+  function clampNumber(value,min,max){
+    if(max<min)return min;
+    return Math.min(Math.max(value,min),max);
+  }
+  function activeIssueCard(){
+    if(!grid||editingIssueIdx===null)return null;
+    return grid.querySelector('.qa-card[data-idx="'+editingIssueIdx+'"]');
+  }
+  function clearIssueEditingCard(){
+    if(!grid)return;
+    grid.querySelectorAll('.qa-card.is-editing').forEach(function(item){
+      item.classList.remove('is-editing');
+    });
+  }
+  function positionIssueEditor(){
+    if(!issueEditor||issueEditor.hidden||editingIssueIdx===null)return;
+    var card=activeIssueCard();
+    var dialog=issueForm||issueEditor;
+    if(!card||!dialog)return;
+    var margin=16;
+    var gap=14;
+    var viewportW=Math.max(document.documentElement.clientWidth||0,window.innerWidth||0);
+    var viewportH=Math.max(document.documentElement.clientHeight||0,window.innerHeight||0);
+    var width=Math.min(420,Math.max(280,viewportW-(margin*2)));
+    var maxEditorH=Math.max(160,viewportH-(margin*2));
+    issueEditor.style.width=width+'px';
+    issueEditor.style.maxHeight=maxEditorH+'px';
+    issueEditor.style.visibility='hidden';
+
+    var cardRect=card.getBoundingClientRect();
+    var anchorEl=card.querySelector('.qa-issue-btn')||card;
+    var anchorRect=anchorEl.getBoundingClientRect();
+    var anchorX=anchorRect.left+(anchorRect.width/2);
+    var anchorY=anchorRect.top+(anchorRect.height/2);
+    var dialogRect=dialog.getBoundingClientRect();
+    var editorW=dialogRect.width||width;
+    var editorH=Math.min(dialogRect.height||320,maxEditorH);
+    var placement='right';
+    var left=cardRect.right+gap;
+    var top=clampNumber(cardRect.top,margin,viewportH-editorH-margin);
+
+    if(left+editorW>viewportW-margin){
+      var leftCandidate=cardRect.left-gap-editorW;
+      if(leftCandidate>=margin){
+        left=leftCandidate;
+        placement='left';
+      }else{
+        var belowTop=cardRect.bottom+gap;
+        var aboveTop=cardRect.top-gap-editorH;
+        left=clampNumber(anchorX-(editorW/2),margin,viewportW-editorW-margin);
+        if(belowTop+editorH<=viewportH-margin){
+          top=belowTop;
+          placement='below';
+        }else if(aboveTop>=margin){
+          top=aboveTop;
+          placement='above';
+        }else{
+          top=clampNumber(cardRect.top+((cardRect.height-editorH)/2),margin,viewportH-editorH-margin);
+          placement='float';
+        }
+      }
+    }
+
+    issueEditor.style.setProperty('--qa-issue-left',Math.round(left)+'px');
+    issueEditor.style.setProperty('--qa-issue-top',Math.round(top)+'px');
+    issueEditor.style.setProperty('--qa-issue-arrow-top',Math.round(clampNumber(anchorY-top,24,Math.max(24,editorH-24)))+'px');
+    issueEditor.style.setProperty('--qa-issue-arrow-left',Math.round(clampNumber(anchorX-left,24,Math.max(24,editorW-24)))+'px');
+    issueEditor.dataset.placement=placement;
+    issueEditor.style.visibility='';
+  }
+  function scheduleIssueEditorPosition(){
+    if(issuePositionFrame||!issueEditor||issueEditor.hidden)return;
+    issuePositionFrame=requestAnimationFrame(function(){
+      issuePositionFrame=null;
+      positionIssueEditor();
+    });
+  }
   function closeIssueEditor(){
     editingIssueIdx=null;
+    clearIssueEditingCard();
+    if(issuePositionFrame){
+      cancelAnimationFrame(issuePositionFrame);
+      issuePositionFrame=null;
+    }
     setIssueError('');
-    if(issueEditor)issueEditor.hidden=true;
+    if(issueEditor){
+      issueEditor.hidden=true;
+      issueEditor.style.visibility='';
+      issueEditor.removeAttribute('data-placement');
+    }
     if(issueTextarea)issueTextarea.value='';
   }
   function openIssueEditor(idx){
     if(!issueEditor||!issueTextarea)return;
+    clearIssueEditingCard();
     editingIssueIdx=idx;
+    var card=activeIssueCard();
+    if(card)card.classList.add('is-editing');
     var issue=activeIssueForSlide(idx);
     if(issueTitle)issueTitle.textContent='Slide '+(idx+1)+' revision request';
     issueTextarea.value=issue?issue.note:'';
     setIssueError('');
     issueEditor.hidden=false;
-    setTimeout(function(){issueTextarea.focus();},0);
+    positionIssueEditor();
+    setTimeout(function(){
+      positionIssueEditor();
+      issueTextarea.focus();
+    },0);
   }
   function saveIssueFromEditor(){
     if(editingIssueIdx===null||!issueTextarea)return;
@@ -2697,6 +2797,7 @@ fitSlideLayout(slides[cur]);
   }
   function closeQaOverview(){
     if(!qa)return;
+    closeIssueEditor();
     qa.classList.remove('show');
     qa.setAttribute('aria-hidden','true');
     if(qaHideTimer)clearTimeout(qaHideTimer);
@@ -2734,8 +2835,12 @@ fitSlideLayout(slides[cur]);
     e.stopPropagation();
     closeQaOverview();
   });
+  if(grid)grid.addEventListener('scroll',function(){
+    scheduleIssueEditorPosition();
+  },{passive:true});
   window.addEventListener('resize',function(){
     if(qaCache)requestAnimationFrame(refreshQaScales);
+    scheduleIssueEditorPosition();
   });
   document.addEventListener('keydown',function(e){
     if(e.code==='Escape'&&issueEditor&&!issueEditor.hidden){
