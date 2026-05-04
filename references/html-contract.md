@@ -234,8 +234,9 @@ Rules:
 - Use `min-width:0` on flex/grid children containing text.
 - For short Magic Move labels that must stay one line, use an approved label
   class or `data-magic-nowrap="true"` and give the element an explicit
-  one-line width policy. Do not rely on the animated clone to discover a width
-  during transition.
+  one-line width policy. For short heading phrases that must stay one line, use
+  `data-magic-line="nowrap"` or `.magic-nowrap-phrase` instead. Do not rely on
+  the animated clone to discover a width during transition.
 - Do not use `data-magic-nowrap="true"` on heading phrases, card titles,
   hero-card titles, callout titles, or ordinary `.magic-phrase` spans inside
   headings. Those elements must wrap naturally or use semantic phrase-fragment
@@ -471,17 +472,20 @@ runtime re-applies the centered 1680px content-canvas guard to the direct
      subtitle/chips, and simple decoration, then move the working diagram to
      slide 2 or a later content slide
 
-12. **Magic Move label wraps during flight then snaps back**
+12. **Magic Move text wraps during flight then snaps back**
    - Fix: for short labels/chips/badges, use `data-magic-nowrap="true"` or an
      approved label class, and give the source/target the same one-line width
-     policy; for real headings, keep the same line-break behavior on both
-     sides, animate a shorter stable token, or use `flip-engine.md`'s
-     semantic phrase-fragment anchor pattern for real long phrases
+     policy; for short heading phrases, use `data-magic-line="nowrap"` or
+     `.magic-nowrap-phrase`; for real long headings, keep the same line-break
+     behavior on both sides, animate a shorter stable token, or use
+     `flip-engine.md`'s semantic phrase-fragment anchor pattern
 
 13. **Heading phrase is forced nowrap and overflows its card**
-   - Fix: remove `data-magic-nowrap="true"` from the heading phrase, let the
-     parent heading wrap naturally, lower the max heading size, widen the card,
-     or split the phrase into semantic Magic Move fragments
+   - Fix: remove `data-magic-nowrap="true"` from the heading phrase. If it is a
+     genuinely short phrase, replace it with `data-magic-line="nowrap"` or
+     `.magic-nowrap-phrase` and prove the one-line fit; otherwise let the parent
+     heading wrap naturally, lower the max heading size, widen the card, or
+     split the phrase into semantic Magic Move fragments
    - Avoid: `<h3><span class="magic-phrase" data-magic-nowrap="true">long
      product surface phrase</span></h3>` inside `.hero-card`, `.callout`,
      `.card`, `.tile`, or `.stat-item`

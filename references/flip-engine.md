@@ -92,11 +92,13 @@ target must have compatible box roles:
 - Phrase anchors inside headings or paragraphs: make the phrase element
   `display:inline-block` on both slides, with identical visible text and
   compatible `text-transform`, `white-space`, and width policy.
-- Short display headings that are intended to stay on one line should use a
-  one-line heading style on both sides, such as `display:inline-block;
-  white-space:nowrap`, plus a font-size cap or wider container that proves the
-  phrase fits. Do not use `data-magic-nowrap="true"` for heading phrases; that
-  attribute is reserved for labels/chips/badges.
+- Short display headings or heading phrases that are intended to stay on one
+  line should use the phrase-level nowrap API on both sides:
+  `data-magic-line="nowrap"` or `.magic-nowrap-phrase`. Pair it with a real
+  one-line fit (`display:inline-block`, enough width or a lower max font size,
+  and no max-inline-size that forces wrapping). Do not use
+  `data-magic-nowrap="true"` for heading phrases; that attribute is reserved
+  for labels/chips/badges.
 
 If a phrase appears as an inline word in a paragraph on slide N and becomes a
 large `h1`/`h2` on slide N+1, first decide whether it is a one-line display
@@ -128,9 +130,11 @@ invent Magic-only labels or deck chrome.
 Use `data-magic-nowrap="true"` only on short custom label/chip elements that
 must remain one line and behave like labels. It is not for heading phrases,
 card titles, hero-card titles, callout titles, or ordinary `.magic-phrase`
-spans, even when the text is only two or three words. The source and target
-still need enough width for the string: if the label cannot fit on one line,
-widen the container, lower the font-size max, or remove the nowrap promise.
+spans. For short title phrases that should fly as one unit, use
+`data-magic-line="nowrap"` or `.magic-nowrap-phrase` instead. The source and
+target still need enough width for the string: if the phrase cannot fit on one
+line, widen the container, lower the font-size max, remove the nowrap promise,
+or split it into semantic fragments.
 
 Shared text anchors need stable line behavior. A label that wraps during the
 animated clone and then becomes one line at the destination is a broken Magic
@@ -138,9 +142,10 @@ Move. Before writing HTML, decide whether each shared text anchor is a
 one-line label or a multiline heading/body block:
 - One-line labels: use an approved label class or `data-magic-nowrap="true"`
   and keep both source and target to the same nowrap policy.
-- One-line display headings/phrases: use `display:inline-block` plus an
-  authored one-line width policy on both sides; do not use
-  `data-magic-nowrap="true"` unless the element is actually a label/chip.
+- One-line display headings/phrases: use `data-magic-line="nowrap"` or
+  `.magic-nowrap-phrase`, plus an authored one-line width policy on both sides;
+  do not use `data-magic-nowrap="true"` unless the element is actually a
+  label/chip.
 - Multiline headings/body text: let both sides wrap naturally with compatible
   widths, and do not add `data-magic-nowrap="true"` to the phrase. If the
   whole text block is too unstable, anchor a shorter phrase or split it into
@@ -266,6 +271,18 @@ Use this pattern for phrase-level anchors:
   <span data-magic-id="closing-change-models" style="display:inline-block">change models,</span>
   <span data-magic-id="closing-not-products" style="display:inline-block">not products</span>
 </h1>
+```
+
+Use this pattern for short phrase anchors that must stay one line:
+
+```html
+<h1>
+  <span class="magic-nowrap-phrase" data-magic-id="the-shot">The Shot</span>
+</h1>
+<h2>
+  <span class="magic-phrase magic-nowrap-phrase" data-magic-id="the-shot">The Shot</span>
+  starts as a question
+</h2>
 ```
 
 The fragments should be natural reading units, not arbitrary word confetti:

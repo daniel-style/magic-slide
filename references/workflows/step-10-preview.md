@@ -132,6 +132,27 @@ Triage rules:
   ambiguous, or after repair only when the user explicitly requests visual
   verification. Do not capture every slide individually by default.
 
+### 10a.2 Magic text motion check
+
+After merge/inject and while the preview server is available, run the text
+motion check for generated decks:
+
+```bash
+python3 "$SKILL_DIR/scripts/check-magic-text-wrap.py" {topic}/index.html
+```
+
+This is a Playwright check for a failure the QA overview cannot see: Magic Move
+text that looks correct in the final slides but wraps during the temporary FLIP
+clone motion, especially when navigating backward. Explicit one-line text
+anchors such as `.magic-nowrap-phrase`, `data-magic-line="nowrap"`,
+`data-magic-nowrap="true"`, and label-like anchors are hard failures when they
+wrap. Short unmarked Magic text anchors produce warnings so the author can
+decide whether to mark them as phrase-level nowrap or split them into semantic
+fragments. If it fails, fix the modular source files first by
+widening/lowering the phrase, preserving the `data-magic-line="nowrap"` /
+`.magic-nowrap-phrase` marker for genuinely short phrases, or splitting longer
+phrases into semantic fragments. Then re-run merge, inject, and this check.
+
 ### 10b. Final QA checklist
 
 **Objective checks:**
@@ -184,6 +205,8 @@ Triage rules:
    structure after the deck is already built. Body token rows, focus chips, or
    labels whose main job is movement fail this check even if the animation is
    technically smooth.
+   When short phrase anchors use `data-magic-line="nowrap"` or
+   `.magic-nowrap-phrase`, `scripts/check-magic-text-wrap.py` must pass.
 7. Runtime controls work: arrows, space, click navigation, progress bar, slide counter, and edit mode.
 
 **Subjective review:**

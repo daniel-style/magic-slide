@@ -125,16 +125,37 @@ notes, or intermediate files created during generation must also live under
   word from a paragraph into a block heading, or a cover `h1` into an inline
   heading span, unless both sides have compatible inline-block geometry,
   identical text transform, and the same one-line or multiline behavior.
-- For short display headings that should remain one line during Magic Move,
-  author the one-line heading style directly (`display:inline-block`,
-  `white-space:nowrap`, and enough width or a lower max font size). Do not use
+- For short display headings or heading phrases that should remain one line
+  during Magic Move, use the phrase-level nowrap API:
+  `data-magic-line="nowrap"` or class `.magic-nowrap-phrase`. Also author a
+  real fit: `display:inline-block`, enough width or a lower max font size, and
+  no `max-inline-size` that can force the phrase to wrap. This API is for
+  short title phrases such as "The Shot", "Practice System", or "Model
+  Training" that are intended to fly as one readable unit. Do not use
   `data-magic-nowrap="true"` on heading phrases; reserve it for true
   labels/chips/badges.
 - Hard gate: do not put `data-magic-nowrap="true"` on heading phrases, card
   titles, hero-card titles, callout titles, or ordinary `.magic-phrase` spans
   inside `h1`-`h6`. Those are text layout, not labels. They must wrap naturally
-  inside their container, use container-sized type, or be split into semantic
-  Magic Move fragments.
+  inside their container, use `data-magic-line="nowrap"` / `.magic-nowrap-phrase`
+  only when they are short enough to fit on one line at both endpoints, or be
+  split into semantic Magic Move fragments.
+
+  Safe short-phrase pattern:
+
+  ```html
+  <h1><span class="magic-nowrap-phrase" data-magic-id="the-shot">The Shot</span></h1>
+  <h2><span class="magic-phrase magic-nowrap-phrase" data-magic-id="the-shot">The Shot</span> starts as a question</h2>
+  ```
+
+  Unsafe pattern:
+
+  ```html
+  <h2><span class="magic-phrase" data-magic-id="the-shot">The Shot</span> starts as a question</h2>
+  ```
+
+  The unsafe version may look correct in the final slide but wrap during the
+  temporary FLIP clone motion, especially when navigating backward.
 
 **Avoid repetition:**
 - Vary layout primitives across slides

@@ -338,7 +338,8 @@ svg path[fill="none"],svg line,svg polyline{vector-effect:non-scaling-stroke}
 .ms-nowrap,.ms-cjk-token{display:inline-block;white-space:nowrap}
 h1[data-magic-id],h2[data-magic-id],h3[data-magic-id],h4[data-magic-id],h5[data-magic-id],h6[data-magic-id],p[data-magic-id],blockquote[data-magic-id],h1 [data-magic-id],h2 [data-magic-id],h3 [data-magic-id],h4 [data-magic-id],h5 [data-magic-id],h6 [data-magic-id],p [data-magic-id],blockquote [data-magic-id]{display:inline-block;vertical-align:baseline}
 .deck-mark[data-magic-id],.kicker[data-magic-id],.section-tag[data-magic-id],.chip[data-magic-id],.tag[data-magic-id],.badge[data-magic-id],.pill[data-magic-id],.label[data-magic-id],.eyebrow[data-magic-id],.mini-label[data-magic-id],.small-label[data-magic-id],.mini[data-magic-id],.endpoint[data-magic-id],[data-magic-id][data-magic-label="true"]{white-space:nowrap!important;inline-size:max-content;max-inline-size:none;flex-shrink:0}
-h1 .magic-phrase[data-magic-id],h2 .magic-phrase[data-magic-id],h3 .magic-phrase[data-magic-id],h4 .magic-phrase[data-magic-id],.card h3 .magic-phrase[data-magic-id],.hero-card h3 .magic-phrase[data-magic-id],.callout h3 .magic-phrase[data-magic-id]{white-space:normal!important;inline-size:auto!important;width:auto!important;max-inline-size:100%!important;flex-shrink:1!important;overflow-wrap:break-word;word-break:normal;text-wrap:balance}
+h1 .magic-phrase[data-magic-id]:not(.magic-nowrap-phrase):not([data-magic-line="nowrap"]),h2 .magic-phrase[data-magic-id]:not(.magic-nowrap-phrase):not([data-magic-line="nowrap"]),h3 .magic-phrase[data-magic-id]:not(.magic-nowrap-phrase):not([data-magic-line="nowrap"]),h4 .magic-phrase[data-magic-id]:not(.magic-nowrap-phrase):not([data-magic-line="nowrap"]),.card h3 .magic-phrase[data-magic-id]:not(.magic-nowrap-phrase):not([data-magic-line="nowrap"]),.hero-card h3 .magic-phrase[data-magic-id]:not(.magic-nowrap-phrase):not([data-magic-line="nowrap"]),.callout h3 .magic-phrase[data-magic-id]:not(.magic-nowrap-phrase):not([data-magic-line="nowrap"]){white-space:normal!important;inline-size:auto!important;width:auto!important;max-inline-size:100%!important;flex-shrink:1!important;overflow-wrap:break-word;word-break:normal;text-wrap:balance}
+.magic-nowrap-phrase[data-magic-id],[data-magic-id][data-magic-line="nowrap"]{display:inline-block!important;white-space:nowrap!important;inline-size:max-content!important;width:max-content!important;max-inline-size:none!important;flex-shrink:0!important;overflow-wrap:normal!important;word-break:normal!important;text-wrap:nowrap!important}
 .ms-cjk-balance{text-wrap:balance}
 .card,.stat-item,.compare-panel,.metric-poster,.time-card,.timeline-card,.phase-card,.step-card,.lane-card{min-width:0;overflow:visible;container-type:inline-size}
 .card-title{max-inline-size:100%;font-size:clamp(1.45rem,2.2vw,2.45rem);font-size:clamp(1.45rem,18cqw,2.45rem);line-height:1.02;overflow-wrap:break-word;word-break:normal;text-wrap:balance}
@@ -802,6 +803,7 @@ function isMagicNoWrapLabel(el){
   if(Array.from(el.children||[]).some(function(ch){return ch.textContent&&ch.textContent.trim()}))return false;
   var text=(el.textContent||'').replace(/\s+/g,' ').trim();
   if(!text||text.length>52)return false;
+  if(el.matches('[data-magic-line="nowrap"],.magic-nowrap-phrase'))return false;
   var labelSelector='.deck-mark,.small-mono,.kicker,.section-tag,.chip,.tag,.badge,.pill,.label,.eyebrow,.mini-label,.small-label,.mini,.endpoint,.feature-plate';
   var labelLike=el.matches(labelSelector)||!!el.closest(labelSelector);
   if(el.matches('[data-magic-label="true"]'))return true;
@@ -815,18 +817,35 @@ function isMagicNoWrapLabel(el){
   if((display==='inline-flex'||display==='inline-block'||display==='inline'||display==='inline-grid')&&text.length<=52&&/^(SPAN|SMALL|LI|BUTTON|A|DIV|STRONG|B|EM)$/.test(el.tagName))return true;
   return /^(SPAN|SMALL|LI|BUTTON|A|DIV|STRONG|B|EM)$/.test(el.tagName)&&text.length<=36;
 }
+function isMagicNoWrapPhrase(el){
+  if(!el||!el.hasAttribute('data-magic-id')||el.dataset.magicWrap==='allow')return false;
+  if(!el.matches('[data-magic-line="nowrap"],.magic-nowrap-phrase'))return false;
+  if(el.closest('[contenteditable="true"]'))return false;
+  if(el.querySelector&&el.querySelector('img,video,canvas,svg,br'))return false;
+  if(Array.from(el.children||[]).some(function(ch){return ch.textContent&&ch.textContent.trim()}))return false;
+  var text=(el.textContent||'').replace(/\s+/g,' ').trim();
+  return !!text&&text.length<=90;
+}
+function forceMagicNoWrapText(el){
+  el.style.whiteSpace='nowrap';
+  el.style.width='max-content';
+  el.style.inlineSize='max-content';
+  el.style.maxWidth='none';
+  el.style.maxInlineSize='none';
+  el.style.flexShrink='0';
+}
 function stabilizeMagicText(root){
   (root||document).querySelectorAll('[data-magic-id]').forEach(function(el){
     if(isPlainMagicTextAnchor(el)){
       el.style.display='inline-block';
       el.style.transformOrigin='0 0';
     }
+    if(isMagicNoWrapPhrase(el)){
+      forceMagicNoWrapText(el);
+      return;
+    }
     if(!isMagicNoWrapLabel(el))return;
-    el.style.whiteSpace='nowrap';
-    el.style.width='max-content';
-    el.style.maxWidth='none';
-    el.style.maxInlineSize='none';
-    el.style.flexShrink='0';
+    forceMagicNoWrapText(el);
   });
 }
 slides[0].classList.add('active');
@@ -1103,7 +1122,7 @@ function shouldLockMagicCloneOneLine(el,rect,cs){
   if(!text||text.length>90)return false;
   if(approxLineCount(rect,cs)>1)return false;
   if((cs.whiteSpace||'').indexOf('nowrap')>-1)return true;
-  if(el.matches&&el.matches('[data-magic-nowrap="true"],.magic-phrase,.route-label,.mono-pill'))return true;
+  if(el.matches&&el.matches('[data-magic-nowrap="true"],[data-magic-line="nowrap"],.magic-nowrap-phrase,.magic-phrase,.route-label,.mono-pill'))return true;
   var display=(cs.display||'').replace(/\s+/g,'-');
   return display==='inline-flex'||display==='inline-block'||display==='inline'||display==='inline-grid';
 }
@@ -1516,6 +1535,7 @@ function go(from,to){
     var fr=fromRects[id],tr=toRects[id];
     var c=toEls[id].cloneNode(true);
     c.removeAttribute('data-magic-id');
+    c.setAttribute('data-ms-magic-clone-id',id);
     var labelMode=sameText&&isMagicNoWrapLabel(fromEls[id])&&isMagicNoWrapLabel(toEls[id])&&!hasMagicTransform(fromEls[id])&&!hasMagicTransform(toEls[id]);
     var p;
     if(labelMode){

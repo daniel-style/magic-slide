@@ -258,8 +258,9 @@ The continuity map should include:
   primary-anchor quality standard.
 - Planned id names, exact visible text, and element type on both sides.
 - The rendered text-box policy for every text anchor: `display:inline-block`
-  heading, `display:inline-block` phrase, nowrap label, or compatible multiline
-  block. Raw inline `span`/`strong` anchors are not stable enough for FLIP.
+  heading, short nowrap phrase using `data-magic-line="nowrap"` or
+  `.magic-nowrap-phrase`, nowrap label, or compatible multiline block. Raw
+  inline `span`/`strong` anchors are not stable enough for FLIP.
 - The motion role: travel, shrink, expand, zoom into detail, carry evidence
   forward, or shift a real content role. Repeated deck marks or chapter context
   are supporting cues at most, not primary anchors.
