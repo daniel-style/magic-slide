@@ -249,8 +249,8 @@ Rules:
 - If the full text cannot fit, reduce the max font size, widen the container, allow wrapping, or split the slide.
 - Do not hide text overflow with `overflow:hidden`, `overflow:clip`, masks, or
   fades. If content needs hiding to look tidy, the slide is over budget.
-- In the QA overview longshot, first confirm iframe-loaded readiness, then
-  visually inspect cards by slide number for escaped labels, cramped rows,
+- In the Playwright QA overview longshot, first confirm iframe-loaded readiness,
+  then visually inspect cards by slide number for escaped labels, cramped rows,
   unreadable wrapping/contrast, overlap, clipping, cropped media, and blank or
   unloaded cards. If `visual-issues.json` already has open revision notes,
   repair those marked slides from JSON/source context first. After repairing
@@ -575,9 +575,9 @@ Before delivery, check:
       budget
 - [ ] Metric/card labels do not collide with neighboring cards; four-card
       groups are not squeezed into half-width columns
-- [ ] The QA overview longshot was captured only after iframe-loaded readiness,
-      then checked by slide number for cramped card rows, escaped labels,
-      unreadable wrapping/contrast, overlap, clipping, cropped media,
+- [ ] The Playwright QA overview longshot was captured only after iframe-loaded
+      readiness, then checked by slide number for cramped card rows, escaped
+      labels, unreadable wrapping/contrast, overlap, clipping, cropped media,
       wide-tray/tiny-payload layouts, and blank or unloaded cards; open
       `sources/qa/visual-issues.json` notes are repaired from JSON/source
       context, then marked `fixed_pending_confirmation` for user confirmation

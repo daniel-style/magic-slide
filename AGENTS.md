@@ -22,14 +22,15 @@ Before step 1, create and maintain a visible TODO/plan for every
 5. Read reference files, make a compact internal style/layout plan with primary/supporting Magic Move continuity, and generate all modular HTML sources directly
 6. Merge slides into single HTML
 7. Inject FLIP engine and runtime
-8. Launch the Magic Slide preview server, capture one QA overview longshot
-   first for newly generated decks, fix obvious rendered issues visible in the
-   overview, then stop for the mandatory user `Revise slide` marking pass
-   before final repairs and delivery. Do not run single-slide screenshot repair
-   before that pause. When resuming from saved `visual-issues.json` notes, read
-   JSON and source files first, repair marked slides, then mark those JSON
-   records fixed and awaiting user confirmation. Do not run screenshot
-   verification after repairing saved JSON notes unless the user explicitly asks.
+8. Launch the Magic Slide preview server, capture one Playwright QA overview
+   longshot first for newly generated decks, fix obvious rendered issues
+   visible in the overview, then stop for the mandatory user `Revise slide`
+   marking pass before final repairs and delivery. Do not run single-slide
+   screenshot repair before that pause. When resuming from saved
+   `visual-issues.json` notes, read JSON and source files first, repair marked
+   slides, then mark those JSON records fixed and awaiting user confirmation.
+   Do not run screenshot verification after repairing saved JSON notes unless
+   the user explicitly asks.
 
 **Why this works:** User controls information gathering and reviews structure before generation. Brief Lite gives the deck an art direction without returning to the old long prototype loop. Read design guidelines once, generate all slides in main thread. Fast and simple with clear checkpoints.
 
@@ -77,9 +78,10 @@ All scripts are in `scripts/` directory:
 9. inject-runtime.py adds FLIP + navigation to index.html
 10. serve.py launches preview and remains running for QA/editing
 11. For newly generated decks, open `?ms_qa=overview&ms_qa_capture=1`, capture
-    one full-page scrolling QA overview longshot, fix obvious rendered issues
-    visible in the overview, then stop for the mandatory user `Revise slide`
-    marking pass. Do not run single-slide screenshot repair before that pause.
+    one Playwright full-page scrolling QA overview longshot, fix obvious
+    rendered issues visible in the overview, then stop for the mandatory user
+    `Revise slide` marking pass. Do not run single-slide screenshot repair
+    before that pause.
 ```
 
 ### Running Scripts
@@ -101,21 +103,22 @@ running and the user has the displayed URL. The in-browser editor depends on
 image replacement, and close/shutdown behavior.
 
 For newly generated decks, delivery has an extra required pause: after the
-agent captures one QA Overview longshot and fixes the most obvious visible
-issues, it must stop with QA Overview available and tell the user to mark any
-remaining slide changes with `Revise slide`, then return to continue.
+agent captures one Playwright QA Overview longshot and fixes the most obvious
+visible issues, it must stop with QA Overview available and tell the user to
+mark any remaining slide changes with `Revise slide`, then return to continue.
 
 For chat follow-up edits after a deck has been generated, treat `sources/` as
 the source of truth: edit `[topic]/sources/style.css`,
 `[topic]/sources/slide-XX.html`, or source-local helpers, then re-run merge and
 inject. If `[topic]/sources/qa/visual-issues.json` has open notes, use
 those notes plus the matching source slide/CSS as the repair entry point before
-capturing fresh screenshots; screenshots are only for ambiguous notes. After
-repairing saved notes, update them to `status: "fixed_pending_confirmation"`
-with `resolved: false`, reopen QA Overview for user confirmation, and do not
-run a screenshot verification pass unless the user explicitly asks. Do not patch
-`[topic]/index.html` directly unless the user explicitly asks for a merged-HTML
-patch or the change comes from browser edit mode Save.
+capturing fresh screenshots; screenshots are only for ambiguous notes and must
+use Playwright. After repairing saved notes, update them to
+`status: "fixed_pending_confirmation"` with `resolved: false`, reopen QA
+Overview for user confirmation, and do not run a screenshot verification pass
+unless the user explicitly asks. Do not patch `[topic]/index.html` directly
+unless the user explicitly asks for a merged-HTML patch or the change comes
+from browser edit mode Save.
 
 ## File Structure
 
@@ -240,6 +243,7 @@ telling users to press `e` or use Save.
 - Python 3.7+
 - No external Python packages required (uses stdlib only)
 - Browser with JavaScript enabled for preview
+- Playwright for agent-run screenshot QA
 - Optional: PipeLLM API key for image generation AND web search
   - Set via `PIPELLM_API_KEY` env var or `~/.config/pipellm/api_key`
   - Used for both `generate-image.py` and `websearch.py`

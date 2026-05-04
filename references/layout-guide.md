@@ -182,7 +182,8 @@ Rules:
   When repairing existing notes, read the JSON and source files first, revise
   the marked source slides, then mark the notes `fixed_pending_confirmation`
   for user confirmation. Do not run screenshot verification after saved-note
-  repairs unless the user explicitly asks.
+  repairs unless the user explicitly asks; if screenshots are needed, capture
+  them with Playwright.
 
 ### Vertical Balance Rule
 
@@ -223,8 +224,8 @@ Rules:
   or tighten the content group; do not leave a large accidental dead zone below
   it.
 - Runtime may add `.ms-sparse-balance` to repair accidental top alignment, but
-  source slides should still be authored centered. In screenshot review, revise
-  any slide that looks top-shifted, cramped, or scaled down.
+  source slides should still be authored centered. In Playwright screenshot
+  review, revise any slide that looks top-shifted, cramped, or scaled down.
 
 ### Slide Chrome Guardrail
 

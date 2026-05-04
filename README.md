@@ -156,11 +156,11 @@ it as each stage progresses.
 7. Inject the Magic Move runtime and editing helpers.
 8. Launch the preview server, open the QA capture URL
    `?ms_qa=overview&ms_qa_capture=1`, take one full-page overview longshot for
-   first-pass visual triage, fix obvious visible issues, then stop for the
-   user to add `Revise slide` notes. Do not run single-slide screenshot repair
-   before that human revision step. After saved notes are repaired, mark them
-   `fixed_pending_confirmation` and return to QA Overview for user confirmation
-   instead of running a screenshot verification pass.
+   first-pass visual triage with Playwright, fix obvious visible issues, then
+   stop for the user to add `Revise slide` notes. Do not run single-slide
+   screenshot repair before that human revision step. After saved notes are
+   repaired, mark them `fixed_pending_confirmation` and return to QA Overview
+   for user confirmation instead of running a screenshot verification pass.
 
 ## Core Scripts
 
@@ -245,7 +245,7 @@ or store the key at:
 ```
 
 Core merging, runtime injection, and preview features only require Python 3 and
-a modern browser.
+a modern browser. Agent-run screenshot QA requires Playwright.
 
 ## Design Principles
 
@@ -270,10 +270,10 @@ based on Anthropic's public skill:
 Before delivery, verify:
 
 - Slides render without errors.
-- QA overview has been captured as one full-page visual wall, open
-  `sources/qa/visual-issues.json` notes are treated as known revisions, and
-  new-deck first-pass repairs stop at the human `Revise slide` step before any
-  targeted single-slide screenshot checks. Repaired notes are marked
+- QA overview has been captured with Playwright as one full-page visual wall,
+  open `sources/qa/visual-issues.json` notes are treated as known revisions,
+  and new-deck first-pass repairs stop at the human `Revise slide` step before
+  any targeted single-slide screenshot checks. Repaired notes are marked
   `fixed_pending_confirmation` and confirmed by the user in QA Overview.
 - Text does not overflow or overlap.
 - Slide backgrounds cover the full viewport.

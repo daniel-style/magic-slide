@@ -316,29 +316,31 @@ After generating the full deck:
 - Inject runtime with `inject-runtime.py`.
 - Preview with `serve.py`.
 - Run the QA overview gate from `step-10-preview.md` before any later detailed
-  viewport checks. For newly generated decks, first capture one QA overview
-  longshot from `?ms_qa=overview&ms_qa_capture=1` only after the QA wall
-  reports iframe-loaded readiness. Repair the most obvious rendered visual
+  viewport checks. For newly generated decks, first capture one Playwright QA
+  overview longshot from `?ms_qa=overview&ms_qa_capture=1` only after the QA
+  wall reports iframe-loaded readiness. Repair the most obvious rendered visual
   issues by slide number, then stop for the mandatory user `Revise slide`
   marking pass without doing single-slide screenshot repair.
 - When the user returns, read open revision notes first. Treat those
   slides as known repair targets and repair from the JSON notes plus the
-  matching source slide/CSS. Use screenshots only when the JSON/source context
-  is too ambiguous to repair confidently. The overview is intentionally not a
-  rule-based detector; after repair it is the user's confirmation surface.
-- When repairing, start with JSON notes and source files; use screenshots before
-  repair only when a note is ambiguous. After fixing `sources/`, merge, inject,
-  mark repaired JSON records `status: "fixed_pending_confirmation"` with
-  `resolved: false`, and preview/open QA Overview for the user to confirm.
+  matching source slide/CSS. Use Playwright screenshots only when the
+  JSON/source context is too ambiguous to repair confidently. The overview is
+  intentionally not a rule-based detector; after repair it is the user's
+  confirmation surface.
+- When repairing, start with JSON notes and source files; use Playwright
+  screenshots before repair only when a note is ambiguous. After fixing
+  `sources/`, merge, inject, mark repaired JSON records
+  `status: "fixed_pending_confirmation"` with `resolved: false`, and
+  preview/open QA Overview for the user to confirm.
   Do not capture a QA overview longshot as verification unless explicitly
   requested.
 - Do not write revision notes into `index.html`.
-- Use the scrolling QA overview longshot as the primary all-slide visual check.
-  Do not capture full-size single-slide screenshots during the newly generated
-  deck's autonomous first pass before the user revision pause. After the user
-  returns, capture targeted full-size screenshots only for slides that look
-  problematic, ambiguous, marked by the user, or representative of a risky
-  layout family.
+- Use the Playwright scrolling QA overview longshot as the primary all-slide
+  visual check. Do not capture full-size single-slide screenshots during the
+  newly generated deck's autonomous first pass before the user revision pause.
+  After the user returns, capture targeted full-size Playwright screenshots
+  only for slides that look problematic, ambiguous, marked by the user, or
+  representative of a risky layout family.
 - Check for overflow, clipped text, broken images, dead zones, unbalanced
   columns, sparse framed panels, and runtime fit issues using
   `step-10-preview.md` as the delivery checklist.
@@ -347,9 +349,9 @@ After generating the full deck:
 - If images were requested, verify the final deck has actual assets and rendered
   image slides.
 - After the user revision pause, if the overview reveals no obvious issue,
-  inspect only targeted rendered screenshots from roles that still need closer
-  confidence, such as cover, dense middle, image/diagram, risk/summary, or
-  closing.
+  inspect only targeted Playwright-rendered screenshots from roles that still
+  need closer confidence, such as cover, dense middle, image/diagram,
+  risk/summary, or closing.
 - Do a design director pass: name the three roughest or most generic rendered
   slides, then revise them. If fewer than three are weak, explicitly say why the
   remaining candidates are acceptable.

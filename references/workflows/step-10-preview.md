@@ -27,6 +27,16 @@ Run the runtime QA overview before any later detailed screenshots. This is a
 visual review wall and revision-note capture surface, not an automatic scoring
 gate.
 
+All agent-run rendered screenshots in this workflow must use Playwright. This
+includes the QA overview longshot, any fallback vertical chunks, and any
+targeted full-size slide screenshots used for ambiguous notes or explicit
+visual verification. Keep `scripts/serve.py` as the preview server; Playwright
+only drives the browser, waits for runtime readiness, and captures screenshots.
+Do not use OS-level screenshots, manual GUI captures, browser extension
+captures, or non-Playwright browser tooling as QA evidence. If Playwright is
+unavailable, install/enable it or stop and report the blocker instead of
+silently substituting another capture path.
+
 For a newly generated deck, the gate has three ordered phases:
 
 1. **Autonomous overview-longshot pass.** Open the preview URL with
@@ -37,18 +47,17 @@ For a newly generated deck, the gate has three ordered phases:
    runtime readiness signal is `body.ms-qa-ready` with
    `body[data-ms-qa-pending="0"]`; `body[data-ms-qa-timeouts]` should also be
    `"0"` before capture, and `body[data-ms-qa-errors]` should be `"0"` unless
-   you are explicitly investigating a frame load failure. Use any browser,
-   browser-automation, or scrolling-screenshot tool that can capture the full
-   QA wall after those readiness flags are set. For Playwright specifically,
-   wait for the selector/state, then wait a short extra frame-settle delay
-   before taking a `fullPage` screenshot. If cards are blank, still showing
-   loading frames, or have timed out/errored, the screenshot is invalid for
-   visual QA; wait/reload or inspect the affected slides before using it.
-   Capture one
-   full-page/scrolling QA overview screenshot first. If a tool cannot save one
-   very tall image, capture the minimum number of vertical chunks of the QA
-   wall; do not open every slide individually. Use that visual wall to identify
-   the slide numbers with obvious rendered visual problems:
+   you are explicitly investigating a frame load failure. Use Playwright to
+   wait for those selector/attribute states, then wait a short extra
+   frame-settle delay before calling `page.screenshot({ fullPage: true })`.
+   If cards are blank, still showing loading frames, or have timed out/errored,
+   the screenshot is invalid for visual QA; wait/reload or inspect the affected
+   slides before using it. Capture one Playwright full-page QA overview
+   screenshot first. If browser image limits prevent one very tall image,
+   capture the minimum number of vertical chunks with Playwright scrolling;
+   do not switch tools and do not open every slide individually. Use that
+   visual wall to identify the slide numbers with obvious rendered visual
+   problems:
    layout overflow, clipped or cropped content, text/image overlap, cramped
    grids, unreadable text or weak color contrast, broken/cropped image
    treatment, weak cover framing, blank/unloaded cards, visibly unfinished
@@ -72,9 +81,9 @@ For a newly generated deck, the gate has three ordered phases:
    known slide numbers. Those notes are the repair queue. For each marked
    slide, open the matching `{topic}/sources/slide-XX.html` plus
    `{topic}/sources/style.css` and repair the modular sources before taking any
-   fresh screenshots. Use targeted screenshots only when a saved note is too
-   ambiguous to interpret from JSON/source context. After source repairs,
-   re-run `merge-slides.py` and `inject-runtime.py`, then mark repaired
+   fresh screenshots. Use targeted Playwright screenshots only when a saved
+   note is too ambiguous to interpret from JSON/source context. After source
+   repairs, re-run `merge-slides.py` and `inject-runtime.py`, then mark repaired
    requests as `status: "fixed_pending_confirmation"` and `resolved: false` in
    `visual-issues.json`, with `repairedAt`, `repairedInRevision`,
    `repairSummary`, `confirmationRequestedAt`, and `changedFiles`. Restart or
@@ -107,8 +116,9 @@ Triage rules:
   contrast, image/diagram treatment, and whether any card is blank or unloaded.
 - Revision notes are a source-first repair queue, not a reason to screenshot
   before fixing. Use screenshots before repair only when a saved note is
-  ambiguous; otherwise repair marked source slides first, then mark those notes
-  `fixed_pending_confirmation` for user review.
+  ambiguous, and capture those screenshots with Playwright; otherwise repair
+  marked source slides first, then mark those notes `fixed_pending_confirmation`
+  for user review.
 - Do not run post-repair screenshot verification after saved-note repairs unless
   the user explicitly asks for visual verification.
 - Do not inject revision notes into `index.html`. QA cards only read/write
@@ -118,9 +128,9 @@ Triage rules:
 - For a newly generated deck, do not do targeted full-size screenshots after
   the autonomous overview-longshot repair pass; stop for the mandatory
   `Revise slide` marking pass. After the user returns, targeted full-size
-  screenshots may be used before repair only when a saved note is ambiguous, or
-  after repair only when the user explicitly requests visual verification. Do
-  not capture every slide individually by default.
+  Playwright screenshots may be used before repair only when a saved note is
+  ambiguous, or after repair only when the user explicitly requests visual
+  verification. Do not capture every slide individually by default.
 
 ### 10b. Final QA checklist
 
@@ -150,8 +160,9 @@ Triage rules:
    visual issues even when nothing overflows.
    Treat cramped card rows with word-by-word wrapping as a visual issue when
    nearby horizontal space is empty; revise the source layout to use the
-   available width or split the slide. Find these problems from the rendered QA
-   overview wall and full-size screenshots, not from runtime-generated tags.
+   available width or split the slide. Find these problems from the
+   Playwright-captured QA overview wall and full-size screenshots, not from
+   runtime-generated tags.
    Also treat card-title collisions as visual issues even when the text remains
    inside the viewport. In rendered review, scan metric/card grids for words
    crossing into neighboring cards, especially four-card rows inside split
@@ -226,8 +237,8 @@ been generated:
 1. Read `{topic}/sources/qa/visual-issues.json` first. If it contains open
    revision requests, treat their slides as known repair targets. Open the
    matching source slides and CSS, then fix those known targets. Use
-   screenshots before repair only when a note is too ambiguous to interpret
-   from JSON and source context.
+   Playwright screenshots before repair only when a note is too ambiguous to
+   interpret from JSON and source context.
 2. Edit `{topic}/sources/style.css`, `{topic}/sources/slide-XX.html`, and any
    relevant source-local helpers first.
 3. Re-run merge:
