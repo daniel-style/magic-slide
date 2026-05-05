@@ -45,10 +45,11 @@ When invoked as `/magic-slide preview [topic]` in Claude Code or
    an explicit `.html` file, preview that file directly.
 3. Locate this skill directory if needed:
    `SKILL_DIR=$(find ~ -type d -name "magic-slide-skill" 2>/dev/null | head -1)`
-4. Start the preview server with the existing script:
-   `python3 "$SKILL_DIR/scripts/serve.py" "$DECK_PATH"`
-5. Keep the server process running and give the user the displayed URL.
-6. Do not ask deck-generation questions, create an outline, merge slides, or
+4. Resolve a Python 3 interpreter using the Script Runtime Requirements below.
+5. Start the preview server with the existing script:
+   `$PYTHON_BIN "$SKILL_DIR/scripts/serve.py" "$DECK_PATH"`
+6. Keep the server process running and give the user the displayed URL.
+7. Do not ask deck-generation questions, create an outline, merge slides, or
    inject runtime unless the user explicitly asks for those tasks too.
 
 For any other `magic-slide` invocation arguments, treat the arguments as the
@@ -73,6 +74,34 @@ Hard gate:
 - If the structured question tool is unavailable, use the plain-text fallback
   template from Step 1 as the whole response for that turn, then wait.
 
+## CRITICAL: Script Runtime Requirements
+
+Magic Slide's bundled scripts require a Python 3 runtime. Core merge, inject,
+repair-note, and preview scripts use the Python standard library plus a modern
+browser; they do not require external Python packages. PipeLLM scripts require
+`PIPELLM_API_KEY` only when web search or image generation is used. Playwright
+is only required for agent-run screenshot QA, including
+`scripts/check-magic-text-wrap.py`.
+
+Before the first script execution in a turn, resolve a Python 3 interpreter:
+
+```bash
+PYTHON_BIN=$(command -v python3 || command -v python || true)
+if [ -z "$PYTHON_BIN" ]; then
+  echo "Magic Slide requires Python 3 to run its bundled scripts." >&2
+  echo "Install Python 3, then rerun the Magic Slide command." >&2
+  exit 1
+fi
+if ! "$PYTHON_BIN" -c 'import sys; raise SystemExit(0 if sys.version_info[0] == 3 else 1)'; then
+  echo "Magic Slide requires Python 3, but the resolved python command is not Python 3." >&2
+  exit 1
+fi
+```
+
+Use `$PYTHON_BIN` for script invocations after it is resolved. If Python 3 is
+not available, stop and tell the user that Magic Slide needs Python 3 rather
+than rewriting or bypassing the scripts.
+
 ## CRITICAL: Script Execution Rules
 
 **All scripts in this skill are located in the `scripts/` directory relative to the skill root.**
@@ -83,7 +112,7 @@ Hard gate:
    - Find the skill directory using: `find ~ -name "magic-slide-skill" -type d 2>/dev/null | head -1`
    - Or search for SKILL.md: `find ~ -name "SKILL.md" -path "*/magic-slide-skill/*" 2>/dev/null | head -1 | xargs dirname`
    - Store the skill directory path in a variable
-   - Re-execute the script using the absolute path: `python3 $SKILL_DIR/scripts/websearch.py`
+   - Re-execute the script using the absolute path: `$PYTHON_BIN $SKILL_DIR/scripts/websearch.py`
 
 2. **Always use absolute paths for script execution** to avoid path issues
 
@@ -93,9 +122,9 @@ Hard gate:
 SKILL_DIR=$(find ~ -type d -name "magic-slide-skill" 2>/dev/null | head -1)
 
 # Execute scripts with absolute paths
-python3 "$SKILL_DIR/scripts/websearch.py" "query"
-python3 "$SKILL_DIR/scripts/generate-image.py" "prompt text" --output ./assets/image.png
-python3 "$SKILL_DIR/scripts/merge-slides.py" ./sources/ --lang en
+$PYTHON_BIN "$SKILL_DIR/scripts/websearch.py" "query"
+$PYTHON_BIN "$SKILL_DIR/scripts/generate-image.py" "prompt text" --output ./assets/image.png
+$PYTHON_BIN "$SKILL_DIR/scripts/merge-slides.py" ./sources/ --lang en
 ```
 
 ## CRITICAL: Injected Runtime Output Boundary
@@ -143,7 +172,7 @@ confirmation and the web-search yes/no question; see
 7. **Step 7: Inject runtime** — Run the existing injector unchanged; preserve injected behavior/results unless the user explicitly asks otherwise
 8. **Step 8: Preview, autonomous overview QA repair, mandatory user revision pause, revision-note repair, user confirmation, and delivery** — ALWAYS launch the skill preview server with `scripts/serve.py`, open the runtime QA capture URL, take one Playwright QA overview longshot for first-pass repair, then stop so the user can mark slide revisions. After repairing saved revision notes, mark them fixed and awaiting user confirmation instead of running a screenshot verification pass.
 
-**NON-NEGOTIABLE DELIVERY RULE:** After generating or updating a deck, do not finish until `python3 "$SKILL_DIR/scripts/serve.py" {topic}/index.html` is running and you have given the user the preview URL. Opening the HTML file directly is not enough: edit mode, save, image replacement, and close/shutdown controls require the Magic Slide preview server. Never substitute `python3 -m http.server`, `npx serve`, or a file URL for the skill server.
+**NON-NEGOTIABLE DELIVERY RULE:** After generating or updating a deck, do not finish until `$PYTHON_BIN "$SKILL_DIR/scripts/serve.py" {topic}/index.html` is running and you have given the user the preview URL. Opening the HTML file directly is not enough: edit mode, save, image replacement, and close/shutdown controls require the Magic Slide preview server. Never substitute `python3 -m http.server`, `npx serve`, or a file URL for the skill server.
 
 **NON-NEGOTIABLE QA GATE:** After `serve.py` is running for a newly generated deck, open `?ms_qa=overview&ms_qa_capture=1`, wait until the QA wall reports iframe-loaded readiness, capture one Playwright full-page/scrolling QA overview longshot, and repair the most obvious rendered visual issues by slide number first. During this autonomous first pass, do not capture full-size single-slide screenshots after the overview repair. Follow `references/workflows/step-10-preview.md` for the detailed triage order and Playwright-only screenshot rule. Then reopen/leave QA Overview running and stop: tell the user to mark slide changes with `Revise slide` on the QA cards and return when ready. This user revision pause is mandatory before final QA or delivery. When continuing repairs, first read open JSON notes from `{topic}/sources/qa/visual-issues.json`.
 

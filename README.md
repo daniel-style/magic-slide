@@ -25,6 +25,22 @@ editable source files, and a portable final HTML deck.
 npx skills add daniel-style/magic-slide
 ```
 
+## Runtime Requirements
+
+Magic Slide's bundled scripts require Python 3. The core workflow uses only the
+Python standard library plus a modern browser for merging slides, injecting the
+runtime, marking QA notes, and running the preview server.
+
+Optional capabilities have separate requirements:
+
+- PipeLLM web search and image generation require a `PIPELLM_API_KEY`.
+- Agent-run screenshot QA requires Playwright.
+- `scripts/check-magic-text-wrap.py` also requires Playwright.
+
+If Python 3 is not available, install Python 3 before running Magic Slide
+commands. The scripts are intentionally kept as lightweight Python helpers
+rather than packaged binaries or rewritten per platform.
+
 ## Highlights
 
 ### Magic Move Transitions
@@ -244,8 +260,8 @@ or store the key at:
 ~/.config/pipellm/api_key
 ```
 
-Core merging, runtime injection, and preview features only require Python 3 and
-a modern browser. Agent-run screenshot QA requires Playwright.
+See [Runtime Requirements](#runtime-requirements) for the Python, browser, and
+Playwright runtime contract.
 
 ## Design Principles
 
