@@ -248,16 +248,25 @@ python3 scripts/websearch.py "latest market data for renewable energy storage"
 ## Configuration
 
 PipeLLM features require an API key from [PipeLLM](https://www.pipellm.ai/).
-Set one of:
+Recommended local setup:
 
 ```bash
-export PIPELLM_API_KEY="your-key"
+python3 scripts/generate-image.py --save-key
 ```
 
-or store the key at:
+The command reads from a hidden prompt in an interactive terminal, or from stdin
+when piped. Do not pass API keys as command-line arguments.
+
+This stores the key at:
 
 ```text
 ~/.config/pipellm/api_key
+```
+
+For automation, provide `PIPELLM_API_KEY` from your shell or CI secret store:
+
+```bash
+export PIPELLM_API_KEY
 ```
 
 See [Runtime Requirements](#runtime-requirements) for the Python, browser, and

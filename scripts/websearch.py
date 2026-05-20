@@ -25,20 +25,53 @@ import urllib.request
 import urllib.error
 import urllib.parse
 import time
+from typing import List
 
 BASE_URL = "https://api.pipellm.ai/v1/websearch"
 MAX_RETRIES = 3
 RETRY_DELAYS = [2, 5, 10]
 KEY_FILE = os.path.expanduser("~/.config/pipellm/api_key")
+KEY_ENV = "PIPELLM_API_KEY"
+REDACTION = "[REDACTED]"
+
+
+def _known_secrets() -> List[str]:
+    """Return locally known PipeLLM secrets for log redaction."""
+    secrets = []
+    env_key = os.environ.get(KEY_ENV, "").strip()
+    if env_key:
+        secrets.append(env_key)
+    if os.path.isfile(KEY_FILE):
+        try:
+            with open(KEY_FILE, "r", encoding="utf-8") as f:
+                file_key = f.read().strip()
+            if file_key:
+                secrets.append(file_key)
+        except OSError:
+            pass
+    return sorted(set(secrets), key=len, reverse=True)
+
+
+def redact_secrets(text: object) -> str:
+    """Remove locally known PipeLLM secrets from text before logging."""
+    redacted = str(text)
+    for secret in _known_secrets():
+        if len(secret) >= 8:
+            redacted = redacted.replace(secret, REDACTION)
+    return redacted
 
 
 def get_api_key() -> str:
     """Read API key from env var first, then from config file."""
-    key = os.environ.get("PIPELLM_API_KEY", "").strip()
+    key = os.environ.get(KEY_ENV, "").strip()
     if key:
         return key
     if os.path.isfile(KEY_FILE):
-        with open(KEY_FILE, "r") as f:
+        try:
+            os.chmod(KEY_FILE, 0o600)
+        except OSError:
+            pass
+        with open(KEY_FILE, "r", encoding="utf-8") as f:
             key = f.read().strip()
         if key:
             return key
@@ -76,7 +109,7 @@ def search(query: str, simple: bool = False) -> dict:
                 if data.get("code") == 200:
                     return data.get("data", {})
                 else:
-                    raise Exception(f"API error: {data.get('message', 'Unknown error')}")
+                    raise Exception(f"API error: {redact_secrets(data.get('message', 'Unknown error'))}")
 
         except urllib.error.HTTPError as e:
             if e.code == 503 and attempt < MAX_RETRIES:
@@ -89,7 +122,7 @@ def search(query: str, simple: bool = False) -> dict:
                 continue
             elif e.code == 400:
                 error_body = e.read().decode() if hasattr(e, 'read') else ""
-                raise Exception(f"Bad request (400): {error_body}")
+                raise Exception(f"Bad request (400): {redact_secrets(error_body)}")
             elif e.code == 401:
                 raise Exception("Authentication failed (401): Invalid API key")
             elif e.code == 404:
@@ -126,7 +159,7 @@ def main():
         results = search(args.query, args.simple)
         print(json.dumps(results, ensure_ascii=False, indent=2))
     except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
+        print(f"Error: {redact_secrets(e)}", file=sys.stderr)
         sys.exit(1)
 
 
