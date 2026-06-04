@@ -647,7 +647,7 @@ body.ms-presenter-shell-mode .ms-cursor-trail{display:none!important}
 #ms-presenter-shell{--ms-presenter-notes-width:380px;position:fixed;inset:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,var(--ms-presenter-notes-width));grid-template-rows:minmax(0,1fr) auto;grid-template-areas:"stage notes" "console notes";gap:14px;padding:16px;background:#0b0d13;color:#eef2f7;font-family:var(--font-body,system-ui,-apple-system,sans-serif);z-index:20000}
 body.ms-presenter-notes-left #ms-presenter-shell{grid-template-columns:minmax(280px,var(--ms-presenter-notes-width)) minmax(0,1fr);grid-template-areas:"notes stage" "notes console"}
 .ms-presenter-stage{grid-area:stage;position:relative;min-width:0;min-height:220px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(238,242,247,0.12);border-radius:12px;background:#05070b;box-shadow:0 24px 80px rgba(0,0,0,0.36);overflow:hidden}
-.ms-presenter-mirror{width:100%;height:100%;max-width:100%;max-height:100%;aspect-ratio:16/9;border:0;background:#05070b;display:block}
+.ms-presenter-mirror{position:absolute;top:50%;left:50%;width:100%;height:100%;max-width:none;max-height:none;border:0;background:#05070b;display:block;transform:translate(-50%,-50%) scale(var(--ms-presenter-mirror-scale,1));transform-origin:center center;will-change:transform}
 .ms-presenter-overview{position:absolute;inset:0;display:none;opacity:0;visibility:hidden;pointer-events:none;background:rgba(6,8,13,0.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);z-index:3;transition:opacity 0.22s ease,visibility 0.22s ease}
 .ms-presenter-overview.showing{display:block}
 .ms-presenter-overview.show{opacity:1;visibility:visible;pointer-events:auto}
@@ -682,7 +682,7 @@ body.ms-presenter-notes-left .ms-presenter-notes-resizer{left:auto;right:-7px}
 body.ms-presenter-notes-resizing{cursor:ew-resize!important}
 .ms-presenter-notes-body{min-height:0;flex:1;overflow:auto;color:#f8fafc;font-size:clamp(20px,1.55vw,34px);line-height:1.44;white-space:pre-wrap;overflow-wrap:anywhere}
 .ms-presenter-notes-body.is-empty{color:rgba(238,242,247,0.48);font-size:clamp(16px,1.2vw,22px)}
-@media(max-width:960px), (max-height:620px){#ms-presenter-shell{display:flex;flex-direction:column;padding:10px;gap:10px;--ms-presenter-notes-width:100%}.ms-presenter-stage{flex:1;min-height:180px}.ms-presenter-overview-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:12px}.ms-presenter-console{align-items:flex-start;min-height:0}.ms-presenter-status-grid{gap:6px}.ms-presenter-status-item{font-size:10px;padding:4px 7px}.ms-presenter-notes{flex:0 0 150px;padding:13px}.ms-presenter-notes-head{font-size:10px}.ms-presenter-notes-body{font-size:18px}.ms-presenter-notes-resizer{display:none}.ms-presenter-mirror{width:100%}}
+@media(max-width:960px), (max-height:620px){#ms-presenter-shell{display:flex;flex-direction:column;padding:10px;gap:10px;--ms-presenter-notes-width:100%}.ms-presenter-stage{flex:1;min-height:180px}.ms-presenter-overview-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:12px}.ms-presenter-console{align-items:flex-start;min-height:0}.ms-presenter-status-grid{gap:6px}.ms-presenter-status-item{font-size:10px;padding:4px 7px}.ms-presenter-notes{flex:0 0 150px;padding:13px}.ms-presenter-notes-head{font-size:10px}.ms-presenter-notes-body{font-size:18px}.ms-presenter-notes-resizer{display:none}}
 /* === end injected CSS === */
 """
 
@@ -1093,6 +1093,12 @@ function msGetPresenterStatus(){
     save:saveState
   };
 }
+function msPresenterViewport(){
+  return {
+    width:Math.max(1,Math.round(window.innerWidth||document.documentElement.clientWidth||1)),
+    height:Math.max(1,Math.round(window.innerHeight||document.documentElement.clientHeight||1))
+  };
+}
 function msPresenterState(){
   return {
     type:'ms-presenter-state',
@@ -1101,6 +1107,7 @@ function msPresenterState(){
     notes:MS_SPEAKER_NOTES[cur]||'',
     heading:msSlideHeading(cur),
     title:document.title||'',
+    viewport:msPresenterViewport(),
     status:msGetPresenterStatus()
   };
 }
@@ -1928,6 +1935,7 @@ else if(MS_IS_SLIDE_EMBED){
 }
 window.addEventListener('resize',function(){
   fitSlideLayout(slides[cur]);
+  if(!MS_IS_SLIDE_EMBED&&!MS_IS_PRESENTER_SHELL)msBroadcastPresenterState();
 });
 if(!MS_IS_SLIDE_EMBED&&!MS_IS_PRESENTER_SHELL){
 window.addEventListener('hashchange',restoreFromHash);
@@ -3353,7 +3361,19 @@ fitSlideLayout(slides[cur]);
       notes:MS_SPEAKER_NOTES[idx]||'',
       heading:msSlideHeading(idx),
       title:document.title||'',
+      viewport:msPresenterViewport(),
       status:presenterStatusForIndex(idx,status)
+    };
+  }
+  function presenterViewportForState(state){
+    var viewport=state&&state.viewport&&typeof state.viewport==='object'?state.viewport:null;
+    var width=viewport?Number(viewport.width):0;
+    var height=viewport?Number(viewport.height):0;
+    if(!Number.isFinite(width)||width<1)width=window.innerWidth||document.documentElement.clientWidth||1;
+    if(!Number.isFinite(height)||height<1)height=window.innerHeight||document.documentElement.clientHeight||1;
+    return {
+      width:Math.max(1,Math.round(width)),
+      height:Math.max(1,Math.round(height))
     };
   }
   function presenterControlTargetIndex(state,action,gotoSlide){
@@ -3783,15 +3803,12 @@ fitSlideLayout(slides[cur]);
       var rect=mirrorStage.getBoundingClientRect();
       var maxW=Math.max(1,rect.width);
       var maxH=Math.max(1,rect.height);
-      var ratio=16/9;
-      var w=maxW;
-      var h=w/ratio;
-      if(h>maxH){
-        h=maxH;
-        w=h*ratio;
-      }
-      mirrorFrame.style.width=Math.max(1,Math.floor(w))+'px';
-      mirrorFrame.style.height=Math.max(1,Math.floor(h))+'px';
+      var viewport=presenterViewportForState(shellState);
+      var scale=Math.min(maxW/viewport.width,maxH/viewport.height);
+      if(!Number.isFinite(scale)||scale<=0)scale=1;
+      mirrorFrame.style.width=viewport.width+'px';
+      mirrorFrame.style.height=viewport.height+'px';
+      mirrorFrame.style.setProperty('--ms-presenter-mirror-scale',scale.toFixed(5));
     }
     function mirrorHasRenderableSlide(){
       if(!mirrorFrame)return false;
@@ -3864,6 +3881,7 @@ fitSlideLayout(slides[cur]);
         notes:typeof state.notes==='string'?state.notes:(MS_SPEAKER_NOTES[idx]||''),
         heading:typeof state.heading==='string'?state.heading:msSlideHeading(idx),
         title:typeof state.title==='string'?state.title:(document.title||''),
+        viewport:presenterViewportForState(state),
         status:presenterStatusForIndex(idx,state.status)
       };
       if(noteTitle)noteTitle.textContent=shellState.heading||shellState.title||MS_UI.presenter_notes;
