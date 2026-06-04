@@ -43,8 +43,10 @@ Before writing files, make a concise internal plan based on Brief Lite:
   `design-system.md`: display/body/optional mono stacks, why the type fits the
   requested style, and any language/script adjustments
 - Footer/source-note strategy
-- Presenter-note strategy: when the deck benefits from speaker prompts,
-  include concise per-slide notes through `data-speaker-notes` or
+- Presenter-note strategy: implement the confirmed outline's
+  `Presenter note mode` and every slide's `Speaker note / presenter prompt`.
+  Unless notes are explicitly disabled, each source slide should carry one
+  concise hidden presenter note through `data-speaker-notes` or
   `<aside class="speaker-notes">...</aside>` as defined in `html-contract.md`.
 - Design-canvas scaling strategy from `layout-guide.md`: keep `.slide-content`
   as the stable 16:9 design-canvas wrapper and rely on runtime/overview scaling
@@ -104,6 +106,11 @@ notes, or intermediate files created during generation must also live under
   so the chosen aesthetic is visible in typography, not only in colors.
 - Keep ordinary slides in the primary deck tone. Generate inverse-tone slides
   only when they were named in Brief Lite or the internal production plan.
+- Transfer the outline's per-slide speaker prompts into the HTML as hidden
+  presenter notes. Do not render them as visible slide text, footer notes, or
+  source notes; they are for the presenter console only. Prefer
+  `data-speaker-notes` for short one-line prompts and
+  `<aside class="speaker-notes">...</aside>` for multiline cues.
 - Build the Magic Move spine from the outline's content relay instead of
   sprinkling ids after the deck is done. Most adjacent pairs with continuous
   subject matter should share a primary semantic anchor; overview/detail or

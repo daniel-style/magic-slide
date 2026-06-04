@@ -52,6 +52,7 @@ Primitive: comparison OR metrics, not both
 Focal element: workstation use case map
 Support: 3 industries OR 3 differentiators
 Detail: source note in reserved footer
+Presenter note: cue the speaker to contrast the map with the prior metric
 Split if: metrics row is also needed
 ```
 
@@ -62,6 +63,9 @@ slide, or choose the one point the audience should remember.
 
 The slide budget is a planning aid, not a subjective scoring script. It protects
 the viewport and forces editorial choices before CSS tries to rescue the page.
+It also keeps presenter prompts separate from slide copy: speaker notes belong
+in hidden runtime metadata, while source notes/captions belong in the visible
+layout only when the audience needs them.
 
 By default, generate `style.css` and every `slide-XX.html` file directly after
 this pass. A separate prototype gate is optional and should only be used when

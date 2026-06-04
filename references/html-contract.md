@@ -49,10 +49,12 @@ first headline is still perceptible.
   `<div class="slide-content">...</div>`.
 - Full-bleed decorative/background layers may be direct children only when they
   use class `.bg`, are `aria-hidden="true"`, and sit behind `.slide-content`.
-- Optional presenter notes may be stored on the slide root with
-  `data-speaker-notes="..."` or as a direct child
-  `<aside class="speaker-notes">...</aside>`. The runtime hides these notes in
-  the main deck and shows the current slide's note in the presenter window.
+- Presenter notes from the confirmed outline may be stored on the slide root
+  with `data-speaker-notes="..."` or as a direct child
+  `<aside class="speaker-notes">...</aside>`. Prefer the attribute for short
+  one-line prompts and the hidden aside for multiline cues. The runtime hides
+  these notes in the main deck and shows the current slide's note in the
+  presenter window; do not style them as visible footer/source notes.
 - Do not put brand marks, page numbers, section counters, labels, or other
   visible slide chrome as direct children of `.slide`. Put necessary marks
   inside `.slide-content` or omit them.

@@ -17,11 +17,13 @@ remain reserved for final deliverables (`index.html` and `assets/`) plus the
 **Chapter arc:** [how the story turns from beginning to end] ← REQUIRED, NOT OPTIONAL
 **Closing idea:** [the non-generic idea the final slide should land] ← REQUIRED, NOT OPTIONAL
 **Magic Move spine:** [content relay system: how concepts pass between adjacent slides through primary anchors] ← REQUIRED, NOT OPTIONAL
+**Presenter note mode:** [concise per-slide prompts / none because user explicitly declined or deck is self-running] ← REQUIRED, NOT OPTIONAL
 
 ## Slide 1: [Concise Cover Title]
 - Content role: [what this slide proves, sets up, contrasts, or resolves]
 - Content point 1
 - Content point 2
+- Speaker note / presenter prompt: [one or two short cues: what to emphasize, transition setup, question, or timing note; not visible slide copy]
 - Inherited from previous: [none / cover opening / chapter break]
 - Passed to next: [concept, label, number, object, card, image, or node that should become the next slide's premise/focus/detail]
 - Content relay / Magic Move plan: Primary anchor: [exact visible text/object and role change into next slide, or "hard cut: reason"]; Supporting anchors: [optional exact labels/objects]
@@ -30,6 +32,7 @@ remain reserved for final deliverables (`index.html` and `assets/`) plus the
 - Content role: [what this slide proves, sets up, contrasts, or resolves]
 - Content point 1
 - Content point 2
+- Speaker note / presenter prompt: [one or two short cues for the presenter; "none" only if intentionally silent]
 - Inherited from previous: [concept/anchor from prior slide and how it becomes this slide's premise/focus/detail]
 - Passed to next: [concept/anchor this slide hands forward]
 - Content relay / Magic Move plan: Primary anchor: [exact visible text/object and role change from/to adjacent slide, or "hard cut: reason"]; Supporting anchors: [optional exact labels/objects]
@@ -88,7 +91,15 @@ remain reserved for final deliverables (`index.html` and `assets/`) plus the
    such as a real status, timeline date, card title, or diagram node label. Use
    `flip-engine.md` for the full primary-anchor quality standard.
 
-8. **Magic Move Storyboard** - Before asking for outline confirmation, include
+8. **Presenter prompts are planned with the outline** - Unless the user
+   explicitly asks for no speaker notes or the deck is meant to be self-running,
+   each slide entry must include a concise speaker note / presenter prompt. This
+   is not visible slide copy and should not simply repeat bullets. Use it to
+   record delivery cues: what to emphasize, how to bridge from the previous
+   slide, a key caveat, a rhetorical question, or a timing reminder. Keep each
+   prompt short enough for the presenter console.
+
+9. **Magic Move Storyboard** - Before asking for outline confirmation, include
    a compact adjacent-pair storyboard. This is where you prove the deck has
    enough real continuity before any HTML is written. Each pair must name the
    content relationship: continuation, amplification, decomposition, contrast,
@@ -96,23 +107,23 @@ remain reserved for final deliverables (`index.html` and `assets/`) plus the
    deck mark or says "hard cut", change the slide order or split/merge slides
    now.
 
-9. **Hard cuts are rare content decisions** - Use "hard cut" only for true
+10. **Hard cuts are rare content decisions** - Use "hard cut" only for true
    chapter breaks, tone resets, or content shifts where continuity would make
    the argument less clear. Always write the content reason. Do not use hard
    cuts to avoid planning relay opportunities inside the same argument arc.
 
-10. **Slide 1 title is cover copy** - Keep it short and title-like. Do not use
+11. **Slide 1 title is cover copy** - Keep it short and title-like. Do not use
    the full topic sentence as the cover H1; `html-contract.md` owns the
    detailed cover copy rules.
 
-11. **Cover relay stays simple** - For company, product, AI, infrastructure,
+12. **Cover relay stays simple** - For company, product, AI, infrastructure,
    SaaS, and developer-tool decks, do not plan a labeled process flow,
    architecture map, or explanatory node/card diagram on Slide 1. Slide 1 may
    hand off the title/wordmark when it is the main cover text, or one short key
    phrase into Slide 2; the working system map should begin on Slide 2 or
    later.
 
-12. **Each slide must advance the argument** - Not just list information. If a slide only says "this also exists", merge it or sharpen it.
+13. **Each slide must advance the argument** - Not just list information. If a slide only says "this also exists", merge it or sharpen it.
 
 The outline must be an argument, not a topic inventory. For company, technology, finance, or product decks, avoid a flat encyclopedia sequence such as history, products, market, partnerships, future. Each slide should either advance the thesis, provide evidence, create contrast, answer a risk/question, or resolve the story.
 
