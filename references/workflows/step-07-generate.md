@@ -43,6 +43,9 @@ Before writing files, make a concise internal plan based on Brief Lite:
   `design-system.md`: display/body/optional mono stacks, why the type fits the
   requested style, and any language/script adjustments
 - Footer/source-note strategy
+- Presenter-note strategy: when the deck benefits from speaker prompts,
+  include concise per-slide notes through `data-speaker-notes` or
+  `<aside class="speaker-notes">...</aside>` as defined in `html-contract.md`.
 - Design-canvas scaling strategy from `layout-guide.md`: keep `.slide-content`
   as the stable 16:9 design-canvas wrapper and rely on runtime/overview scaling
   for rendered sizes; use internal stages, groups, panels, and evidence bands
