@@ -73,6 +73,8 @@ UI_STRINGS = {
         'presenter_notes': '演讲备注',
         'presenter_notes_empty': '本页没有演讲备注。',
         'presenter_popup_blocked': '浏览器拦截了演讲者窗。请点击“演讲者窗”打开。',
+        'presenter_notes_toggle_side': '切换备注侧栏位置',
+        'presenter_notes_resize': '拖动调整备注宽度',
         'presenter_status_cursor': '光标',
         'presenter_status_overview': '总览',
         'presenter_status_qa': 'QA',
@@ -141,6 +143,8 @@ UI_STRINGS = {
         'presenter_notes': 'Speaker notes',
         'presenter_notes_empty': 'No speaker notes for this slide.',
         'presenter_popup_blocked': 'The presenter window was blocked. Click Presenter to open it.',
+        'presenter_notes_toggle_side': 'Toggle notes side',
+        'presenter_notes_resize': 'Drag to resize notes',
         'presenter_status_cursor': 'Cursor',
         'presenter_status_overview': 'Overview',
         'presenter_status_qa': 'QA',
@@ -640,8 +644,9 @@ body.ms-presenter-shell-mode .progress,
 body.ms-presenter-shell-mode .counter,
 body.ms-presenter-shell-mode #ms-cursor,
 body.ms-presenter-shell-mode .ms-cursor-trail{display:none!important}
-#ms-presenter-shell{position:fixed;inset:0;display:flex;flex-direction:column;gap:14px;padding:16px;background:#0b0d13;color:#eef2f7;font-family:var(--font-body,system-ui,-apple-system,sans-serif);z-index:20000}
-.ms-presenter-stage{position:relative;min-height:220px;flex:1;display:flex;align-items:center;justify-content:center;border:1px solid rgba(238,242,247,0.12);border-radius:12px;background:#05070b;box-shadow:0 24px 80px rgba(0,0,0,0.36);overflow:hidden}
+#ms-presenter-shell{--ms-presenter-notes-width:380px;position:fixed;inset:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,var(--ms-presenter-notes-width));grid-template-rows:minmax(0,1fr) auto;grid-template-areas:"stage notes" "console notes";gap:14px;padding:16px;background:#0b0d13;color:#eef2f7;font-family:var(--font-body,system-ui,-apple-system,sans-serif);z-index:20000}
+body.ms-presenter-notes-left #ms-presenter-shell{grid-template-columns:minmax(280px,var(--ms-presenter-notes-width)) minmax(0,1fr);grid-template-areas:"notes stage" "notes console"}
+.ms-presenter-stage{grid-area:stage;position:relative;min-width:0;min-height:220px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(238,242,247,0.12);border-radius:12px;background:#05070b;box-shadow:0 24px 80px rgba(0,0,0,0.36);overflow:hidden}
 .ms-presenter-mirror{width:100%;height:100%;max-width:100%;max-height:100%;aspect-ratio:16/9;border:0;background:#05070b;display:block}
 .ms-presenter-overview{position:absolute;inset:0;display:none;opacity:0;visibility:hidden;pointer-events:none;background:rgba(6,8,13,0.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);z-index:3;transition:opacity 0.22s ease,visibility 0.22s ease}
 .ms-presenter-overview.showing{display:block}
@@ -655,7 +660,7 @@ body.ms-presenter-shell-mode .ms-cursor-trail{display:none!important}
 .ms-presenter-overview-number{position:absolute;top:8px;right:8px;z-index:1;border-radius:999px;padding:4px 8px;background:rgba(6,8,13,0.82);color:rgba(238,242,247,0.82);font:800 10px/1 var(--font-mono,ui-monospace,monospace);font-variant-numeric:tabular-nums}
 .ms-presenter-overview-close{position:absolute;top:12px;right:12px;z-index:4;width:34px;height:34px;border-radius:999px;border:1px solid rgba(238,242,247,0.16);background:rgba(6,8,13,0.78);color:#eef2f7;font-size:18px;font-weight:800;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .ms-presenter-overview-close:hover{background:rgba(238,242,247,0.10);border-color:rgba(127,200,255,0.58)}
-.ms-presenter-console{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:10px 12px;border:1px solid rgba(238,242,247,0.12);border-radius:12px;background:rgba(255,255,255,0.035);box-shadow:0 12px 34px rgba(0,0,0,0.18);overflow:hidden}
+.ms-presenter-console{grid-area:console;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:10px 12px;border:1px solid rgba(238,242,247,0.12);border-radius:12px;background:rgba(255,255,255,0.035);box-shadow:0 12px 34px rgba(0,0,0,0.18);overflow:hidden}
 .ms-presenter-status-grid{min-width:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .ms-presenter-status-item{display:inline-flex;align-items:center;gap:6px;min-height:26px;border:1px solid rgba(238,242,247,0.13);border-radius:999px;padding:4px 9px;background:rgba(255,255,255,0.045);color:rgba(238,242,247,0.68);font-size:11px;font-weight:850;line-height:1;white-space:nowrap}
 .ms-presenter-status-item.is-on{border-color:rgba(74,222,128,0.32);background:rgba(34,197,94,0.12);color:#bbf7d0}
@@ -663,13 +668,21 @@ body.ms-presenter-shell-mode .ms-cursor-trail{display:none!important}
 .ms-presenter-status-item.is-muted{opacity:0.62}
 .ms-presenter-status-label{color:rgba(238,242,247,0.56);font-weight:800}
 .ms-presenter-status-value{color:inherit;font-weight:950}
-.ms-presenter-notes{flex:0 0 170px;min-height:132px;display:flex;flex-direction:column;gap:10px;padding:16px 18px;border:1px solid rgba(238,242,247,0.12);border-radius:12px;background:rgba(255,255,255,0.045);box-shadow:0 16px 44px rgba(0,0,0,0.22);overflow:hidden}
+.ms-presenter-notes{grid-area:notes;position:relative;min-width:0;min-height:0;display:flex;flex-direction:column;gap:10px;padding:16px 18px;border:1px solid rgba(238,242,247,0.12);border-radius:12px;background:rgba(255,255,255,0.045);box-shadow:0 16px 44px rgba(0,0,0,0.22);overflow:hidden}
 .ms-presenter-notes-head{display:flex;align-items:center;justify-content:space-between;gap:12px;color:rgba(238,242,247,0.64);font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase}
 .ms-presenter-notes-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ms-presenter-notes-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .ms-presenter-notes-page{flex-shrink:0;font-family:var(--font-mono,ui-monospace,monospace);font-variant-numeric:tabular-nums}
-.ms-presenter-notes-body{min-height:0;flex:1;overflow:auto;color:#f8fafc;font-size:clamp(18px,2.1vw,30px);line-height:1.42;white-space:pre-wrap;overflow-wrap:anywhere}
-.ms-presenter-notes-body.is-empty{color:rgba(238,242,247,0.48);font-size:clamp(16px,1.5vw,22px)}
-@media(max-width:760px){#ms-presenter-shell{padding:10px;gap:10px}.ms-presenter-overview-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:12px}.ms-presenter-console{align-items:flex-start;min-height:0}.ms-presenter-status-grid{gap:6px}.ms-presenter-status-item{font-size:10px;padding:4px 7px}.ms-presenter-notes{flex-basis:150px;padding:13px}.ms-presenter-notes-head{font-size:10px}.ms-presenter-notes-body{font-size:18px}.ms-presenter-mirror{width:100%}}
+.ms-presenter-notes-side-btn{appearance:none;-webkit-appearance:none;width:30px;height:26px;border:1px solid rgba(238,242,247,0.14);border-radius:8px;background:rgba(255,255,255,0.055);color:rgba(238,242,247,0.78);font-size:14px;font-weight:900;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background 0.16s ease,border-color 0.16s ease,color 0.16s ease,transform 0.16s ease}
+.ms-presenter-notes-side-btn:hover{background:rgba(255,255,255,0.10);border-color:rgba(127,200,255,0.56);color:#eef2f7;transform:translateY(-1px)}
+.ms-presenter-notes-resizer{position:absolute;top:0;bottom:0;left:-7px;width:14px;cursor:ew-resize;z-index:2;touch-action:none}
+body.ms-presenter-notes-left .ms-presenter-notes-resizer{left:auto;right:-7px}
+.ms-presenter-notes-resizer::before{content:'';position:absolute;top:14px;bottom:14px;left:6px;width:2px;border-radius:999px;background:rgba(238,242,247,0.16);opacity:0;transition:opacity 0.16s ease,background 0.16s ease}
+.ms-presenter-notes-resizer:hover::before,body.ms-presenter-notes-resizing .ms-presenter-notes-resizer::before{opacity:1;background:rgba(127,200,255,0.62)}
+body.ms-presenter-notes-resizing{cursor:ew-resize!important}
+.ms-presenter-notes-body{min-height:0;flex:1;overflow:auto;color:#f8fafc;font-size:clamp(20px,1.55vw,34px);line-height:1.44;white-space:pre-wrap;overflow-wrap:anywhere}
+.ms-presenter-notes-body.is-empty{color:rgba(238,242,247,0.48);font-size:clamp(16px,1.2vw,22px)}
+@media(max-width:960px), (max-height:620px){#ms-presenter-shell{display:flex;flex-direction:column;padding:10px;gap:10px;--ms-presenter-notes-width:100%}.ms-presenter-stage{flex:1;min-height:180px}.ms-presenter-overview-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:12px}.ms-presenter-console{align-items:flex-start;min-height:0}.ms-presenter-status-grid{gap:6px}.ms-presenter-status-item{font-size:10px;padding:4px 7px}.ms-presenter-notes{flex:0 0 150px;padding:13px}.ms-presenter-notes-head{font-size:10px}.ms-presenter-notes-body{font-size:18px}.ms-presenter-notes-resizer{display:none}.ms-presenter-mirror{width:100%}}
 /* === end injected CSS === */
 """
 
@@ -3495,7 +3508,7 @@ fitSlideLayout(slides[cur]);
   if(MS_IS_PRESENTER_SHELL){
     var shell=document.createElement('div');
     shell.id='ms-presenter-shell';
-    shell.innerHTML='<div class="ms-presenter-stage"><iframe class="ms-presenter-mirror" title="Presenter mirror" allow="fullscreen"></iframe><div class="ms-presenter-overview" aria-hidden="true"><div class="ms-presenter-overview-grid"></div><button class="ms-presenter-overview-close" type="button" aria-label="Close overview">&times;</button></div></div><section class="ms-presenter-console" aria-live="polite"><div class="ms-presenter-status-grid"></div></section><section class="ms-presenter-notes" aria-live="polite"><div class="ms-presenter-notes-head"><span class="ms-presenter-notes-title"></span><span class="ms-presenter-notes-page"></span></div><div class="ms-presenter-notes-body"></div></section>';
+    shell.innerHTML='<div class="ms-presenter-stage"><iframe class="ms-presenter-mirror" title="Presenter mirror" allow="fullscreen"></iframe><div class="ms-presenter-overview" aria-hidden="true"><div class="ms-presenter-overview-grid"></div><button class="ms-presenter-overview-close" type="button" aria-label="Close overview">&times;</button></div></div><section class="ms-presenter-console" aria-live="polite"><div class="ms-presenter-status-grid"></div></section><section class="ms-presenter-notes" aria-live="polite"><div class="ms-presenter-notes-resizer" role="separator" aria-orientation="vertical"></div><div class="ms-presenter-notes-head"><span class="ms-presenter-notes-title"></span><span class="ms-presenter-notes-actions"><span class="ms-presenter-notes-page"></span><button class="ms-presenter-notes-side-btn" type="button"></button></span></div><div class="ms-presenter-notes-body"></div></section>';
     document.body.appendChild(shell);
     var mirrorStage=shell.querySelector('.ms-presenter-stage');
     var mirrorFrame=shell.querySelector('.ms-presenter-mirror');
@@ -3503,6 +3516,8 @@ fitSlideLayout(slides[cur]);
     var presenterOverviewGrid=shell.querySelector('.ms-presenter-overview-grid');
     var presenterOverviewClose=shell.querySelector('.ms-presenter-overview-close');
     var statusGrid=shell.querySelector('.ms-presenter-status-grid');
+    var noteResizer=shell.querySelector('.ms-presenter-notes-resizer');
+    var noteSideBtn=shell.querySelector('.ms-presenter-notes-side-btn');
     var noteTitle=shell.querySelector('.ms-presenter-notes-title');
     var notePage=shell.querySelector('.ms-presenter-notes-page');
     var noteBody=shell.querySelector('.ms-presenter-notes-body');
@@ -3517,6 +3532,94 @@ fitSlideLayout(slides[cur]);
     function postPresenterShellToMain(message){
       if(window.opener&&!window.opener.closed)return msPostWindow(window.opener,message);
       return false;
+    }
+    var presenterNotesSide=readPresenterShellSetting('notes-side','right')==='left'?'left':'right';
+    var presenterNotesDesiredWidth=parseInt(readPresenterShellSetting('notes-width','380'),10)||380;
+    var presenterNotesWidth=presenterNotesDesiredWidth;
+    var presenterNotesResizeState=null;
+    function presenterShellSettingKey(name){
+      return 'magic-slide-presenter-'+name;
+    }
+    function readPresenterShellSetting(name,fallback){
+      try{
+        var value=window.localStorage?window.localStorage.getItem(presenterShellSettingKey(name)):null;
+        return value||fallback;
+      }catch(err){
+        return fallback;
+      }
+    }
+    function writePresenterShellSetting(name,value){
+      try{
+        if(window.localStorage)window.localStorage.setItem(presenterShellSettingKey(name),String(value));
+      }catch(err){}
+    }
+    function presenterNotesInlineLayoutEnabled(){
+      return !window.matchMedia('(max-width: 960px), (max-height: 620px)').matches;
+    }
+    function clampPresenterNotesWidth(width){
+      var min=280;
+      var max=Math.max(min,Math.min(920,Math.floor(window.innerWidth*0.56)));
+      return Math.max(min,Math.min(max,Math.round(width||380)));
+    }
+    function applyPresenterNotesLayout(save){
+      presenterNotesWidth=clampPresenterNotesWidth(presenterNotesDesiredWidth);
+      document.body.classList.toggle('ms-presenter-notes-left',presenterNotesSide==='left');
+      document.body.classList.toggle('ms-presenter-notes-right',presenterNotesSide!=='left');
+      shell.style.setProperty('--ms-presenter-notes-width',presenterNotesWidth+'px');
+      if(noteSideBtn){
+        noteSideBtn.textContent=presenterNotesSide==='left'?'→':'←';
+        noteSideBtn.title=presenterText('presenter_notes_toggle_side','Toggle notes side');
+        noteSideBtn.setAttribute('aria-label',presenterText('presenter_notes_toggle_side','Toggle notes side'));
+      }
+      if(noteResizer){
+        noteResizer.title=presenterText('presenter_notes_resize','Drag to resize notes');
+        noteResizer.setAttribute('aria-label',presenterText('presenter_notes_resize','Drag to resize notes'));
+      }
+      if(save){
+        writePresenterShellSetting('notes-side',presenterNotesSide);
+        writePresenterShellSetting('notes-width',presenterNotesDesiredWidth);
+      }
+      resizePresenterMirror();
+      refreshPresenterOverviewCards();
+      scheduleMirrorHealthCheck('resize');
+    }
+    function togglePresenterNotesSide(){
+      presenterNotesSide=presenterNotesSide==='left'?'right':'left';
+      applyPresenterNotesLayout(true);
+    }
+    function startPresenterNotesResize(e){
+      if(!presenterNotesInlineLayoutEnabled())return;
+      e.preventDefault();
+      e.stopPropagation();
+      presenterNotesWidth=clampPresenterNotesWidth(presenterNotesDesiredWidth);
+      presenterNotesDesiredWidth=presenterNotesWidth;
+      presenterNotesResizeState={x:e.clientX,width:presenterNotesWidth,side:presenterNotesSide};
+      document.body.classList.add('ms-presenter-notes-resizing');
+      if(noteResizer&&noteResizer.setPointerCapture){
+        try{noteResizer.setPointerCapture(e.pointerId);}catch(err){}
+      }
+      window.addEventListener('pointermove',updatePresenterNotesResize,true);
+      window.addEventListener('pointerup',finishPresenterNotesResize,true);
+      window.addEventListener('pointercancel',finishPresenterNotesResize,true);
+    }
+    function updatePresenterNotesResize(e){
+      if(!presenterNotesResizeState)return;
+      e.preventDefault();
+      var delta=e.clientX-presenterNotesResizeState.x;
+      presenterNotesDesiredWidth=presenterNotesResizeState.width+(presenterNotesResizeState.side==='left'?delta:-delta);
+      presenterNotesWidth=clampPresenterNotesWidth(presenterNotesDesiredWidth);
+      applyPresenterNotesLayout(false);
+    }
+    function finishPresenterNotesResize(e){
+      if(!presenterNotesResizeState)return;
+      if(e)e.preventDefault();
+      presenterNotesResizeState=null;
+      presenterNotesDesiredWidth=presenterNotesWidth;
+      document.body.classList.remove('ms-presenter-notes-resizing');
+      window.removeEventListener('pointermove',updatePresenterNotesResize,true);
+      window.removeEventListener('pointerup',finishPresenterNotesResize,true);
+      window.removeEventListener('pointercancel',finishPresenterNotesResize,true);
+      writePresenterShellSetting('notes-width',presenterNotesDesiredWidth);
     }
     function presenterText(key,fallback){
       return (window.MS_UI&&typeof window.MS_UI[key]==='string')?window.MS_UI[key]:fallback;
@@ -3832,6 +3935,19 @@ fitSlideLayout(slides[cur]);
         scheduleMirrorHealthCheck('resize');
       });
     }
+    if(noteSideBtn){
+      noteSideBtn.addEventListener('click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        togglePresenterNotesSide();
+      });
+    }
+    if(noteResizer){
+      noteResizer.addEventListener('pointerdown',startPresenterNotesResize);
+    }
+    window.addEventListener('resize',function(){
+      applyPresenterNotesLayout(false);
+    });
     if(presenterOverviewClose){
       presenterOverviewClose.addEventListener('click',function(e){
         e.preventDefault();
@@ -3850,6 +3966,7 @@ fitSlideLayout(slides[cur]);
         }
       });
     }
+    applyPresenterNotesLayout(false);
     applyPresenterShellState(shellState);
     window.addEventListener('message',function(event){
       var data=event.data||{};
