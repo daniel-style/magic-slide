@@ -781,6 +781,7 @@ var MS_QA_ALLOWED=MS_IS_MAGIC_SLIDE_PREVIEW;
 var MS_QA_MODE=MS_QA_ALLOWED&&MS_VIEW_PARAMS.get('ms_qa')==='overview';
 var MS_QA_CAPTURE_MODE=MS_QA_MODE&&MS_VIEW_PARAMS.get('ms_qa_capture')==='1';
 var MS_SHOULD_AUTOPEN_PRESENTER=!MS_IS_SLIDE_EMBED&&!MS_IS_PRESENTER_SHELL&&!MS_QA_MODE&&MS_VIEW_PARAMS.get('ms_no_presenter')!=='1'&&MS_VIEW_PARAMS.get('ms_presenter')!=='0';
+var MS_PRESENTER_DETACH_GRACE_MS=800;
 document.body.classList.toggle('ms-qa-capture',MS_QA_CAPTURE_MODE);
 document.body.classList.toggle('ms-presenter-shell-mode',MS_IS_PRESENTER_SHELL);
 document.body.classList.toggle('ms-slide-embed',MS_IS_SLIDE_EMBED);
@@ -1077,6 +1078,19 @@ function msBuildPresenterMirrorUrl(idx){
   url.searchParams.set('ms_slide',String(idx+1));
   url.hash='#'+(idx+1);
   return url.toString();
+}
+function msPresenterLifecycleKey(){
+  return 'magic-slide-presenter-lifecycle-'+(window.location.origin||'file')+'-'+(window.location.pathname||'deck').replace(/[^a-z0-9]+/gi,'-');
+}
+function msWritePresenterLifecycle(state,reason){
+  try{
+    if(!window.localStorage)return;
+    window.localStorage.setItem(msPresenterLifecycleKey(),JSON.stringify({state:state,reason:reason||'',at:Date.now()}));
+  }catch(err){}
+}
+function msReadPresenterLifecycleValue(value){
+  if(!value)return null;
+  try{return JSON.parse(value);}catch(err){return null;}
 }
 function msGetPresenterStatus(){
   var saveState=null;
@@ -3592,21 +3606,67 @@ fitSlideLayout(slides[cur]);
     var presenterOverviewBuilt=false;
     var presenterOverviewHideTimer=null;
     var presenterShellClosing=false;
+    var presenterMainDetachTimer=null;
+    var presenterReadyPingTimer=null;
 
     function postPresenterShellToMain(message){
       if(window.opener&&!window.opener.closed)return msPostWindow(window.opener,message);
       return false;
     }
+    function stopPresenterReadyPing(){
+      if(!presenterReadyPingTimer)return;
+      clearInterval(presenterReadyPingTimer);
+      presenterReadyPingTimer=null;
+    }
+    function startPresenterReadyPing(){
+      stopPresenterReadyPing();
+      presenterReadyPingTimer=setInterval(function(){
+        postPresenterShellToMain({type:'ms-presenter-ready',reason:'heartbeat'});
+      },300);
+    }
+    function clearPresenterMainDetachTimer(){
+      if(!presenterMainDetachTimer)return;
+      clearTimeout(presenterMainDetachTimer);
+      presenterMainDetachTimer=null;
+    }
     function closePresenterShellFromMain(){
       if(presenterShellClosing)return;
       presenterShellClosing=true;
+      clearPresenterMainDetachTimer();
+      if(presenterOpenerWatchTimer)clearInterval(presenterOpenerWatchTimer);
+      stopPresenterReadyPing();
       try{window.close();}catch(err){}
+    }
+    function schedulePresenterShellCloseAfterDetach(data){
+      clearPresenterMainDetachTimer();
+      startPresenterReadyPing();
+      var grace=parseInt(data&&data.graceMs,10)||MS_PRESENTER_DETACH_GRACE_MS;
+      grace=Math.max(450,Math.min(5000,grace));
+      presenterMainDetachTimer=setTimeout(function(){
+        presenterMainDetachTimer=null;
+        closePresenterShellFromMain();
+      },grace);
     }
     var presenterOpenerWatchTimer=setInterval(function(){
       if(window.opener&&window.opener.closed)closePresenterShellFromMain();
-    },1000);
+    },250);
     window.addEventListener('pagehide',function(){
       if(presenterOpenerWatchTimer)clearInterval(presenterOpenerWatchTimer);
+      stopPresenterReadyPing();
+      clearPresenterMainDetachTimer();
+    });
+    window.addEventListener('storage',function(event){
+      if(event.key!==msPresenterLifecycleKey())return;
+      var lifecycle=msReadPresenterLifecycleValue(event.newValue);
+      if(!lifecycle)return;
+      if(lifecycle.state==='active'){
+        clearPresenterMainDetachTimer();
+        startPresenterReadyPing();
+      }else if(lifecycle.state==='detached'){
+        schedulePresenterShellCloseAfterDetach({graceMs:MS_PRESENTER_DETACH_GRACE_MS});
+      }else if(lifecycle.state==='closed'){
+        closePresenterShellFromMain();
+      }
     });
     var presenterNotesSide=readPresenterShellSetting('notes-side','right')==='left'?'left':'right';
     var presenterNotesDesiredWidth=parseInt(readPresenterShellSetting('notes-width','380'),10)||380;
@@ -3928,6 +3988,8 @@ fitSlideLayout(slides[cur]);
       },reason==='load'?260:(reason==='loading'?700:900));
     }
     function applyPresenterShellState(state){
+      clearPresenterMainDetachTimer();
+      stopPresenterReadyPing();
       var idx=Math.max(0,Math.min(slides.length-1,(parseInt(state.slide,10)||1)-1));
       shellState={
         type:'ms-presenter-state',
@@ -4048,6 +4110,10 @@ fitSlideLayout(slides[cur]);
         closePresenterShellFromMain();
         return;
       }
+      if(data.type==='ms-presenter-detach'){
+        schedulePresenterShellCloseAfterDetach(data);
+        return;
+      }
       if(data.type==='ms-presenter-state'){
         applyPresenterShellState(data);
         return;
@@ -4071,6 +4137,7 @@ fitSlideLayout(slides[cur]);
     document.addEventListener('keydown',function(e){
       sendPresenterKeyFromEvent(e,handlePresenterKeyInShell);
     });
+    startPresenterReadyPing();
     setTimeout(function(){
       postPresenterShellToMain({type:'ms-presenter-ready'});
     },80);
@@ -4081,8 +4148,21 @@ fitSlideLayout(slides[cur]);
   var presenterButton=document.getElementById('ms-presenter-open-btn');
   var presenterGestureArmed=false;
   var presenterWindowCloseSent=false;
+  var presenterWindowDetachSent=false;
+  msWritePresenterLifecycle('active','load');
   function presenterWindowName(){
     return 'magic-slide-presenter-'+(window.location.pathname||'deck').replace(/[^a-z0-9]+/gi,'-');
+  }
+  function notifyPresenterWindowDetaching(reason){
+    var win=window.msPresenterWindow;
+    if(!win||win.closed){
+      window.msPresenterWindow=null;
+      return false;
+    }
+    if(presenterWindowCloseSent||presenterWindowDetachSent)return false;
+    presenterWindowDetachSent=true;
+    msWritePresenterLifecycle('detached',reason||'main-detach');
+    return msPostWindow(win,{type:'ms-presenter-detach',reason:reason||'main-detach',graceMs:MS_PRESENTER_DETACH_GRACE_MS});
   }
   function closePresenterWindowFromMain(reason){
     var win=window.msPresenterWindow;
@@ -4092,6 +4172,7 @@ fitSlideLayout(slides[cur]);
     }
     if(presenterWindowCloseSent)return false;
     presenterWindowCloseSent=true;
+    msWritePresenterLifecycle('closed',reason||'main-close');
     msPostWindow(win,{type:'ms-presenter-close',reason:reason||'main-close'});
     try{win.close();}catch(err){}
     window.msPresenterWindow=null;
@@ -4099,13 +4180,15 @@ fitSlideLayout(slides[cur]);
   }
   window.msClosePresenterWindowFromMain=closePresenterWindowFromMain;
   window.addEventListener('pagehide',function(){
-    closePresenterWindowFromMain('pagehide');
+    notifyPresenterWindowDetaching('pagehide');
   });
   window.addEventListener('unload',function(){
-    closePresenterWindowFromMain('unload');
+    notifyPresenterWindowDetaching('unload');
   });
   window.addEventListener('pageshow',function(){
     presenterWindowCloseSent=false;
+    presenterWindowDetachSent=false;
+    msWritePresenterLifecycle('active','pageshow');
   });
   function openPresenterWindow(reason){
     if(window.msPresenterWindow&&!window.msPresenterWindow.closed){
@@ -4123,6 +4206,7 @@ fitSlideLayout(slides[cur]);
     if(opened){
       window.msPresenterWindow=opened;
       presenterWindowCloseSent=false;
+      presenterWindowDetachSent=false;
       if(presenterButton)presenterButton.classList.remove('ms-dirty');
       setTimeout(msBroadcastPresenterState,220);
       return true;
@@ -4158,6 +4242,7 @@ fitSlideLayout(slides[cur]);
     if(data.type==='ms-presenter-ready'||data.type==='ms-presenter-request-state'){
       window.msPresenterWindow=event.source;
       presenterWindowCloseSent=false;
+      presenterWindowDetachSent=false;
       msBroadcastPresenterState();
       return;
     }
@@ -4178,8 +4263,12 @@ fitSlideLayout(slides[cur]);
     if(typeof window.msDriveCursorFromPresenter==='function')window.msDriveCursorFromPresenter(data);
   }
   setTimeout(function(){
+    if(window.msPresenterWindow&&!window.msPresenterWindow.closed){
+      msBroadcastPresenterState();
+      return;
+    }
     if(!openPresenterWindow('auto'))armPresenterGestureFallback();
-  },420);
+  },800);
 })();
 
 // ── Uploadable image placeholders ─────────────────────────────────────────
