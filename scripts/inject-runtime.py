@@ -3591,11 +3591,23 @@ fitSlideLayout(slides[cur]);
     var mirrorResizeObserver=null;
     var presenterOverviewBuilt=false;
     var presenterOverviewHideTimer=null;
+    var presenterShellClosing=false;
 
     function postPresenterShellToMain(message){
       if(window.opener&&!window.opener.closed)return msPostWindow(window.opener,message);
       return false;
     }
+    function closePresenterShellFromMain(){
+      if(presenterShellClosing)return;
+      presenterShellClosing=true;
+      try{window.close();}catch(err){}
+    }
+    var presenterOpenerWatchTimer=setInterval(function(){
+      if(window.opener&&window.opener.closed)closePresenterShellFromMain();
+    },1000);
+    window.addEventListener('pagehide',function(){
+      if(presenterOpenerWatchTimer)clearInterval(presenterOpenerWatchTimer);
+    });
     var presenterNotesSide=readPresenterShellSetting('notes-side','right')==='left'?'left':'right';
     var presenterNotesDesiredWidth=parseInt(readPresenterShellSetting('notes-width','380'),10)||380;
     var presenterNotesWidth=presenterNotesDesiredWidth;
@@ -4032,6 +4044,10 @@ fitSlideLayout(slides[cur]);
     window.addEventListener('message',function(event){
       var data=event.data||{};
       if(!data||typeof data.type!=='string'||data.type.indexOf('ms-presenter-')!==0)return;
+      if(data.type==='ms-presenter-close'){
+        closePresenterShellFromMain();
+        return;
+      }
       if(data.type==='ms-presenter-state'){
         applyPresenterShellState(data);
         return;
@@ -4064,9 +4080,33 @@ fitSlideLayout(slides[cur]);
   if(!MS_SHOULD_AUTOPEN_PRESENTER)return;
   var presenterButton=document.getElementById('ms-presenter-open-btn');
   var presenterGestureArmed=false;
+  var presenterWindowCloseSent=false;
   function presenterWindowName(){
     return 'magic-slide-presenter-'+(window.location.pathname||'deck').replace(/[^a-z0-9]+/gi,'-');
   }
+  function closePresenterWindowFromMain(reason){
+    var win=window.msPresenterWindow;
+    if(!win||win.closed){
+      window.msPresenterWindow=null;
+      return false;
+    }
+    if(presenterWindowCloseSent)return false;
+    presenterWindowCloseSent=true;
+    msPostWindow(win,{type:'ms-presenter-close',reason:reason||'main-close'});
+    try{win.close();}catch(err){}
+    window.msPresenterWindow=null;
+    return true;
+  }
+  window.msClosePresenterWindowFromMain=closePresenterWindowFromMain;
+  window.addEventListener('pagehide',function(){
+    closePresenterWindowFromMain('pagehide');
+  });
+  window.addEventListener('unload',function(){
+    closePresenterWindowFromMain('unload');
+  });
+  window.addEventListener('pageshow',function(){
+    presenterWindowCloseSent=false;
+  });
   function openPresenterWindow(reason){
     if(window.msPresenterWindow&&!window.msPresenterWindow.closed){
       msBroadcastPresenterState();
@@ -4082,6 +4122,7 @@ fitSlideLayout(slides[cur]);
     }
     if(opened){
       window.msPresenterWindow=opened;
+      presenterWindowCloseSent=false;
       if(presenterButton)presenterButton.classList.remove('ms-dirty');
       setTimeout(msBroadcastPresenterState,220);
       return true;
@@ -4116,6 +4157,7 @@ fitSlideLayout(slides[cur]);
     if(!data||typeof data.type!=='string'||data.type.indexOf('ms-presenter-')!==0)return;
     if(data.type==='ms-presenter-ready'||data.type==='ms-presenter-request-state'){
       window.msPresenterWindow=event.source;
+      presenterWindowCloseSent=false;
       msBroadcastPresenterState();
       return;
     }
@@ -4367,6 +4409,7 @@ fitSlideLayout(slides[cur]);
           .then(function(filename){
             var name=filename.trim()||document.title;
             showToast(MS_UI.toast_closing.replace('{name}',name),4000);
+            if(typeof window.msClosePresenterWindowFromMain==='function')window.msClosePresenterWindowFromMain('toolbar-close');
             setTimeout(function(){fetch(apiUrl('/shutdown'),{method:'POST'}).catch(function(){});},1500);
             setTimeout(function(){document.body.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#0a0c0e;color:#e8edf7;font-family:system-ui;gap:1rem"><p style="font-size:1.5rem;font-weight:700">'+MS_UI.done_title+'</p><p style="color:#6b7280;font-size:0.95rem">'+MS_UI.done_file.replace('{name}',name)+'</p><p style="color:#6b7280;font-size:0.85rem">'+MS_UI.done_hint+'</p></div>';},2500);
           })
