@@ -73,8 +73,17 @@ UI_STRINGS = {
         'presenter_notes': '演讲备注',
         'presenter_notes_empty': '本页没有演讲备注。',
         'presenter_popup_blocked': '浏览器拦截了演讲者窗。请点击“演讲者窗”打开。',
+        'presenter_notes_show': '显示备注',
+        'presenter_notes_hide': '隐藏备注',
         'presenter_notes_toggle_side': '切换备注侧栏位置',
         'presenter_notes_resize': '拖动调整备注宽度',
+        'presenter_notes_edit': '编辑',
+        'presenter_notes_save': '保存',
+        'presenter_notes_cancel': '取消',
+        'presenter_notes_saving': '保存中…',
+        'presenter_notes_saved': '已保存',
+        'presenter_notes_save_failed': '保存失败',
+        'presenter_notes_edit_unavailable': '仅本地预览可编辑',
         'presenter_status_cursor': '光标',
         'presenter_status_overview': '总览',
         'presenter_status_qa': 'QA',
@@ -143,8 +152,17 @@ UI_STRINGS = {
         'presenter_notes': 'Speaker notes',
         'presenter_notes_empty': 'No speaker notes for this slide.',
         'presenter_popup_blocked': 'The presenter window was blocked. Click Presenter to open it.',
+        'presenter_notes_show': 'Show notes',
+        'presenter_notes_hide': 'Hide notes',
         'presenter_notes_toggle_side': 'Toggle notes side',
         'presenter_notes_resize': 'Drag to resize notes',
+        'presenter_notes_edit': 'Edit',
+        'presenter_notes_save': 'Save',
+        'presenter_notes_cancel': 'Cancel',
+        'presenter_notes_saving': 'Saving...',
+        'presenter_notes_saved': 'Saved',
+        'presenter_notes_save_failed': 'Save failed',
+        'presenter_notes_edit_unavailable': 'Editable in local preview only',
         'presenter_status_cursor': 'Cursor',
         'presenter_status_overview': 'Overview',
         'presenter_status_qa': 'QA',
@@ -647,6 +665,7 @@ body.ms-presenter-shell-mode #ms-cursor,
 body.ms-presenter-shell-mode .ms-cursor-trail{display:none!important}
 #ms-presenter-shell{--ms-presenter-notes-width:380px;position:fixed;inset:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,var(--ms-presenter-notes-width));grid-template-rows:minmax(0,1fr) auto;grid-template-areas:"stage notes" "console notes";gap:14px;padding:16px;background:#0b0d13;color:#eef2f7;font-family:var(--font-body,system-ui,-apple-system,sans-serif);z-index:20000}
 body.ms-presenter-notes-left #ms-presenter-shell{grid-template-columns:minmax(280px,var(--ms-presenter-notes-width)) minmax(0,1fr);grid-template-areas:"notes stage" "notes console"}
+body.ms-presenter-notes-collapsed #ms-presenter-shell{grid-template-columns:minmax(0,1fr);grid-template-areas:"stage" "console"}
 .ms-presenter-stage{grid-area:stage;position:relative;min-width:0;min-height:220px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(238,242,247,0.12);border-radius:12px;background:#05070b;box-shadow:0 24px 80px rgba(0,0,0,0.36);overflow:hidden}
 .ms-presenter-mirror{position:absolute;top:50%;left:50%;width:100%;height:100%;max-width:none;max-height:none;border:0;background:#05070b;display:block;transform:translate(-50%,-50%) scale(var(--ms-presenter-mirror-scale,1));transform-origin:center center;will-change:transform}
 .ms-presenter-overview{position:absolute;inset:0;display:none;opacity:0;visibility:hidden;pointer-events:none;background:rgba(6,8,13,0.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);z-index:3;transition:opacity 0.22s ease,visibility 0.22s ease}
@@ -669,7 +688,15 @@ body.ms-presenter-notes-left #ms-presenter-shell{grid-template-columns:minmax(28
 .ms-presenter-status-item.is-muted{opacity:0.62}
 .ms-presenter-status-label{color:rgba(238,242,247,0.56);font-weight:800}
 .ms-presenter-status-value{color:inherit;font-weight:950}
+.ms-presenter-console-actions{flex-shrink:0;display:flex;align-items:center;gap:8px}
+.ms-presenter-notes-toggle-btn,.ms-presenter-notes-edit-btn,.ms-presenter-notes-save-btn,.ms-presenter-notes-cancel-btn{appearance:none;-webkit-appearance:none;min-height:28px;border:1px solid rgba(238,242,247,0.14);border-radius:8px;background:rgba(255,255,255,0.055);color:rgba(238,242,247,0.82);font-size:11px;font-weight:900;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 10px;transition:background 0.16s ease,border-color 0.16s ease,color 0.16s ease,transform 0.16s ease}
+.ms-presenter-notes-toggle-btn:hover,.ms-presenter-notes-edit-btn:hover,.ms-presenter-notes-save-btn:hover,.ms-presenter-notes-cancel-btn:hover{background:rgba(255,255,255,0.10);border-color:rgba(127,200,255,0.56);color:#eef2f7;transform:translateY(-1px)}
+.ms-presenter-notes-save-btn{border-color:rgba(74,222,128,0.28);background:rgba(34,197,94,0.12);color:#bbf7d0}
+.ms-presenter-notes-cancel-btn{color:rgba(238,242,247,0.62)}
+.ms-presenter-notes-toggle-btn.is-open{border-color:rgba(127,200,255,0.40);background:rgba(127,200,255,0.13);color:#dbeafe}
+.ms-presenter-notes-edit-btn[disabled],.ms-presenter-notes-save-btn[disabled],.ms-presenter-notes-cancel-btn[disabled]{opacity:0.55;cursor:not-allowed;transform:none}
 .ms-presenter-notes{grid-area:notes;position:relative;min-width:0;min-height:0;display:flex;flex-direction:column;gap:10px;padding:16px 18px;border:1px solid rgba(238,242,247,0.12);border-radius:12px;background:rgba(255,255,255,0.045);box-shadow:0 16px 44px rgba(0,0,0,0.22);overflow:hidden}
+body.ms-presenter-notes-collapsed .ms-presenter-notes{display:none}
 .ms-presenter-notes-head{display:flex;align-items:center;justify-content:space-between;gap:12px;color:rgba(238,242,247,0.64);font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase}
 .ms-presenter-notes-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ms-presenter-notes-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
@@ -683,7 +710,9 @@ body.ms-presenter-notes-left .ms-presenter-notes-resizer{left:auto;right:-7px}
 body.ms-presenter-notes-resizing{cursor:ew-resize!important}
 .ms-presenter-notes-body{min-height:0;flex:1;overflow:auto;color:#f8fafc;font-size:clamp(20px,1.55vw,34px);line-height:1.44;white-space:pre-wrap;overflow-wrap:anywhere}
 .ms-presenter-notes-body.is-empty{color:rgba(238,242,247,0.48);font-size:clamp(16px,1.2vw,22px)}
-@media(max-width:960px), (max-height:620px){#ms-presenter-shell{display:flex;flex-direction:column;padding:10px;gap:10px;--ms-presenter-notes-width:100%}.ms-presenter-stage{flex:1;min-height:180px}.ms-presenter-overview-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:12px}.ms-presenter-console{align-items:flex-start;min-height:0}.ms-presenter-status-grid{gap:6px}.ms-presenter-status-item{font-size:10px;padding:4px 7px}.ms-presenter-notes{flex:0 0 150px;padding:13px}.ms-presenter-notes-head{font-size:10px}.ms-presenter-notes-body{font-size:18px}.ms-presenter-notes-resizer{display:none}}
+.ms-presenter-notes-body[contenteditable="true"]{outline:1px solid rgba(127,200,255,0.48);background:rgba(127,200,255,0.075);border-radius:8px;padding:10px;caret-color:#dbeafe}
+.ms-presenter-notes-body[contenteditable="true"]:empty::before{content:attr(data-placeholder);color:rgba(238,242,247,0.42)}
+@media(max-width:960px), (max-height:620px){#ms-presenter-shell{display:flex;flex-direction:column;padding:10px;gap:10px;--ms-presenter-notes-width:100%}.ms-presenter-stage{flex:1;min-height:180px}.ms-presenter-overview-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:12px}.ms-presenter-console{align-items:flex-start;min-height:0}.ms-presenter-status-grid{gap:6px}.ms-presenter-status-item{font-size:10px;padding:4px 7px}.ms-presenter-notes{flex:0 0 150px;padding:13px}.ms-presenter-notes-head{font-size:10px}.ms-presenter-notes-body{font-size:18px}.ms-presenter-notes-resizer{display:none}body.ms-presenter-notes-collapsed .ms-presenter-notes{display:none}}
 /* === end injected CSS === */
 """
 
@@ -977,14 +1006,42 @@ function speakerNoteTextFromNode(node){
   if(!node)return '';
   return (node.innerText||node.textContent||'').replace(/\\n{3,}/g,'\\n\\n').trim();
 }
+function speakerNoteNodeForSlide(slide){
+  if(!slide)return null;
+  return slide.querySelector(':scope > .speaker-notes,:scope > .presenter-notes,:scope > .slide-notes,:scope > aside[data-speaker-notes],:scope > [data-speaker-notes],:scope > [data-speaker-note]');
+}
 function getSpeakerNotesForSlide(slide){
   if(!slide)return '';
   var attr=slide.getAttribute('data-speaker-notes')||slide.getAttribute('data-presenter-notes')||slide.getAttribute('data-slide-notes')||'';
   if(attr.trim())return attr.trim();
-  var note=slide.querySelector(':scope > .speaker-notes,:scope > .presenter-notes,:scope > .slide-notes,:scope > aside[data-speaker-notes],:scope > [data-speaker-notes],:scope > [data-speaker-note]');
-  return speakerNoteTextFromNode(note);
+  return speakerNoteTextFromNode(speakerNoteNodeForSlide(slide));
 }
 var MS_SPEAKER_NOTES=Array.from(slides).map(getSpeakerNotesForSlide);
+function setSpeakerNotesForSlide(idx,text){
+  idx=Math.max(0,Math.min(slides.length-1,parseInt(idx,10)||0));
+  var slide=slides[idx];
+  if(!slide)return false;
+  var next=String(text||'').replace(/\\r\\n?/g,'\\n').trim();
+  ['data-speaker-notes','data-presenter-notes','data-slide-notes'].forEach(function(name){
+    slide.removeAttribute(name);
+  });
+  var note=speakerNoteNodeForSlide(slide);
+  if(!next){
+    if(note)note.remove();
+    MS_SPEAKER_NOTES[idx]='';
+    return true;
+  }
+  if(!note){
+    note=document.createElement('aside');
+    note.className='speaker-notes';
+    slide.appendChild(note);
+  }else{
+    note.classList.add('speaker-notes');
+  }
+  note.textContent=next;
+  MS_SPEAKER_NOTES[idx]=next;
+  return true;
+}
 function msSlideHeading(idx){
   var slide=slides[idx];
   if(!slide)return '';
@@ -1105,6 +1162,7 @@ function msGetPresenterStatus(){
     editMode:document.body.classList.contains('ms-edit-mode'),
     fullscreen:!!document.fullscreenElement,
     hasNotes:!!(MS_SPEAKER_NOTES[cur]||''),
+    notesEditable:!!MS_IS_MAGIC_SLIDE_PREVIEW,
     save:saveState
   };
 }
@@ -3406,6 +3464,7 @@ fitSlideLayout(slides[cur]);
       editMode:!!status.editMode,
       fullscreen:!!status.fullscreen,
       hasNotes:typeof status.hasNotes==='boolean'?status.hasNotes:!!(MS_SPEAKER_NOTES[idx]||''),
+      notesEditable:!!status.notesEditable,
       save:save
     };
   }
@@ -3585,16 +3644,21 @@ fitSlideLayout(slides[cur]);
   if(MS_IS_PRESENTER_SHELL){
     var shell=document.createElement('div');
     shell.id='ms-presenter-shell';
-    shell.innerHTML='<div class="ms-presenter-stage"><iframe class="ms-presenter-mirror" title="Presenter mirror" allow="fullscreen"></iframe><div class="ms-presenter-overview" aria-hidden="true"><div class="ms-presenter-overview-grid"></div><button class="ms-presenter-overview-close" type="button" aria-label="Close overview">&times;</button></div></div><section class="ms-presenter-console" aria-live="polite"><div class="ms-presenter-status-grid"></div></section><section class="ms-presenter-notes" aria-live="polite"><div class="ms-presenter-notes-resizer" role="separator" aria-orientation="vertical"></div><div class="ms-presenter-notes-head"><span class="ms-presenter-notes-title"></span><span class="ms-presenter-notes-actions"><span class="ms-presenter-notes-page"></span><button class="ms-presenter-notes-side-btn" type="button"></button></span></div><div class="ms-presenter-notes-body"></div></section>';
+    shell.innerHTML='<div class="ms-presenter-stage"><iframe class="ms-presenter-mirror" title="Presenter mirror" allow="fullscreen"></iframe><div class="ms-presenter-overview" aria-hidden="true"><div class="ms-presenter-overview-grid"></div><button class="ms-presenter-overview-close" type="button" aria-label="Close overview">&times;</button></div></div><section class="ms-presenter-console" aria-live="polite"><div class="ms-presenter-status-grid"></div><div class="ms-presenter-console-actions"><button class="ms-presenter-notes-toggle-btn" type="button"></button></div></section><section class="ms-presenter-notes" aria-live="polite"><div class="ms-presenter-notes-resizer" role="separator" aria-orientation="vertical"></div><div class="ms-presenter-notes-head"><span class="ms-presenter-notes-title"></span><span class="ms-presenter-notes-actions"><span class="ms-presenter-notes-page"></span><button class="ms-presenter-notes-edit-btn" type="button"></button><button class="ms-presenter-notes-save-btn" type="button"></button><button class="ms-presenter-notes-cancel-btn" type="button"></button><button class="ms-presenter-notes-side-btn" type="button"></button></span></div><div class="ms-presenter-notes-body"></div></section>';
     document.body.appendChild(shell);
+    document.body.classList.add('ms-presenter-notes-collapsed');
     var mirrorStage=shell.querySelector('.ms-presenter-stage');
     var mirrorFrame=shell.querySelector('.ms-presenter-mirror');
     var presenterOverview=shell.querySelector('.ms-presenter-overview');
     var presenterOverviewGrid=shell.querySelector('.ms-presenter-overview-grid');
     var presenterOverviewClose=shell.querySelector('.ms-presenter-overview-close');
     var statusGrid=shell.querySelector('.ms-presenter-status-grid');
+    var noteToggleBtn=shell.querySelector('.ms-presenter-notes-toggle-btn');
     var noteResizer=shell.querySelector('.ms-presenter-notes-resizer');
     var noteSideBtn=shell.querySelector('.ms-presenter-notes-side-btn');
+    var noteEditBtn=shell.querySelector('.ms-presenter-notes-edit-btn');
+    var noteSaveBtn=shell.querySelector('.ms-presenter-notes-save-btn');
+    var noteCancelBtn=shell.querySelector('.ms-presenter-notes-cancel-btn');
     var noteTitle=shell.querySelector('.ms-presenter-notes-title');
     var notePage=shell.querySelector('.ms-presenter-notes-page');
     var noteBody=shell.querySelector('.ms-presenter-notes-body');
@@ -3672,6 +3736,10 @@ fitSlideLayout(slides[cur]);
     var presenterNotesDesiredWidth=parseInt(readPresenterShellSetting('notes-width','380'),10)||380;
     var presenterNotesWidth=presenterNotesDesiredWidth;
     var presenterNotesResizeState=null;
+    var presenterNotesOpen=false;
+    var presenterNotesEditing=false;
+    var presenterNotesSaving=false;
+    var presenterNotesRequestId=0;
     function presenterShellSettingKey(name){
       return 'magic-slide-presenter-'+name;
     }
@@ -3717,6 +3785,112 @@ fitSlideLayout(slides[cur]);
       resizePresenterMirror();
       refreshPresenterOverviewCards();
       scheduleMirrorHealthCheck('resize');
+    }
+    function presenterNotesCanEdit(){
+      return !!(MS_IS_MAGIC_SLIDE_PREVIEW&&shellState&&shellState.status&&shellState.status.notesEditable);
+    }
+    function updatePresenterNotesChrome(){
+      document.body.classList.toggle('ms-presenter-notes-collapsed',!presenterNotesOpen);
+      if(noteToggleBtn){
+        noteToggleBtn.textContent=presenterNotesOpen?presenterText('presenter_notes_hide','Hide notes'):presenterText('presenter_notes_show','Show notes');
+        noteToggleBtn.title=presenterNotesOpen?presenterText('presenter_notes_hide','Hide notes'):presenterText('presenter_notes_show','Show notes');
+        noteToggleBtn.setAttribute('aria-expanded',presenterNotesOpen?'true':'false');
+        noteToggleBtn.classList.toggle('is-open',presenterNotesOpen);
+      }
+      if(noteBody){
+        noteBody.dataset.placeholder=presenterText('presenter_notes_empty','No speaker notes for this slide.');
+      }
+      updatePresenterNotesEditControls();
+      resizePresenterMirror();
+      refreshPresenterOverviewCards();
+    }
+    function setPresenterNotesOpen(open){
+      presenterNotesOpen=!!open;
+      if(!presenterNotesOpen&&presenterNotesEditing)cancelPresenterNotesEdit();
+      updatePresenterNotesChrome();
+    }
+    function renderPresenterNotesBody(){
+      if(!noteBody||presenterNotesEditing)return;
+      var text=(shellState&&shellState.notes)||'';
+      noteBody.textContent=text||MS_UI.presenter_notes_empty;
+      noteBody.classList.toggle('is-empty',!text);
+      noteBody.removeAttribute('contenteditable');
+    }
+    function updatePresenterNotesEditControls(){
+      var canEdit=presenterNotesCanEdit();
+      if(noteEditBtn){
+        noteEditBtn.textContent=presenterText('presenter_notes_edit','Edit');
+        noteEditBtn.title=canEdit?presenterText('presenter_notes_edit','Edit'):presenterText('presenter_notes_edit_unavailable','Editable in local preview only');
+        noteEditBtn.style.display=canEdit&&!presenterNotesEditing?'inline-flex':'none';
+        noteEditBtn.disabled=!canEdit;
+      }
+      if(noteSaveBtn){
+        noteSaveBtn.textContent=presenterNotesSaving?presenterText('presenter_notes_saving','Saving...'):presenterText('presenter_notes_save','Save');
+        noteSaveBtn.title=presenterText('presenter_notes_save','Save');
+        noteSaveBtn.style.display=canEdit&&presenterNotesEditing?'inline-flex':'none';
+        noteSaveBtn.disabled=!canEdit||presenterNotesSaving;
+      }
+      if(noteCancelBtn){
+        noteCancelBtn.textContent=presenterText('presenter_notes_cancel','Cancel');
+        noteCancelBtn.title=presenterText('presenter_notes_cancel','Cancel');
+        noteCancelBtn.style.display=canEdit&&presenterNotesEditing?'inline-flex':'none';
+        noteCancelBtn.disabled=presenterNotesSaving;
+      }
+      if(noteBody){
+        if(presenterNotesEditing)noteBody.setAttribute('contenteditable','true');
+        else noteBody.removeAttribute('contenteditable');
+      }
+    }
+    function beginPresenterNotesEdit(){
+      if(!presenterNotesCanEdit()||!noteBody)return;
+      if(!presenterNotesOpen)setPresenterNotesOpen(true);
+      presenterNotesEditing=true;
+      presenterNotesSaving=false;
+      noteBody.textContent=(shellState&&shellState.notes)||'';
+      noteBody.classList.remove('is-empty');
+      updatePresenterNotesEditControls();
+      requestAnimationFrame(function(){
+        try{
+          noteBody.focus();
+          var range=document.createRange();
+          range.selectNodeContents(noteBody);
+          range.collapse(false);
+          var sel=window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }catch(err){}
+      });
+    }
+    function cancelPresenterNotesEdit(){
+      presenterNotesEditing=false;
+      presenterNotesSaving=false;
+      renderPresenterNotesBody();
+      updatePresenterNotesEditControls();
+    }
+    function savePresenterNotesEdit(){
+      if(!presenterNotesCanEdit()||!noteBody||presenterNotesSaving)return;
+      presenterNotesSaving=true;
+      updatePresenterNotesEditControls();
+      presenterNotesRequestId+=1;
+      var text=(noteBody.textContent||'').replace(/\\r\\n?/g,'\\n').trim();
+      if(!postPresenterShellToMain({type:'ms-presenter-notes-save',slide:shellState.slide,notes:text,requestId:presenterNotesRequestId})){
+        presenterNotesSaving=false;
+        updatePresenterNotesEditControls();
+      }
+    }
+    function handlePresenterNotesSaveResult(data){
+      if(!data||parseInt(data.requestId,10)!==presenterNotesRequestId)return;
+      presenterNotesSaving=false;
+      if(data.ok){
+        presenterNotesEditing=false;
+        shellState.notes=typeof data.notes==='string'?data.notes:(shellState.notes||'');
+        shellState.status=presenterStatusForIndex((shellState.slide||1)-1,Object.assign({},shellState.status||{},{hasNotes:!!shellState.notes}));
+        renderPresenterNotesBody();
+        renderPresenterStatus();
+      }else if(noteSaveBtn){
+        noteSaveBtn.textContent=presenterText('presenter_notes_save_failed','Save failed');
+      }
+      updatePresenterNotesEditControls();
     }
     function togglePresenterNotesSide(){
       presenterNotesSide=presenterNotesSide==='left'?'right':'left';
@@ -3991,6 +4165,7 @@ fitSlideLayout(slides[cur]);
       clearPresenterMainDetachTimer();
       stopPresenterReadyPing();
       var idx=Math.max(0,Math.min(slides.length-1,(parseInt(state.slide,10)||1)-1));
+      if(presenterNotesEditing&&shellState&&shellState.slide!==idx+1)cancelPresenterNotesEdit();
       shellState={
         type:'ms-presenter-state',
         slide:idx+1,
@@ -4003,11 +4178,8 @@ fitSlideLayout(slides[cur]);
       };
       if(noteTitle)noteTitle.textContent=shellState.heading||shellState.title||MS_UI.presenter_notes;
       if(notePage)notePage.textContent=shellState.slide+' / '+shellState.slideCount;
-      if(noteBody){
-        var text=shellState.notes||MS_UI.presenter_notes_empty;
-        noteBody.textContent=text;
-        noteBody.classList.toggle('is-empty',!shellState.notes);
-      }
+      renderPresenterNotesBody();
+      updatePresenterNotesChrome();
       renderPresenterStatus();
       if(shellState.status.overviewOpen)openPresenterOverview();
       else closePresenterOverview();
@@ -4070,11 +4242,53 @@ fitSlideLayout(slides[cur]);
         scheduleMirrorHealthCheck('resize');
       });
     }
+    if(noteToggleBtn){
+      noteToggleBtn.addEventListener('click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        setPresenterNotesOpen(!presenterNotesOpen);
+      });
+    }
     if(noteSideBtn){
       noteSideBtn.addEventListener('click',function(e){
         e.preventDefault();
         e.stopPropagation();
         togglePresenterNotesSide();
+      });
+    }
+    if(noteEditBtn){
+      noteEditBtn.addEventListener('click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        beginPresenterNotesEdit();
+      });
+    }
+    if(noteSaveBtn){
+      noteSaveBtn.addEventListener('click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        savePresenterNotesEdit();
+      });
+    }
+    if(noteCancelBtn){
+      noteCancelBtn.addEventListener('click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        cancelPresenterNotesEdit();
+      });
+    }
+    if(noteBody){
+      noteBody.addEventListener('keydown',function(e){
+        var isSave=(e.key==='s'||e.key==='S')&&(e.metaKey||e.ctrlKey)&&!e.altKey;
+        if(isSave){
+          e.preventDefault();
+          e.stopPropagation();
+          savePresenterNotesEdit();
+        }else if(e.key==='Escape'){
+          e.preventDefault();
+          e.stopPropagation();
+          cancelPresenterNotesEdit();
+        }
       });
     }
     if(noteResizer){
@@ -4120,6 +4334,10 @@ fitSlideLayout(slides[cur]);
       }
       if(data.type==='ms-presenter-mirror-ready'){
         postStateToMirror();
+        return;
+      }
+      if(data.type==='ms-presenter-notes-save-result'){
+        handlePresenterNotesSaveResult(data);
         return;
       }
       if(data.type==='ms-presenter-control'){
@@ -4253,6 +4471,11 @@ fitSlideLayout(slides[cur]);
     }
     if(data.type==='ms-presenter-key'){
       handlePresenterKeyOnMain(data);
+      return;
+    }
+    if(data.type==='ms-presenter-notes-save'){
+      if(typeof window.msSavePresenterNotesFromShell==='function')window.msSavePresenterNotesFromShell(data,event.source);
+      else msPostWindow(event.source,{type:'ms-presenter-notes-save-result',ok:false,requestId:data.requestId||0});
       return;
     }
     if(data.type==='ms-presenter-pointer'){
@@ -4425,6 +4648,58 @@ fitSlideLayout(slides[cur]);
     if(saveBtnText){saveBtnText.textContent=MS_UI.save;}
     msBroadcastPresenterState();
   }
+  window.msSavePresenterNotesFromShell=function(data,source){
+    var requestId=data&&data.requestId?data.requestId:0;
+    var idx=(parseInt(data&&data.slide,10)||1)-1;
+    var notes=String((data&&data.notes)||'').replace(/\\r\\n?/g,'\\n').trim();
+    function respond(ok,extra){
+      msPostWindow(source,Object.assign({type:'ms-presenter-notes-save-result',ok:!!ok,requestId:requestId,slide:idx+1,notes:notes},extra||{}));
+    }
+    if(!MS_IS_MAGIC_SLIDE_PREVIEW||window.location.protocol==='file:'){
+      respond(false,{error:'preview-only'});
+      return;
+    }
+    if(idx<0||idx>=slides.length){
+      respond(false,{error:'invalid-slide'});
+      return;
+    }
+    if(saving){
+      respond(false,{error:'saving'});
+      return;
+    }
+    var previous=MS_SPEAKER_NOTES[idx]||'';
+    if(!setSpeakerNotesForSlide(idx,notes)){
+      respond(false,{error:'update-failed'});
+      return;
+    }
+    saving=true;
+    if(saveBtnText)saveBtnText.textContent=MS_UI.saving;
+    if(saveBtn)saveBtn.style.pointerEvents='none';
+    msBroadcastPresenterState();
+    buildHTML(function(html){
+      fetch(apiUrl('/save'),{method:'POST',headers:{'Content-Type':'text/html'},body:html})
+        .then(function(r){if(!r.ok)throw new Error('save failed');return r.text();})
+        .then(function(){
+          saving=false;
+          clearDirty();
+          if(saveBtnText)saveBtnText.textContent=MS_UI.save;
+          if(saveBtn)saveBtn.style.pointerEvents='auto';
+          showToast(MS_UI.presenter_notes_saved||'Saved',1800);
+          msBroadcastPresenterState();
+          respond(true);
+        })
+        .catch(function(){
+          setSpeakerNotesForSlide(idx,previous);
+          saving=false;
+          markDirty();
+          if(saveBtnText)saveBtnText.textContent=MS_UI.save;
+          if(saveBtn)saveBtn.style.pointerEvents='auto';
+          showToast(MS_UI.presenter_notes_save_failed||'Save failed',2400);
+          msBroadcastPresenterState();
+          respond(false,{error:'save-failed'});
+        });
+    });
+  };
 
   // Warn before unload if there are unsaved edits
   window.addEventListener('beforeunload',function(e){
