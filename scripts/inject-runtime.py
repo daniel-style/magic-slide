@@ -382,6 +382,7 @@ body{background-color:var(--bg, var(--field, #0a0c16));color:var(--text, var(--i
 .slide>.slide-content.ms-auto-width,.slide>[data-ms-content-root="true"].ms-auto-width{width:var(--ms-auto-width)!important}
 .slide>.slide-content.ms-fit-top,.slide>[data-ms-content-root="true"].ms-fit-top{justify-content:flex-start!important;padding-top:clamp(1.5rem,3vh,3rem)!important;padding-bottom:clamp(1.5rem,3vh,3rem)!important}
 .slide>.slide-content.ms-fit-scale,.slide>[data-ms-content-root="true"].ms-fit-scale{transform:scale(var(--ms-fit-scale,1));transform-origin:top center;will-change:transform}
+.slide>.slide-content.ms-fit-upscale,.slide>[data-ms-content-root="true"].ms-fit-upscale{transform:scale(var(--ms-fit-upscale,1));transform-origin:var(--ms-fit-origin-x,50%) var(--ms-fit-origin-y,50%);will-change:transform}
 .slide>.slide-content.ms-hero-balance,.slide>[data-ms-content-root="true"].ms-hero-balance{justify-content:center!important;align-items:center!important;text-align:center!important}
 .slide>.slide-content.ms-sparse-balance,.slide>[data-ms-content-root="true"].ms-sparse-balance{justify-content:center!important}
 .slide.active{opacity:1;pointer-events:auto;visibility:visible}
@@ -1231,8 +1232,11 @@ function isFadeTransition(name){
 }
 function resetSlideLayoutFit(slide){
   getSlideWrappers(slide).forEach(function(wrapper){
-    wrapper.classList.remove('ms-fit-top','ms-fit-scale','ms-hero-balance','ms-sparse-balance','ms-auto-width');
+    wrapper.classList.remove('ms-fit-top','ms-fit-scale','ms-fit-upscale','ms-hero-balance','ms-sparse-balance','ms-auto-width');
     wrapper.style.removeProperty('--ms-fit-scale');
+    wrapper.style.removeProperty('--ms-fit-upscale');
+    wrapper.style.removeProperty('--ms-fit-origin-x');
+    wrapper.style.removeProperty('--ms-fit-origin-y');
     wrapper.style.removeProperty('--ms-auto-width');
   });
 }
@@ -1247,9 +1251,10 @@ function measureWrapperBudget(wrapper){
   var availableHeight=Math.max(0,wrapper.clientHeight-padTop-padBottom);
   var wrapperRect=wrapper.getBoundingClientRect();
   var minLeft=Infinity,minTop=Infinity,maxRight=-Infinity,maxBottom=-Infinity;
-  Array.from(wrapper.children).forEach(function(ch){
+  Array.from(wrapper.querySelectorAll('*')).forEach(function(ch){
     var chCS=getComputedStyle(ch);
-    if(chCS.display==='none'||chCS.position==='absolute')return;
+    if(chCS.display==='none'||chCS.visibility==='hidden'||chCS.position==='absolute'||chCS.position==='fixed')return;
+    if(ch.getAttribute('aria-hidden')==='true')return;
     var r=ch.getBoundingClientRect();
     if(!r.width&&!r.height)return;
     minLeft=Math.min(minLeft,r.left-wrapperRect.left);
@@ -1269,6 +1274,8 @@ function measureWrapperBudget(wrapper){
     availableHeight:availableHeight,
     contentWidth:rectWidth,
     contentHeight:rectHeight,
+    contentLeft:minLeft===Infinity?0:minLeft,
+    contentRight:maxRight===-Infinity?0:maxRight,
     contentTop:minTop===Infinity?0:minTop,
     contentBottom:maxBottom===-Infinity?0:maxBottom,
     topGap:minTop===Infinity?0:Math.max(0,minTop-padTop),
@@ -1312,6 +1319,33 @@ function shouldBalanceSparseWrapper(slide,wrapper,budget){
   if(imbalance<Math.max(40,budget.availableHeight*0.10))return false;
   return true;
 }
+function largeViewportContentScale(wrapper,budget){
+  if(!wrapper||!budget||!budget.availableWidth||!budget.availableHeight||!budget.contentWidth||!budget.contentHeight)return 1;
+  if(wrapper.dataset&&/^(fixed|compact|narrow|none)$/.test((wrapper.dataset.msScale||wrapper.dataset.scale||'').toLowerCase()))return 1;
+  var targetWidth=window.innerWidth*0.88;
+  var targetHeight=window.innerHeight*0.76;
+  var widthScale=targetWidth/budget.contentWidth;
+  var heightScale=targetHeight/budget.contentHeight;
+  var wrapperRect=wrapper.getBoundingClientRect();
+  var originX=budget.contentLeft+budget.contentWidth/2;
+  var originY=budget.contentTop+budget.contentHeight/2;
+  var originAbsX=wrapperRect.left+originX;
+  var originAbsY=wrapperRect.top+originY;
+  var safeX=Math.max(44,window.innerWidth*0.035);
+  var safeY=Math.max(34,window.innerHeight*0.045);
+  function sideLimit(space,extent){
+    if(!Number.isFinite(space)||!Number.isFinite(extent)||extent<=1)return Infinity;
+    return Math.max(0,space/extent);
+  }
+  var boundaryScale=Math.min(
+    sideLimit(originAbsX-safeX,originX-budget.contentLeft),
+    sideLimit(window.innerWidth-safeX-originAbsX,budget.contentRight-originX),
+    sideLimit(originAbsY-safeY,originY-budget.contentTop),
+    sideLimit(window.innerHeight-safeY-originAbsY,budget.contentBottom-originY)
+  );
+  var scale=Math.min(widthScale,heightScale,boundaryScale,2.6);
+  return Number.isFinite(scale)&&scale>1.025?scale:1;
+}
 function fitSlideLayout(slide){
   if(!slide)return;
   resetSlideLayoutFit(slide);
@@ -1340,7 +1374,16 @@ function fitSlideLayout(slide){
       heightOverflow=budget.availableHeight&&budget.contentHeight>budget.availableHeight+4;
       widthOverflow=budget.availableWidth&&budget.contentWidth>budget.availableWidth+4;
     }
-    if(!heightOverflow&&!widthOverflow)return;
+    if(!heightOverflow&&!widthOverflow){
+      var upscale=largeViewportContentScale(wrapper,budget);
+      if(upscale>1){
+        wrapper.classList.add('ms-fit-upscale');
+        wrapper.style.setProperty('--ms-fit-upscale',upscale.toFixed(3));
+        wrapper.style.setProperty('--ms-fit-origin-x',(budget.contentLeft+budget.contentWidth/2).toFixed(1)+'px');
+        wrapper.style.setProperty('--ms-fit-origin-y',(budget.contentTop+budget.contentHeight/2).toFixed(1)+'px');
+      }
+      return;
+    }
     var widthScale=budget.availableWidth&&budget.contentWidth?budget.availableWidth/budget.contentWidth:1;
     var heightScale=budget.availableHeight&&budget.contentHeight?budget.availableHeight/budget.contentHeight:1;
     var scale=Math.min(1,widthScale,heightScale);
