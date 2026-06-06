@@ -12,12 +12,12 @@
 ![Magic Slide promotional artwork](./assets/readme/magic-slide-promo.png)
 
 Magic Slide is a toolkit for building polished, self-contained HTML presentations
-with Magic Move transitions, integrated PipeLLM image generation,
+with Magic Move transitions, integrated speaker notes, PipeLLM image generation,
 and high-quality web search for research-backed decks.
 
 It is designed for presentations that need to feel intentional rather than
 template-driven: narrative outlines, distinctive visual systems, smooth motion,
-editable source files, and a portable final HTML deck.
+presenter-ready notes, editable source files, and a portable final HTML deck.
 
 ## Installation
 
@@ -29,7 +29,8 @@ npx skills add daniel-style/magic-slide
 
 Magic Slide's bundled scripts require Python 3. The core workflow uses only the
 Python standard library plus a modern browser for merging slides, injecting the
-runtime, marking QA notes, and running the preview server.
+runtime, syncing speaker notes, marking QA notes, and running the preview
+server.
 
 Optional capabilities have separate requirements:
 
@@ -57,6 +58,36 @@ Good use cases include:
 - Cards moving from grids into focused detail slides
 - Reused metrics or labels carrying continuity across a story
 - Diagram nodes staying visually connected while the explanation changes
+
+### Speaker Notes And Presenter Window
+
+Magic Slide can carry hidden speaker notes from the confirmed outline into the
+finished deck. Notes are for delivery cues, not visible slide copy: use them for
+emphasis, transitions, caveats, questions, or timing reminders.
+
+Source slides can store notes in either form:
+
+```html
+<section class="slide" data-speaker-notes="Pause before revealing the contrast.">
+  <div class="slide-content">...</div>
+</section>
+```
+
+```html
+<section class="slide">
+  <div class="slide-content">...</div>
+  <aside class="speaker-notes">
+    Bridge from the prior metric.
+    Ask the room what would make this fail.
+  </aside>
+</section>
+```
+
+The runtime hides these notes in the main deck and shows the current slide's
+note in the presenter window. In local preview, the presenter window also lets
+you show, hide, resize, move, edit, and save notes. Saving requires the Magic
+Slide preview server because it writes back to `index.html` and syncs the
+modular `sources/` files.
 
 ### PipeLLM Image Generation
 
@@ -164,12 +195,14 @@ it as each stage progresses.
    images should be used.
 2. Optionally run PipeLLM web search when the deck needs fresh or source-backed
    information.
-3. Create an outline with a clear audience, thesis spine, chapter arc, and
-   closing idea.
+3. Create an outline with a clear audience, thesis spine, chapter arc, closing
+   idea, Magic Move spine, presenter note mode, and per-slide speaker prompts.
 4. Write a compact design brief before producing CSS or slide HTML.
-5. Generate `style.css` and the individual slide fragments.
+5. Generate `style.css` and the individual slide fragments, mapping speaker
+   prompts into hidden `data-speaker-notes` attributes or
+   `<aside class="speaker-notes">` blocks unless notes are explicitly disabled.
 6. Merge slide fragments into `index.html`.
-7. Inject the Magic Move runtime and editing helpers.
+7. Inject the Magic Move runtime, presenter window, and editing helpers.
 8. Launch the preview server, open the QA capture URL
    `?ms_qa=overview&ms_qa_capture=1`, take one full-page overview longshot for
    first-pass visual triage with Playwright, fix obvious visible issues, then
@@ -194,8 +227,9 @@ Combines `style.css` and `slide-XX.html` fragments into a deck HTML file.
 python3 scripts/inject-runtime.py ./my-deck/index.html
 ```
 
-Adds the presentation runtime, navigation, overview mode, edit mode, progress
-state, image upload support, and Magic Move transition engine.
+Adds the presentation runtime, navigation, overview mode, presenter window,
+speaker notes support, edit mode, progress state, image upload support, and
+Magic Move transition engine.
 
 ### Preview a deck
 
@@ -219,6 +253,10 @@ python3 scripts/serve.py ./my-deck/index.html
 
 Starts the Magic Slide preview server. Use this server for preview and editing;
 it supports features that direct file opening and generic static servers do not.
+The presenter window opens from the `Presenter` toolbar button and may auto-open
+in normal deck preview routes; if a browser blocks the popup, click the button
+again. Presenter note edits can only be saved through this server-backed preview
+path.
 
 ### Mark repaired QA notes
 
@@ -303,8 +341,12 @@ Before delivery, verify:
 - Text does not overflow or overlap.
 - Slide backgrounds cover the full viewport.
 - Magic Move transitions are smooth and semantically meaningful.
+- Speaker notes are hidden from the main deck, visible in the presenter window,
+  and stored as delivery cues rather than visible source notes or QA revision
+  notes.
 - Images load correctly when used.
 - Inline SVG connectors do not render as filled black shapes.
-- Navigation, overview mode, progress, and edit mode work in the preview server.
+- Navigation, overview mode, presenter window, progress, and edit mode work in
+  the preview server.
 - The deck has a specific visual world that could not be reused unchanged for a
   completely different topic.
