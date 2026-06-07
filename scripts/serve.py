@@ -13,10 +13,13 @@ Usage:
 """
 
 import hashlib
+import hmac
 import json
 import os
 import re
+import secrets
 import subprocess
+import tempfile
 import threading
 import time
 import urllib.error
@@ -25,12 +28,13 @@ import webbrowser
 from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
-from typing import Dict, Optional
-from urllib.parse import quote, unquote
+from typing import Dict, Optional, Tuple
+from urllib.parse import quote, unquote, urlparse
 import sys
 
 BASE_PORT = 8765
 MAX_PORT = 8865
+PREVIEW_HOST = "127.0.0.1"
 HEARTBEAT_TIMEOUT = 120
 INITIAL_DECK_GRACE_TIMEOUT = 300
 SERVICE_KIND = "magic-slide-preview"
@@ -53,6 +57,7 @@ class Deck:
     inject_script: Path
     extract_script: Path
     sources_dir: Path
+    token: str
     created_at: float
     last_heartbeat: float
     has_client_contact: bool
@@ -121,26 +126,99 @@ def build_deck(html_path: Path, registry: Dict[str, Deck]) -> Deck:
         inject_script=Path(__file__).resolve().parent / "inject-runtime.py",
         extract_script=Path(__file__).resolve().parent / "extract-slides.py",
         sources_dir=serve_dir / "sources",
+        token=secrets.token_urlsafe(32),
         created_at=now,
         last_heartbeat=now,
         has_client_contact=False,
     )
 
 
+def validate_html_path(path: Path) -> Path:
+    resolved = path.resolve()
+    if not resolved.exists():
+        raise FileNotFoundError("html file not found")
+    if not resolved.is_file():
+        raise ValueError("path must be an HTML file")
+    if resolved.suffix.lower() not in {".html", ".htm"}:
+        raise ValueError("path must end with .html or .htm")
+    return resolved
+
+
 def is_port_open(port: int) -> bool:
     import socket
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        return s.connect_ex(("localhost", port)) == 0
+        return s.connect_ex((PREVIEW_HOST, port)) == 0
 
 
-def request_json(url: str, method: str = "GET", payload: Optional[dict] = None) -> Optional[dict]:
+def current_user_id() -> int:
+    getuid = getattr(os, "getuid", None)
+    return getuid() if callable(getuid) else 0
+
+
+def token_file_path(port: int) -> Path:
+    return Path(tempfile.gettempdir()) / f"magic-slide-preview-{current_user_id()}-{port}.json"
+
+
+def write_token_file(port: int, token: str) -> None:
+    path = token_file_path(port)
+    tmp = path.with_name(path.name + f".{os.getpid()}.tmp")
+    payload = {"service": SERVICE_KIND, "port": port, "token": token}
+    fd = os.open(str(tmp), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(payload, f)
+            f.write("\n")
+        os.replace(tmp, path)
+        try:
+            os.chmod(path, 0o600)
+        except OSError:
+            pass
+    finally:
+        if tmp.exists():
+            tmp.unlink()
+
+
+def read_token_file(port: int) -> Optional[str]:
+    path = token_file_path(port)
+    try:
+        st = path.stat()
+        if hasattr(os, "getuid") and st.st_uid != current_user_id():
+            return None
+        if st.st_mode & 0o077:
+            return None
+        with path.open("r", encoding="utf-8") as f:
+            payload = json.load(f)
+    except Exception:
+        return None
+    if payload.get("service") != SERVICE_KIND or payload.get("port") != port:
+        return None
+    token = payload.get("token")
+    return token if isinstance(token, str) and token else None
+
+
+def remove_token_file(port: int, token: str) -> None:
+    path = token_file_path(port)
+    try:
+        existing = read_token_file(port)
+        if existing and hmac.compare_digest(existing, token):
+            path.unlink()
+    except OSError:
+        pass
+
+
+def request_json(
+    url: str,
+    method: str = "GET",
+    payload: Optional[dict] = None,
+    headers: Optional[dict] = None,
+) -> Optional[dict]:
     data = None
-    headers = {}
+    req_headers = dict(headers or {})
     if payload is not None:
         data = json.dumps(payload).encode("utf-8")
-        headers["Content-Type"] = "application/json"
-    req = urllib.request.Request(url, data=data, headers=headers, method=method)
+        req_headers["Content-Type"] = "application/json"
+    req = urllib.request.Request(url, data=data, headers=req_headers, method=method)
     try:
         with urllib.request.urlopen(req, timeout=2) as resp:
             if resp.status != 200:
@@ -151,13 +229,15 @@ def request_json(url: str, method: str = "GET", payload: Optional[dict] = None) 
         return None
 
 
-def find_running_service_port() -> Optional[int]:
+def find_running_service() -> Optional[Tuple[int, str]]:
     for port in range(BASE_PORT, MAX_PORT + 1):
         if not is_port_open(port):
             continue
-        meta = request_json(f"http://localhost:{port}/__magic_slide_meta")
+        meta = request_json(f"http://{PREVIEW_HOST}:{port}/__magic_slide_meta")
         if meta and meta.get("service") == SERVICE_KIND:
-            return port
+            token = read_token_file(port)
+            if token:
+                return port, token
     return None
 
 
@@ -170,9 +250,10 @@ def find_free_port() -> int:
 
 def register_with_running_service(port: int, html_path: Path) -> Optional[dict]:
     return request_json(
-        f"http://localhost:{port}/__register",
+        f"http://{PREVIEW_HOST}:{port}/__register",
         method="POST",
         payload={"html_path": str(html_path.resolve())},
+        headers={"X-Magic-Slide-Service-Token": read_token_file(port) or ""},
     )
 
 
@@ -190,8 +271,10 @@ def has_pending_qa_confirmation(deck: Deck) -> bool:
 
 
 def deck_url(deck: Deck, *, qa_overview: bool = False) -> str:
-    url = f"http://localhost:{server_port}{deck.url_path()}"  # type: ignore[name-defined]
-    return f"{url}?ms_qa=overview" if qa_overview else url
+    url = f"http://{PREVIEW_HOST}:{server_port}{deck.url_path()}"  # type: ignore[name-defined]
+    if qa_overview:
+        url = f"{url}?ms_qa=overview"
+    return f"{url}#ms_token={quote(deck.token)}"
 
 
 def deck_open_url(deck: Deck) -> str:
@@ -269,7 +352,10 @@ def write_qa_issues(deck: Deck, data: dict) -> None:
     data["qaRevision"] = max(existing_revision, incoming_revision)
     if not isinstance(data.get("updatedAt"), str):
         data["updatedAt"] = existing.get("updatedAt") if isinstance(existing.get("updatedAt"), str) else None
-    path = qa_issues_path(deck)
+    path = qa_issues_path(deck).resolve()
+    expected = (deck.sources_dir / "qa" / QA_ISSUES_FILENAME).resolve()
+    if path != expected:
+        raise ValueError("invalid QA issues path")
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.name + ".tmp")
     tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -281,13 +367,15 @@ def main():
         print("Usage: python3 serve.py <file.html>", file=sys.stderr)
         sys.exit(1)
 
-    html_path = Path(sys.argv[1]).resolve()
-    if not html_path.exists():
-        print(f"File not found: {html_path}", file=sys.stderr)
+    try:
+        html_path = validate_html_path(Path(sys.argv[1]))
+    except (FileNotFoundError, ValueError) as ex:
+        print(f"Invalid preview file: {ex}", file=sys.stderr)
         sys.exit(1)
 
-    existing_port = find_running_service_port()
-    if existing_port is not None:
+    existing_service = find_running_service()
+    if existing_service is not None:
+        existing_port, _ = existing_service
         registered = register_with_running_service(existing_port, html_path)
         if not registered:
             print("Failed to register deck with running Magic Slide service.", file=sys.stderr)
@@ -304,6 +392,8 @@ def main():
 
     global server_port
     server_port = find_free_port()
+    service_token = secrets.token_urlsafe(32)
+    write_token_file(server_port, service_token)
 
     def with_lock(fn):
         def wrapped(*args, **kwargs):
@@ -317,7 +407,7 @@ def main():
 
     @with_lock
     def register_deck(html_path_str: str) -> Deck:
-        deck_path = Path(html_path_str).resolve()
+        deck_path = validate_html_path(Path(html_path_str))
         for existing in registry.values():
             if existing.html_path == deck_path:
                 existing.created_at = time.time()
@@ -333,14 +423,14 @@ def main():
         return registry.pop(deck_id, None)
 
     @with_lock
-    def list_decks():
+    def list_decks(include_open_urls: bool = True):
         return [
             {
                 "deck_id": deck.deck_id,
                 "filename": deck.filename,
                 "html_path": str(deck.html_path),
-                "url": deck_url(deck),
-                "open_url": deck_open_url(deck),
+                "url": deck_url(deck) if include_open_urls else deck.url_path(),
+                "open_url": deck_open_url(deck) if include_open_urls else deck.url_path(),
                 "last_heartbeat": deck.last_heartbeat,
             }
             for deck in registry.values()
@@ -361,9 +451,22 @@ def main():
             return None
         return candidate
 
+    def local_url_header_allowed(value: str) -> bool:
+        if not value:
+            return True
+        try:
+            parsed = urlparse(value)
+        except Exception:
+            return False
+        if parsed.scheme not in {"http", "https"}:
+            return False
+        if parsed.hostname not in {PREVIEW_HOST, "localhost", "::1"}:
+            return False
+        return parsed.port == server_port
+
     def render_index() -> bytes:
         items = []
-        for entry in list_decks():
+        for entry in list_decks(include_open_urls=True):
             items.append(
                 f'<li><a href="{entry["url"]}">{entry["deck_id"]}</a> '
                 f'<span style="color:#9ca3af">{entry["filename"]}</span></li>'
@@ -408,6 +511,9 @@ def main():
         def send_json(self, status: int, data: dict):
             self.send_bytes(status, json.dumps(data).encode("utf-8"), "application/json; charset=utf-8")
 
+        def send_error_json(self, status: int, message: str):
+            self.send_json(status, {"error": message})
+
         def parse_path(self):
             return self.path.split("?", 1)[0]
 
@@ -419,6 +525,25 @@ def main():
             except Exception:
                 return None
 
+        def request_origin_allowed(self) -> bool:
+            origin = self.headers.get("Origin", "")
+            referer = self.headers.get("Referer", "")
+            return local_url_header_allowed(origin) and local_url_header_allowed(referer)
+
+        def require_service_token(self) -> bool:
+            supplied = self.headers.get("X-Magic-Slide-Service-Token", "")
+            if supplied and hmac.compare_digest(supplied, service_token):
+                return True
+            self.send_error_json(401, "missing or invalid service token")
+            return False
+
+        def require_deck_token(self, deck: Deck) -> bool:
+            supplied = self.headers.get("X-Magic-Slide-Token", "")
+            if supplied and hmac.compare_digest(supplied, deck.token):
+                return True
+            self.send_error_json(401, "missing or invalid deck token")
+            return False
+
         def do_GET(self):
             path = self.parse_path()
 
@@ -428,7 +553,7 @@ def main():
                     {
                         "service": SERVICE_KIND,
                         "port": server_port,
-                        "decks": list_decks(),
+                        "decks": list_decks(include_open_urls=False),
                     },
                 )
                 return
@@ -461,6 +586,8 @@ def main():
                 return
 
             if rel_path == "qa-issues":
+                if not self.require_deck_token(deck):
+                    return
                 try:
                     deck.last_heartbeat = time.time()
                     deck.has_client_contact = True
@@ -500,15 +627,25 @@ def main():
         def do_POST(self):
             path = self.parse_path()
 
+            if not self.request_origin_allowed():
+                self.send_error_json(403, "cross-origin preview write denied")
+                return
+
             if path == "/__register":
+                if not self.require_service_token():
+                    return
                 payload = self.read_json_body() or {}
                 html_path_str = payload.get("html_path")
                 if not html_path_str:
                     self.send_json(400, {"error": "html_path required"})
                     return
-                deck_path = Path(html_path_str).resolve()
-                if not deck_path.exists():
+                try:
+                    deck_path = validate_html_path(Path(html_path_str))
+                except FileNotFoundError:
                     self.send_json(404, {"error": "html file not found"})
+                    return
+                except ValueError as ex:
+                    self.send_json(400, {"error": str(ex)})
                     return
                 deck = register_deck(str(deck_path))
                 self.send_json(
@@ -534,6 +671,8 @@ def main():
             if not deck:
                 self.send_response(404)
                 self.end_headers()
+                return
+            if not self.require_deck_token(deck):
                 return
 
             if action == "save":
@@ -600,13 +739,10 @@ def main():
                 return
 
         def do_OPTIONS(self):
-            self.send_response(200)
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.send_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-            self.send_header("Access-Control-Allow-Headers", "Content-Type")
+            self.send_response(204)
             self.end_headers()
 
-    server = HTTPServer(("localhost", server_port), Handler)
+    server = HTTPServer((PREVIEW_HOST, server_port), Handler)
 
     def watchdog():
         while True:
@@ -629,7 +765,7 @@ def main():
                 return
 
     initial_url = deck_open_url(initial_deck)
-    print(f"  Magic Slide service → http://localhost:{server_port}")
+    print(f"  Magic Slide service → http://{PREVIEW_HOST}:{server_port}")
     print(f"  Initial deck:          {initial_url}")
     print(f"  Auto-stop:             {HEARTBEAT_TIMEOUT}s after the last preview tab stops sending heartbeats")
     print(f"  Press Ctrl+C to stop\n")
@@ -641,6 +777,8 @@ def main():
         server.serve_forever()
     except KeyboardInterrupt:
         print("\n  Server stopped.")
+    finally:
+        remove_token_file(server_port, service_token)
 
 
 if __name__ == "__main__":

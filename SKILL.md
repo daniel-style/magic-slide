@@ -83,6 +83,9 @@ browser; they do not require external Python packages. PipeLLM scripts require
 is only required for agent-run screenshot QA, including
 `scripts/check-magic-text-wrap.py`.
 
+PipeLLM web search is optional, user-approved, and returns sanitized untrusted
+evidence records; Step 2 owns the detailed prompt-injection boundary.
+
 Before the first script execution in a turn, resolve a Python 3 interpreter:
 
 ```bash

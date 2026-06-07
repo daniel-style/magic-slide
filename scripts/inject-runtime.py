@@ -2737,7 +2737,7 @@ fitSlideLayout(slides[cur]);
       qaIssuesLoaded=true;
       return Promise.resolve(qaIssues);
     }
-    qaIssuesLoading=fetch(url,{headers:{'Accept':'application/json'}})
+    qaIssuesLoading=msAuthFetch(url,{headers:{'Accept':'application/json'}})
       .then(function(r){return r.ok?r.json():Promise.reject(new Error('QA issue load failed'));})
       .then(function(data){
         qaIssues=normalizeQaIssues(data);
@@ -2759,7 +2759,7 @@ fitSlideLayout(slides[cur]);
   function saveQaIssues(){
     var url=qaIssueApiUrl();
     if(!url)return Promise.reject(new Error('QA issue API is unavailable'));
-    return fetch(url,{
+    return msAuthFetch(url,{
       method:'POST',
       headers:{'Content-Type':'application/json','Accept':'application/json'},
       body:JSON.stringify(qaIssues)
@@ -4624,6 +4624,46 @@ fitSlideLayout(slides[cur]);
     var base=getDeckBase();
     return (base||'')+path;
   }
+  function previewTokenStorageKey(){
+    return 'magic-slide-preview-token:'+(getDeckBase()||window.location.pathname);
+  }
+  function readPreviewTokenFromHash(){
+    var raw=window.location.hash?window.location.hash.slice(1):'';
+    if(!raw)return '';
+    var parts=raw.split(/[&?]/);
+    for(var i=0;i<parts.length;i++){
+      var part=parts[i];
+      var eq=part.indexOf('=');
+      if(eq<0)continue;
+      var key=part.slice(0,eq);
+      if(key==='ms_token'){
+        try{return decodeURIComponent(part.slice(eq+1).replace(/\+/g,'%20'));}
+        catch(_){return part.slice(eq+1);}
+      }
+    }
+    return '';
+  }
+  var msPreviewTokenCache=null;
+  function getPreviewToken(){
+    if(msPreviewTokenCache!==null)return msPreviewTokenCache;
+    var token=readPreviewTokenFromHash();
+    var key=previewTokenStorageKey();
+    if(token){
+      try{sessionStorage.setItem(key,token);}catch(_){}
+      msPreviewTokenCache=token;
+      return token;
+    }
+    try{token=sessionStorage.getItem(key)||'';}catch(_){token='';}
+    msPreviewTokenCache=token;
+    return token;
+  }
+  function msAuthFetch(url,options){
+    options=options||{};
+    var headers=new Headers(options.headers||{});
+    var token=getPreviewToken();
+    if(token)headers.set('X-Magic-Slide-Token',token);
+    return fetch(url,Object.assign({},options,{headers:headers}));
+  }
   var deckBadge=document.getElementById('ms-deck-badge');
   if(deckBadge&&window.location.protocol!=='file:'){
     var deckLabel=getDeckLabel();
@@ -4677,7 +4717,7 @@ fitSlideLayout(slides[cur]);
     if(saveBtn)saveBtn.style.pointerEvents='none';
     msBroadcastPresenterState();
     buildHTML(function(html){
-      fetch(apiUrl('/save'),{method:'POST',headers:{'Content-Type':'text/html'},body:html})
+      msAuthFetch(apiUrl('/save'),{method:'POST',headers:{'Content-Type':'text/html'},body:html})
         .then(function(r){if(!r.ok)throw new Error('save failed');return r.text();})
         .then(function(){
           saving=false;
@@ -4715,7 +4755,7 @@ fitSlideLayout(slides[cur]);
       if(saveBtnText)saveBtnText.textContent=MS_UI.saving;
       saveBtn.style.pointerEvents='none';
       buildHTML(function(html){
-        fetch(apiUrl('/save'),{method:'POST',headers:{'Content-Type':'text/html'},body:html})
+        msAuthFetch(apiUrl('/save'),{method:'POST',headers:{'Content-Type':'text/html'},body:html})
           .then(function(r){
             if(r.ok){
               clearDirty();
@@ -4768,13 +4808,13 @@ fitSlideLayout(slides[cur]);
       dirty=false; // prevent beforeunload from blocking
       msBroadcastPresenterState();
       buildHTML(function(html){
-        fetch(apiUrl('/save'),{method:'POST',headers:{'Content-Type':'text/html'},body:html})
+        msAuthFetch(apiUrl('/save'),{method:'POST',headers:{'Content-Type':'text/html'},body:html})
           .then(function(r){return r.ok?r.text():Promise.reject();})
           .then(function(filename){
             var name=filename.trim()||document.title;
             showToast(MS_UI.toast_closing.replace('{name}',name),4000);
             if(typeof window.msClosePresenterWindowFromMain==='function')window.msClosePresenterWindowFromMain('toolbar-close');
-            setTimeout(function(){fetch(apiUrl('/shutdown'),{method:'POST'}).catch(function(){});},1500);
+            setTimeout(function(){msAuthFetch(apiUrl('/shutdown'),{method:'POST'}).catch(function(){});},1500);
             setTimeout(function(){document.body.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#0a0c0e;color:#e8edf7;font-family:system-ui;gap:1rem"><p style="font-size:1.5rem;font-weight:700">'+MS_UI.done_title+'</p><p style="color:#6b7280;font-size:0.95rem">'+MS_UI.done_file.replace('{name}',name)+'</p><p style="color:#6b7280;font-size:0.85rem">'+MS_UI.done_hint+'</p></div>';},2500);
           })
           .catch(function(){
@@ -4790,7 +4830,7 @@ fitSlideLayout(slides[cur]);
     function autoSave(){
       if(saving||!dirty)return;
       buildHTML(function(html){
-        fetch(apiUrl('/save'),{method:'POST',headers:{'Content-Type':'text/html'},body:html})
+        msAuthFetch(apiUrl('/save'),{method:'POST',headers:{'Content-Type':'text/html'},body:html})
           .then(function(r){if(r.ok){clearDirty();}})
           .catch(function(){});
       });
@@ -4798,7 +4838,7 @@ fitSlideLayout(slides[cur]);
     // Only auto-save when dirty (every 30s)
     setInterval(autoSave,30000);
     // Heartbeat every 5s — the preview service removes inactive decks after the server-side timeout
-    setInterval(function(){fetch(apiUrl('/heartbeat'),{method:'POST'}).catch(function(){});},5000);
+    setInterval(function(){msAuthFetch(apiUrl('/heartbeat'),{method:'POST'}).catch(function(){});},5000);
   }
 
   // ── Edit Mode ───────────────────────────────────────────────────────────
