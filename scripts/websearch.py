@@ -3,14 +3,14 @@
 """Web search using PipeLLM WebSearch API.
 
 Usage:
-  python3 websearch.py "search query" [--simple]
+  python3 websearch.py "search query" --allow-external [--simple]
 
 Output:
   JSON with search results to stdout.
   Errors to stderr with exit code 1.
 
 Environment:
-  PIPELLM_API_KEY — API key for pipellm.ai (env var OR ~/.config/pipellm/api_key file)
+  PIPELLM_API_KEY — API key for pipellm.ai
 
 Endpoints:
   Default: Deep Search (/v1/websearch/search) — Retrieval + reranking; stdout drops full contexts
@@ -32,7 +32,6 @@ from typing import List, Optional
 BASE_URL = "https://api.pipellm.ai/v1/websearch"
 MAX_RETRIES = 3
 RETRY_DELAYS = [2, 5, 10]
-KEY_FILE = os.path.expanduser("~/.config/pipellm/api_key")
 KEY_ENV = "PIPELLM_API_KEY"
 REDACTION = "[REDACTED]"
 MAX_ORGANIC_RESULTS = 20
@@ -47,14 +46,6 @@ def _known_secrets() -> List[str]:
     env_key = os.environ.get(KEY_ENV, "").strip()
     if env_key:
         secrets.append(env_key)
-    if os.path.isfile(KEY_FILE):
-        try:
-            with open(KEY_FILE, "r", encoding="utf-8") as f:
-                file_key = f.read().strip()
-            if file_key:
-                secrets.append(file_key)
-        except OSError:
-            pass
     return sorted(set(secrets), key=len, reverse=True)
 
 
@@ -141,20 +132,11 @@ def sanitize_search_data(data: object) -> dict:
 
 
 def get_api_key() -> str:
-    """Read API key from env var first, then from config file."""
+    """Read API key from the process environment."""
     key = os.environ.get(KEY_ENV, "").strip()
     if key:
         return key
-    if os.path.isfile(KEY_FILE):
-        try:
-            os.chmod(KEY_FILE, 0o600)
-        except OSError:
-            pass
-        with open(KEY_FILE, "r", encoding="utf-8") as f:
-            key = f.read().strip()
-        if key:
-            return key
-    print("Error: PIPELLM_API_KEY not set and no key found at " + KEY_FILE, file=sys.stderr)
+    print("Error: PIPELLM_API_KEY is not set in the environment.", file=sys.stderr)
     sys.exit(1)
 
 
@@ -232,7 +214,16 @@ def main():
         action="store_true",
         help="Use simple search (faster, no deep retrieval)"
     )
+    parser.add_argument(
+        "--allow-external",
+        action="store_true",
+        help="Confirm the user approved sending this search query to api.pipellm.ai"
+    )
     args = parser.parse_args()
+
+    if not args.allow_external:
+        print("Error: external web search requires --allow-external after user approval.", file=sys.stderr)
+        sys.exit(1)
 
     try:
         results = search(args.query, args.simple)

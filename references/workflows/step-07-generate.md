@@ -262,7 +262,8 @@ SKILL_DIR=$(find ~ -type d -name "magic-slide-skill" 2>/dev/null | head -1)
 # Generate each image
 python3 "$SKILL_DIR/scripts/generate-image.py" "detailed image prompt" \
   --output {topic}/assets/image-1.png \
-  --model flux-1.1-pro
+  --model pro \
+  --allow-external
 
 # Reference in slide HTML
 <img src="assets/image-1.png" alt="description">

@@ -26,7 +26,7 @@ import urllib.error
 import urllib.request
 import webbrowser
 from dataclasses import dataclass
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 from urllib.parse import quote, unquote, urlparse
@@ -227,6 +227,10 @@ def request_json(
             return json.loads(body) if body else None
     except Exception:
         return None
+
+
+def loopback_host_allowed(hostname: Optional[str]) -> bool:
+    return hostname in {PREVIEW_HOST, "localhost", "::1"}
 
 
 def find_running_service() -> Optional[Tuple[int, str]]:
@@ -460,7 +464,7 @@ def main():
             return False
         if parsed.scheme not in {"http", "https"}:
             return False
-        if parsed.hostname not in {PREVIEW_HOST, "localhost", "::1"}:
+        if not loopback_host_allowed(parsed.hostname):
             return False
         return parsed.port == server_port
 
@@ -500,11 +504,22 @@ def main():
             if any(token in msg for token in ("save", "shutdown", "__register")):
                 print(f"  {msg}")
 
+        def host_allowed(self) -> bool:
+            host = self.headers.get("Host", "")
+            try:
+                parsed = urlparse(f"http://{host}")
+            except Exception:
+                return False
+            return loopback_host_allowed(parsed.hostname) and parsed.port == server_port
+
         def send_bytes(self, status: int, payload: bytes, content_type: str):
             self.send_response(status)
             self.send_header("Content-Type", content_type)
             self.send_header("Content-Length", str(len(payload)))
             self.send_header("Cache-Control", "no-cache")
+            self.send_header("X-Content-Type-Options", "nosniff")
+            self.send_header("Referrer-Policy", "no-referrer")
+            self.send_header("Cross-Origin-Resource-Policy", "same-origin")
             self.end_headers()
             self.wfile.write(payload)
 
@@ -545,15 +560,21 @@ def main():
             return False
 
         def do_GET(self):
+            if not self.host_allowed():
+                self.send_error_json(403, "invalid preview host")
+                return
+
             path = self.parse_path()
 
             if path == "/__magic_slide_meta":
+                supplied = self.headers.get("X-Magic-Slide-Service-Token", "")
+                include_decks = bool(supplied and hmac.compare_digest(supplied, service_token))
                 self.send_json(
                     200,
                     {
                         "service": SERVICE_KIND,
                         "port": server_port,
-                        "decks": list_decks(include_open_urls=False),
+                        "decks": list_decks(include_open_urls=False) if include_decks else [],
                     },
                 )
                 return
@@ -625,6 +646,10 @@ def main():
             self.send_bytes(200, data, mime)
 
         def do_POST(self):
+            if not self.host_allowed():
+                self.send_error_json(403, "invalid preview host")
+                return
+
             path = self.parse_path()
 
             if not self.request_origin_allowed():
@@ -739,10 +764,14 @@ def main():
                 return
 
         def do_OPTIONS(self):
+            if not self.host_allowed() or not self.request_origin_allowed():
+                self.send_error_json(403, "cross-origin preview write denied")
+                return
             self.send_response(204)
             self.end_headers()
 
-    server = HTTPServer((PREVIEW_HOST, server_port), Handler)
+    server = ThreadingHTTPServer((PREVIEW_HOST, server_port), Handler)
+    server.daemon_threads = True
 
     def watchdog():
         while True:

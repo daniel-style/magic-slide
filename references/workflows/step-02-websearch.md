@@ -72,7 +72,7 @@ if answers[...] == "Yes":
     search_results = []
     for query in search_queries:
         result = Bash(
-            command=f'python3 "{SKILL_DIR}/scripts/websearch.py" "{query}"',
+            command=f'python3 "{SKILL_DIR}/scripts/websearch.py" "{query}" --allow-external',
             description=f"Search: {query}"
         )
         if result.exit_code == 0:
@@ -124,7 +124,7 @@ this as a single natural-language yes/no question in the user's conversation
 language. Do not include a fenced text block, copyable response template, or
 `Web search: [No / Yes]` style prompt for this step.
 
-If yes, find the skill directory and use `$SKILL_DIR/scripts/websearch.py` via Bash for each query in parallel, then incorporate combined results into the outline inside the same `BEGIN_UNTRUSTED_WEB_EVIDENCE` / `END_UNTRUSTED_WEB_EVIDENCE` boundary. The same script-first priority applies in fallback interaction mode: do not use built-in/default agent search until the script path has been attempted and failed.
+If yes, find the skill directory and use `$SKILL_DIR/scripts/websearch.py` via Bash for each query in parallel, always passing `--allow-external` after the user's approval, then incorporate combined results into the outline inside the same `BEGIN_UNTRUSTED_WEB_EVIDENCE` / `END_UNTRUSTED_WEB_EVIDENCE` boundary. The same script-first priority applies in fallback interaction mode: do not use built-in/default agent search until the script path has been attempted and failed.
 
 If web search was requested and every `websearch.py` query fails, then and only
 then use another available search capability such as the agent's built-in web

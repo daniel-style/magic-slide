@@ -205,7 +205,9 @@ For non-person images (products, diagrams, illustrations):
 ```bash
 python3 <magic-slide-path>/scripts/generate-image.py \
   "stylized illustration portrait, [role description], dark background, [accent color] lighting, abstract artistic style, no face details, cinematic" \
-  --aspect 1:1 --output ./[topic]-assets/[person-id]-placeholder.png
+  --aspect 1:1 \
+  --output ./[topic]-assets/[person-id]-placeholder.png \
+  --allow-external
 ```
 
 Prompt guidelines for person placeholders:

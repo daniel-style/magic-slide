@@ -3,9 +3,8 @@
 """Generate an image using Nano Banana (PipeLLM) and output base64 data or save to file.
 
 Usage:
-  python3 generate-image.py "a serene mountain landscape at sunset" [--aspect 16:9] [--model pro]
-  python3 generate-image.py "prompt" --aspect 16:9 --output ./images/slide-bg.png
-  python3 generate-image.py --save-key
+  python3 generate-image.py "a serene mountain landscape at sunset" --allow-external [--aspect 16:9] [--model pro]
+  python3 generate-image.py "prompt" --aspect 16:9 --output ./images/slide-bg.png --allow-external
 
 Output:
   Without --output: prints raw base64-encoded PNG data to stdout.
@@ -13,7 +12,7 @@ Output:
   On error, prints an error message to stderr and exits with code 1.
 
 Environment / Config:
-  PIPELLM_API_KEY — API key for pipellm.ai (env var OR ~/.config/pipellm/api_key file)
+  PIPELLM_API_KEY — API key for pipellm.ai
 
 Models:
   flash: gemini-3.1-flash-image-preview — fast, good for backgrounds
@@ -26,8 +25,6 @@ import json
 import argparse
 import base64
 import time
-import getpass
-import tempfile
 import urllib.request
 import urllib.error
 from typing import List
@@ -39,7 +36,6 @@ MODELS = {
 }
 MAX_RETRIES = 3
 RETRY_DELAYS = [10, 20, 40]
-KEY_FILE = os.path.expanduser("~/.config/pipellm/api_key")
 KEY_ENV = "PIPELLM_API_KEY"
 REDACTION = "[REDACTED]"
 
@@ -50,14 +46,6 @@ def _known_secrets() -> List[str]:
     env_key = os.environ.get(KEY_ENV, "").strip()
     if env_key:
         secrets.append(env_key)
-    if os.path.isfile(KEY_FILE):
-        try:
-            with open(KEY_FILE, "r", encoding="utf-8") as f:
-                file_key = f.read().strip()
-            if file_key:
-                secrets.append(file_key)
-        except OSError:
-            pass
     return sorted(set(secrets), key=len, reverse=True)
 
 
@@ -71,54 +59,12 @@ def redact_secrets(text: object) -> str:
 
 
 def get_api_key() -> str:
-    """Read API key from env var first, then from config file."""
+    """Read API key from the process environment."""
     key = os.environ.get(KEY_ENV, "").strip()
     if key:
         return key
-    if os.path.isfile(KEY_FILE):
-        try:
-            os.chmod(KEY_FILE, 0o600)
-        except OSError:
-            pass
-        with open(KEY_FILE, "r", encoding="utf-8") as f:
-            key = f.read().strip()
-        if key:
-            return key
-    print("Error: PIPELLM_API_KEY not set and no key found at " + KEY_FILE, file=sys.stderr)
+    print("Error: PIPELLM_API_KEY is not set in the environment.", file=sys.stderr)
     sys.exit(1)
-
-
-def save_api_key(key: str) -> None:
-    """Persist API key to config file for future sessions."""
-    key = key.strip()
-    if not key:
-        print("Error: API key cannot be empty.", file=sys.stderr)
-        sys.exit(1)
-
-    key_dir = os.path.dirname(KEY_FILE)
-    os.makedirs(key_dir, mode=0o700, exist_ok=True)
-    try:
-        os.chmod(key_dir, 0o700)
-    except OSError:
-        pass
-
-    fd, tmp_path = tempfile.mkstemp(prefix=".api_key.", dir=key_dir, text=True)
-    try:
-        os.chmod(tmp_path, 0o600)
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            f.write(key + "\n")
-        os.replace(tmp_path, KEY_FILE)
-    finally:
-        if os.path.exists(tmp_path):
-            os.unlink(tmp_path)
-    os.chmod(KEY_FILE, 0o600)
-
-
-def read_api_key_for_save() -> str:
-    """Read an API key without requiring it to appear in argv."""
-    if sys.stdin.isatty():
-        return getpass.getpass("PipeLLM API key: ").strip()
-    return sys.stdin.read().strip()
 
 
 def generate(prompt: str, aspect: str = "16:9", model: str = "flash") -> str:
@@ -176,18 +122,15 @@ if __name__ == "__main__":
     parser.add_argument("--aspect", default="16:9", help="Aspect ratio (default: 16:9)")
     parser.add_argument("--model", default="flash", choices=["flash", "pro"], help="Model tier (default: flash)")
     parser.add_argument("--output", default=None, help="Save decoded PNG to this file path instead of printing base64")
-    parser.add_argument("--save-key", action="store_true", help="Read API key from stdin or a hidden prompt, save it to ~/.config/pipellm/api_key, and exit")
+    parser.add_argument("--allow-external", action="store_true", help="Confirm the user approved sending this image prompt to api.pipellm.ai")
     args = parser.parse_args()
 
-    if args.save_key:
-        if args.prompt:
-            parser.error("--save-key no longer accepts a key argument; pipe the key on stdin or enter it at the hidden prompt")
-        save_api_key(read_api_key_for_save())
-        print("API key saved to " + KEY_FILE, file=sys.stderr)
-        sys.exit(0)
-
     if not args.prompt:
-        parser.error("prompt is required (unless using --save-key)")
+        parser.error("prompt is required")
+
+    if not args.allow_external:
+        print("Error: image generation requires --allow-external after user approval.", file=sys.stderr)
+        sys.exit(1)
 
     b64 = generate(args.prompt, args.aspect, args.model)
 
