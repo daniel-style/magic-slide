@@ -264,20 +264,22 @@ Responsive type must respect the content budget. Do not stack an aggressively
 scaling `html` font size with large `vw`-based font sizes on every child; this
 makes dense slides overflow at normal 16:9 sizes.
 
-Use viewport scaling for true hero/display moments, and use rem or
-container-relative sizing for dense slide content, cards, captions, and labels.
+Use rem for deck-level typography and container-relative sizing for cards,
+captions, labels, and other bounded objects. Viewport units are allowed for
+local spacing or rare display flourishes only when they do not make browser
+page zoom appear unchanged.
 
 ### Required CSS in style.css
 
 ```css
-/* Modest responsive font scaling base */
+/* Stable root type scale; do not bind this to vw */
 html {
-  font-size: clamp(14px, 1vw, 18px);
+  font-size: 18px;
 }
 
-/* Optional scale token for hero/display moments */
+/* Optional local scale token for specific slide families */
 :root {
-  --font-scale: clamp(0.9, 1vw, 1.15);
+  --font-scale: 1;
 }
 ```
 
@@ -294,30 +296,30 @@ p { font-size: 16px; }
 h1 { font-size: 3rem; }  /* Scales with html font-size */
 p { font-size: 1.2rem; }
 
-/* ✅ BETTER FOR HERO/DISPLAY: Viewport-based with clamp */
-h1 { font-size: clamp(2.5rem, 5vw, 5rem); }
-p { font-size: clamp(1rem, 1.15vw, 1.3rem); }
+/* ✅ BETTER FOR HERO/DISPLAY: stable rem clamp */
+h1 { font-size: clamp(3.5rem, 6rem, 7rem); }
+p { font-size: clamp(1rem, 1.16rem, 1.36rem); }
 ```
 
-### Recommended Responsive Sizes
+### Recommended Canvas Sizes
 
 **For inline styles in HTML:**
 
 ```html
 <!-- Cover slide title -->
-<h1 style="font-size: clamp(3rem, 6vw, 6rem);">Title</h1>
+<h1 style="font-size: clamp(3.5rem, 6rem, 7rem);">Title</h1>
 
 <!-- Section title -->
-<h2 style="font-size: clamp(2rem, 4vw, 4rem);">Section</h2>
+<h2 style="font-size: clamp(2.4rem, 4.2rem, 5rem);">Section</h2>
 
 <!-- Slide title -->
-<h2 style="font-size: clamp(1.8rem, 3vw, 3.5rem);">Slide Title</h2>
+<h2 style="font-size: clamp(2rem, 3.4rem, 4.2rem);">Slide Title</h2>
 
 <!-- Body text for dense or normal slides -->
-<p style="font-size: clamp(1rem, 1.15vw, 1.3rem);">Content</p>
+<p style="font-size: clamp(1rem, 1.16rem, 1.36rem);">Content</p>
 
 <!-- Small text -->
-<p style="font-size: clamp(0.78rem, 0.9vw, 0.95rem);">Caption</p>
+<p style="font-size: clamp(0.78rem, 0.88rem, 1rem);">Caption</p>
 ```
 
 **Why clamp():**
@@ -401,6 +403,12 @@ Rules:
 - Keep `.slide-content` as the stable design canvas wrapper. Prefer
   `width:100%; max-width:1680px; margin:0 auto; padding:clamp(2.5rem,5vw,5rem)`
   rather than a narrow `vw`-driven root frame.
+- If `.slide-content` is authored as a 16:9 design frame, use
+  `aspect-ratio:16/9` with a capped inline size such as
+  `inline-size:min(1500px, calc(100vw - 6rem), calc((100vh - 5rem) * 16 / 9))`.
+  Do not also set `min-height:100vh` on that same frame; the injected runtime
+  detects aspect-ratio canvases and preserves their height so upscale fitting can
+  respond to browser zoom and large viewports.
 - The injected runtime also enforces a centered `max-width:min(1680px,100vw)`
   on the direct `.slide-content` wrapper as a guardrail. Do not override that
   with `max-width:none`, `width:100vw`, viewport-spanning inline styles, or a
@@ -417,7 +425,8 @@ Rules:
   cards, reduce a split gap, put a card row in a shared panel, use a central
   stage max-width, or redesign the layout.
 - Use fluid breakpoints only for true device adaptation. They should preserve
-  the intended composition, not create a different wide-screen layout.
+  the intended composition, not create a different wide-screen layout, and they
+  must not neutralize browser page zoom.
 - Runtime fit is a safety net for slight overflow, not a license to overfill
   slides. Author text and cards to fit the design canvas first, then verify the
   scaled output in QA overview.
@@ -441,23 +450,29 @@ For detailed HTML structure and examples of each layout primitive, see [layouts/
 
 ## Typography Scale
 
-**Recommended responsive font sizes using clamp():**
+**Recommended font sizes using clamp():**
 
 ```css
 /* Cover slide */
-H1: clamp(3rem, 6vw, 6rem)
+H1: clamp(3.5rem, 6rem, 7rem)
 
 /* Section headers */
-H2 (section): clamp(2rem, 4vw, 4rem)
+H2 (section): clamp(2.4rem, 4.2rem, 5rem)
 
 /* Slide titles */
-H2 (slide): clamp(1.8rem, 3vw, 3.5rem)
-H3 (subsection): clamp(1.5rem, 2.5vw, 2.5rem)
+H2 (slide): clamp(2rem, 3.4rem, 4.2rem)
+H3 (subsection): clamp(1.5rem, 2.25rem, 2.8rem)
 
 /* Body text */
-Body: clamp(1rem, 1.15vw, 1.3rem)
-Small: clamp(0.78rem, 0.9vw, 0.95rem)
+Body: clamp(1rem, 1.16rem, 1.36rem)
+Small: clamp(0.78rem, 0.88rem, 1rem)
 ```
+
+Use viewport units sparingly for local spacing or true device breakpoints, not
+as the main text scale. In particular, do not set `html { font-size:
+clamp(..., 1vw, ...) }` or make every heading/body size depend on `vw`; those
+patterns make Chrome/Safari page zoom appear broken because the CSS viewport
+shrinks or expands while the deck reflows in the opposite direction.
 
 **Line height:**
 - Headings: 1.2
@@ -689,11 +704,11 @@ box implying a larger visual that never arrives.
 ```html
 <section class="slide" data-id="good" data-transition="fade" data-stagger="cascade" data-bg="dark">
   <div class="slide-content">
-    <h2 style="font-size: clamp(1.8rem, 3vw, 3.5rem); margin-bottom: clamp(1.5rem, 3vw, 3rem); align-self: flex-start;">
+    <h2 style="font-size: clamp(2rem, 3.4rem, 4.2rem); margin-bottom: clamp(1.5rem, 2.5rem, 3rem); align-self: flex-start;">
       Title
     </h2>
-    <p style="font-size: clamp(1rem, 1.15vw, 1.3rem); line-height: 1.7; max-width: 800px;">
-      Readable text with proper sizing and width constraint that scales with viewport.
+    <p style="font-size: clamp(1rem, 1.16rem, 1.36rem); line-height: 1.7; max-width: 800px;">
+      Readable text with proper sizing and a stable measure inside the design canvas.
     </p>
   </div>
 </section>

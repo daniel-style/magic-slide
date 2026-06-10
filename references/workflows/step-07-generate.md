@@ -53,7 +53,10 @@ Before writing files, make a concise internal plan based on Brief Lite:
   for rendered sizes; use internal stages, groups, panels, and evidence bands
   to make individual slides feel tight. Confirm the source CSS does not
   override the runtime `.slide-content` content-canvas guard with
-  `max-width:none`, `width:100vw`, or viewport-spanning inline root styles.
+  `max-width:none`, `width:100vw`, viewport-spanning inline root styles, or
+  viewport-driven root typography that makes browser page zoom appear unchanged.
+  If the deck uses an `aspect-ratio` design frame, keep `min-height:100vh` off
+  that same `.slide-content`; the runtime handles aspect-canvas fitting.
 - Stage-fit map from `layout-guide.md`: for each slide family, choose compact
   stage, wide evidence band, or full visual frame before writing HTML.
 - Width allocation for card groups, comparison cells, and evidence bands,

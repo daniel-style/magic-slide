@@ -420,7 +420,11 @@ Use `layout-guide.md` for centering, dense-slide exceptions, source-note
 placement, design-canvas scaling, and overflow/collision policy. The injected
 runtime re-applies the centered 1680px content-canvas guard to the direct
 `.slide-content`; generated sources must not override it with `max-width:none`,
-`width:100vw`, or inline viewport-spanning root layout styles.
+`width:100vw`, or inline viewport-spanning root layout styles. If a source deck
+uses an `aspect-ratio` design frame, do not put `min-height:100vh` on that same
+`.slide-content`; the runtime preserves aspect canvases for fitting. Source CSS
+must also avoid viewport-driven root typography such as `html { font-size:
+clamp(..., 1vw, ...) }`; see `layout-guide.md` for the browser-zoom rule.
 
 ## What NOT to Include
 
