@@ -13,6 +13,7 @@ Usage:
 """
 
 import hashlib
+import html as html_lib
 import hmac
 import json
 import os
@@ -283,6 +284,70 @@ def deck_url(deck: Deck, *, qa_overview: bool = False) -> str:
 
 def deck_open_url(deck: Deck) -> str:
     return deck_url(deck, qa_overview=has_pending_qa_confirmation(deck))
+
+
+def inject_preview_token_bootstrap(data: bytes, deck: Deck) -> bytes:
+    """Expose the deck token to local preview runtime without changing disk HTML."""
+    try:
+        html = data.decode("utf-8")
+    except UnicodeDecodeError:
+        return data
+
+    if 'name="magic-slide-preview-token"' in html and 'id="ms-preview-token-bootstrap"' in html:
+        return data
+
+    token_json = json.dumps(deck.token)
+    meta = f'<meta name="magic-slide-preview-token" content="{html_lib.escape(deck.token, quote=True)}">\n'
+    bootstrap = (
+        '<script id="ms-preview-token-bootstrap">'
+        "(function(){"
+        f"var token={token_json};"
+        "var path=window.location.pathname||'';"
+        "var m=path.match(/^\\/deck\\/[^/]+/);"
+        "var base=m?m[0]:'';"
+        "var key='magic-slide-preview-token:'+(base||path);"
+        "try{sessionStorage.setItem(key,token);}catch(_){}"
+        "if(window.fetch&&!window.__msPreviewTokenFetchPatched){"
+        "window.__msPreviewTokenFetchPatched=true;"
+        "var nativeFetch=window.fetch.bind(window);"
+        "window.fetch=function(input,init){"
+        "var url=typeof input==='string'?input:(input&&input.url)||'';"
+        "var absolute;try{absolute=new URL(url,window.location.href);}catch(_){absolute=null;}"
+        "var endpoint=absolute?absolute.pathname:'';"
+        "var shouldAuth=base&&endpoint.indexOf(base+'/')===0&&/\\/(save|heartbeat|shutdown|qa-issues)$/.test(endpoint);"
+        "if(shouldAuth){"
+        "init=init||{};"
+        "var headers=new Headers(init.headers||(input&&input.headers)||{});"
+        "headers.set('X-Magic-Slide-Token',token);"
+        "init=Object.assign({},init,{headers:headers});"
+        "}"
+        "return nativeFetch(input,init);"
+        "};"
+        "}"
+        "})();"
+        "</script>\n"
+    )
+    injection = meta + bootstrap
+    if re.search(r"</head\s*>", html, flags=re.IGNORECASE):
+        html = re.sub(r"</head\s*>", injection + "</head>", html, count=1, flags=re.IGNORECASE)
+    else:
+        html = injection + html
+    return html.encode("utf-8")
+
+
+def strip_preview_token_bootstrap(data: bytes) -> bytes:
+    try:
+        html = data.decode("utf-8")
+    except UnicodeDecodeError:
+        return data
+    html = re.sub(r'\s*<meta\s+name=["\']magic-slide-preview-token["\'][^>]*>\s*', "\n", html, flags=re.IGNORECASE)
+    html = re.sub(
+        r'\s*<script\b[^>]*\bid=["\']ms-preview-token-bootstrap["\'][^>]*>[\s\S]*?</script>\s*',
+        "\n",
+        html,
+        flags=re.IGNORECASE,
+    )
+    return html.encode("utf-8")
 
 
 def empty_qa_issues() -> dict:
@@ -643,6 +708,8 @@ def main():
                 ".svg": "image/svg+xml",
                 ".webp": "image/webp",
             }.get(ext, "application/octet-stream")
+            if target == deck.html_path and ext in {".html", ".htm"}:
+                data = inject_preview_token_bootstrap(data, deck)
             self.send_bytes(200, data, mime)
 
         def do_POST(self):
@@ -702,7 +769,7 @@ def main():
 
             if action == "save":
                 length = int(self.headers.get("Content-Length", 0))
-                body = self.rfile.read(length)
+                body = strip_preview_token_bootstrap(self.rfile.read(length))
                 try:
                     deck.html_path.write_bytes(body)
                     if deck.inject_script.exists():

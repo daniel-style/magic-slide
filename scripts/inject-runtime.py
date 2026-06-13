@@ -198,6 +198,13 @@ def strip(html: str) -> str:
     h = re.sub(r'\n?/\* === injected by inject-runtime\.py === \*/.*?/\* === end injected CSS === \*/\n?', '', h, flags=re.DOTALL)
     # Remove Lucide CDN tag
     h = re.sub(r'<script src="https://unpkg\.com/lucide@[^"]*"></script>\n?', '', h)
+    h = re.sub(r'\s*<meta\s+name=["\']magic-slide-preview-token["\'][^>]*>\s*', '\n', h, flags=re.IGNORECASE)
+    h = re.sub(
+        r'\s*<script\b[^>]*\bid=["\']ms-preview-token-bootstrap["\'][^>]*>[\s\S]*?</script>\s*',
+        '\n',
+        h,
+        flags=re.IGNORECASE,
+    )
     # Remove complex injected blocks as whole regions. These contain nested
     # controls, so a generic "first closing tag" regex leaves button fragments
     # behind on reinjection.
@@ -4624,6 +4631,8 @@ fitSlideLayout(slides[cur]);
       clone.querySelectorAll('script:not([src])').forEach(function(s){
         if(s.textContent.indexOf('var slides=document.querySelectorAll')>-1)s.remove();
       });
+      clone.querySelectorAll('meta[name="magic-slide-preview-token"]').forEach(function(m){m.remove();});
+      clone.querySelectorAll('script#ms-preview-token-bootstrap').forEach(function(s){s.remove();});
       callback('<!DOCTYPE html>\\n'+clone.outerHTML);
     });
   }
@@ -4682,6 +4691,10 @@ fitSlideLayout(slides[cur]);
     var next=window.location.pathname+window.location.search+(kept.length?'#'+kept.join('&'):'');
     try{window.history.replaceState(null,document.title,next);}catch(_){}
   }
+  function readPreviewTokenFromMeta(){
+    var meta=document.querySelector('meta[name="magic-slide-preview-token"]');
+    return meta?meta.getAttribute('content')||'':'';
+  }
   var msPreviewTokenCache=null;
   function getPreviewToken(){
     if(msPreviewTokenCache!==null)return msPreviewTokenCache;
@@ -4694,6 +4707,10 @@ fitSlideLayout(slides[cur]);
       return token;
     }
     try{token=sessionStorage.getItem(key)||'';}catch(_){token='';}
+    if(!token)token=readPreviewTokenFromMeta();
+    if(token){
+      try{sessionStorage.setItem(key,token);}catch(_){}
+    }
     msPreviewTokenCache=token;
     return token;
   }
