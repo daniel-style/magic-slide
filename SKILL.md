@@ -214,6 +214,12 @@ must preserve the source-of-truth files.
 
 **Keyboard scope.** When a deck is opened through the local `serve.py` preview route (`http://localhost:.../deck/...`), all runtime shortcuts are available. When the same HTML is opened outside that local preview context, only presentation-safe shortcuts remain active: `O` for overview, `C` for cursor visibility, `Space`/arrow keys for slide navigation.
 
+**Presenter page indicator.** The presenter window must keep a high-contrast
+current-page / total-page indicator visible in its bottom console and update it
+after every navigation action. Create this indicator only inside the presenter
+shell; never duplicate it onto the audience-facing slide canvas or exported
+slide visuals.
+
 **1. Edit modular sources** (default for all agent changes):
 - Edit `{topic}/sources/slide-XX.html` or `style.css`
 - Re-run merge and inject scripts

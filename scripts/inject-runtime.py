@@ -84,6 +84,7 @@ UI_STRINGS = {
         'presenter_notes_saved': '已保存',
         'presenter_notes_save_failed': '保存失败',
         'presenter_notes_edit_unavailable': '仅本地预览可编辑',
+        'presenter_page_aria': '第 {slide} 页，共 {count} 页',
         'presenter_status_cursor': '光标',
         'presenter_status_overview': '总览',
         'presenter_status_qa': 'QA',
@@ -163,6 +164,7 @@ UI_STRINGS = {
         'presenter_notes_saved': 'Saved',
         'presenter_notes_save_failed': 'Save failed',
         'presenter_notes_edit_unavailable': 'Editable in local preview only',
+        'presenter_page_aria': 'Slide {slide} of {count}',
         'presenter_status_cursor': 'Cursor',
         'presenter_status_overview': 'Overview',
         'presenter_status_qa': 'QA',
@@ -697,6 +699,10 @@ body.ms-presenter-notes-collapsed #ms-presenter-shell{grid-template-columns:minm
 .ms-presenter-status-item.is-muted{opacity:0.62}
 .ms-presenter-status-label{color:rgba(238,242,247,0.56);font-weight:800}
 .ms-presenter-status-value{color:inherit;font-weight:950}
+.ms-presenter-page-indicator{flex:0 0 auto;display:inline-flex;align-items:baseline;justify-content:center;gap:7px;min-width:104px;min-height:38px;margin-left:auto;padding:5px 13px;border:1px solid rgba(127,200,255,0.42);border-radius:10px;background:rgba(127,200,255,0.12);color:#f8fafc;font-family:var(--font-mono,ui-monospace,monospace);font-variant-numeric:tabular-nums;line-height:1;white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,0.08),0 0 0 1px rgba(127,200,255,0.06)}
+.ms-presenter-page-current{font-size:26px;font-weight:950;letter-spacing:-0.05em}
+.ms-presenter-page-separator{font-size:14px;font-weight:850;color:rgba(238,242,247,0.48)}
+.ms-presenter-page-total{font-size:15px;font-weight:900;color:rgba(238,242,247,0.74)}
 .ms-presenter-console-actions{flex-shrink:0;display:flex;align-items:center;gap:8px}
 .ms-presenter-notes-toggle-btn,.ms-presenter-notes-edit-btn,.ms-presenter-notes-save-btn,.ms-presenter-notes-cancel-btn{appearance:none;-webkit-appearance:none;min-height:28px;border:1px solid rgba(238,242,247,0.14);border-radius:8px;background:rgba(255,255,255,0.055);color:rgba(238,242,247,0.82);font-size:11px;font-weight:900;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 10px;transition:background 0.16s ease,border-color 0.16s ease,color 0.16s ease,transform 0.16s ease}
 .ms-presenter-notes-toggle-btn:hover,.ms-presenter-notes-edit-btn:hover,.ms-presenter-notes-save-btn:hover,.ms-presenter-notes-cancel-btn:hover{background:rgba(255,255,255,0.10);border-color:rgba(127,200,255,0.56);color:#eef2f7;transform:translateY(-1px)}
@@ -721,7 +727,7 @@ body.ms-presenter-notes-resizing{cursor:ew-resize!important}
 .ms-presenter-notes-body.is-empty{color:rgba(238,242,247,0.48);font-size:clamp(16px,1.2vw,22px)}
 .ms-presenter-notes-body[contenteditable="true"]{outline:1px solid rgba(127,200,255,0.48);background:rgba(127,200,255,0.075);border-radius:8px;padding:10px;caret-color:#dbeafe}
 .ms-presenter-notes-body[contenteditable="true"]:empty::before{content:attr(data-placeholder);color:rgba(238,242,247,0.42)}
-@media(max-width:960px), (max-height:620px){#ms-presenter-shell{display:flex;flex-direction:column;padding:10px;gap:10px;--ms-presenter-notes-width:100%}.ms-presenter-stage{flex:1;min-height:180px}.ms-presenter-overview-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:12px}.ms-presenter-console{align-items:flex-start;min-height:0}.ms-presenter-status-grid{gap:6px}.ms-presenter-status-item{font-size:10px;padding:4px 7px}.ms-presenter-notes{flex:0 0 150px;padding:13px}.ms-presenter-notes-head{font-size:10px}.ms-presenter-notes-body{font-size:18px}.ms-presenter-notes-resizer{display:none}body.ms-presenter-notes-collapsed .ms-presenter-notes{display:none}}
+@media(max-width:960px), (max-height:620px){#ms-presenter-shell{display:flex;flex-direction:column;padding:10px;gap:10px;--ms-presenter-notes-width:100%}.ms-presenter-stage{flex:1;min-height:180px}.ms-presenter-overview-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:12px}.ms-presenter-console{align-items:flex-start;min-height:0}.ms-presenter-status-grid{gap:6px}.ms-presenter-status-item{font-size:10px;padding:4px 7px}.ms-presenter-page-indicator{min-width:88px;min-height:34px;padding:4px 10px}.ms-presenter-page-current{font-size:22px}.ms-presenter-page-total{font-size:13px}.ms-presenter-notes{flex:0 0 150px;padding:13px}.ms-presenter-notes-head{font-size:10px}.ms-presenter-notes-body{font-size:18px}.ms-presenter-notes-resizer{display:none}body.ms-presenter-notes-collapsed .ms-presenter-notes{display:none}}
 /* === end injected CSS === */
 """
 
@@ -826,7 +832,8 @@ function msTrustedMessageEvent(event){
   return event.origin===window.location.origin;
 }
 function msPostTargetOrigin(){
-  return window.location.origin&&window.location.origin!=='null'?window.location.origin:'/';
+  if(window.location.protocol==='file:')return '*';
+  return window.location.origin&&window.location.origin!=='null'?window.location.origin:'*';
 }
 document.body.classList.toggle('ms-qa-capture',MS_QA_CAPTURE_MODE);
 document.body.classList.toggle('ms-presenter-shell-mode',MS_IS_PRESENTER_SHELL);
@@ -3673,7 +3680,7 @@ fitSlideLayout(slides[cur]);
   if(MS_IS_PRESENTER_SHELL){
     var shell=document.createElement('div');
     shell.id='ms-presenter-shell';
-    shell.innerHTML='<div class="ms-presenter-stage"><iframe class="ms-presenter-mirror" title="Presenter mirror" allow="fullscreen"></iframe><div class="ms-presenter-overview" aria-hidden="true"><div class="ms-presenter-overview-grid"></div><button class="ms-presenter-overview-close" type="button" aria-label="Close overview">&times;</button></div></div><section class="ms-presenter-console" aria-live="polite"><div class="ms-presenter-status-grid"></div><div class="ms-presenter-console-actions"><button class="ms-presenter-notes-toggle-btn" type="button"></button></div></section><section class="ms-presenter-notes" aria-live="polite"><div class="ms-presenter-notes-resizer" role="separator" aria-orientation="vertical"></div><div class="ms-presenter-notes-head"><span class="ms-presenter-notes-title"></span><span class="ms-presenter-notes-actions"><span class="ms-presenter-notes-page"></span><button class="ms-presenter-notes-edit-btn" type="button"></button><button class="ms-presenter-notes-save-btn" type="button"></button><button class="ms-presenter-notes-cancel-btn" type="button"></button><button class="ms-presenter-notes-side-btn" type="button"></button></span></div><div class="ms-presenter-notes-body"></div></section>';
+    shell.innerHTML='<div class="ms-presenter-stage"><iframe class="ms-presenter-mirror" title="Presenter mirror" allow="fullscreen"></iframe><div class="ms-presenter-overview" aria-hidden="true"><div class="ms-presenter-overview-grid"></div><button class="ms-presenter-overview-close" type="button" aria-label="Close overview">&times;</button></div></div><section class="ms-presenter-console" aria-live="polite"><div class="ms-presenter-status-grid"></div><div class="ms-presenter-page-indicator"><span class="ms-presenter-page-current"></span><span class="ms-presenter-page-separator">/</span><span class="ms-presenter-page-total"></span></div><div class="ms-presenter-console-actions"><button class="ms-presenter-notes-toggle-btn" type="button"></button></div></section><section class="ms-presenter-notes" aria-live="polite"><div class="ms-presenter-notes-resizer" role="separator" aria-orientation="vertical"></div><div class="ms-presenter-notes-head"><span class="ms-presenter-notes-title"></span><span class="ms-presenter-notes-actions"><span class="ms-presenter-notes-page"></span><button class="ms-presenter-notes-edit-btn" type="button"></button><button class="ms-presenter-notes-save-btn" type="button"></button><button class="ms-presenter-notes-cancel-btn" type="button"></button><button class="ms-presenter-notes-side-btn" type="button"></button></span></div><div class="ms-presenter-notes-body"></div></section>';
     document.body.appendChild(shell);
     document.body.classList.add('ms-presenter-notes-collapsed');
     var mirrorStage=shell.querySelector('.ms-presenter-stage');
@@ -3682,6 +3689,9 @@ fitSlideLayout(slides[cur]);
     var presenterOverviewGrid=shell.querySelector('.ms-presenter-overview-grid');
     var presenterOverviewClose=shell.querySelector('.ms-presenter-overview-close');
     var statusGrid=shell.querySelector('.ms-presenter-status-grid');
+    var pageIndicator=shell.querySelector('.ms-presenter-page-indicator');
+    var pageCurrent=shell.querySelector('.ms-presenter-page-current');
+    var pageTotal=shell.querySelector('.ms-presenter-page-total');
     var noteToggleBtn=shell.querySelector('.ms-presenter-notes-toggle-btn');
     var noteResizer=shell.querySelector('.ms-presenter-notes-resizer');
     var noteSideBtn=shell.querySelector('.ms-presenter-notes-side-btn');
@@ -4207,6 +4217,13 @@ fitSlideLayout(slides[cur]);
       };
       if(noteTitle)noteTitle.textContent=shellState.heading||shellState.title||MS_UI.presenter_notes;
       if(notePage)notePage.textContent=shellState.slide+' / '+shellState.slideCount;
+      if(pageCurrent)pageCurrent.textContent=String(shellState.slide);
+      if(pageTotal)pageTotal.textContent=String(shellState.slideCount);
+      if(pageIndicator){
+        var pageAria=presenterText('presenter_page_aria','Slide {slide} of {count}').replace('{slide}',String(shellState.slide)).replace('{count}',String(shellState.slideCount));
+        pageIndicator.setAttribute('aria-label',pageAria);
+        pageIndicator.title=pageAria;
+      }
       renderPresenterNotesBody();
       updatePresenterNotesChrome();
       renderPresenterStatus();
