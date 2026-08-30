@@ -12,6 +12,7 @@ Usage:
 - Press Ctrl+C to stop the service if this invocation started it
 """
 
+import argparse
 import hashlib
 import html as html_lib
 import hmac
@@ -20,6 +21,7 @@ import os
 import re
 import secrets
 import subprocess
+import sys
 import tempfile
 import threading
 import time
@@ -31,7 +33,6 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 from urllib.parse import quote, unquote, urlparse
-import sys
 
 BASE_PORT = 8765
 MAX_PORT = 8865
@@ -143,6 +144,25 @@ def validate_html_path(path: Path) -> Path:
     if resolved.suffix.lower() not in {".html", ".htm"}:
         raise ValueError("path must end with .html or .htm")
     return resolved
+
+
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(description="Start the Magic Slide preview service.")
+    parser.add_argument("html_path", type=Path, help="Generated deck HTML file")
+    parser.add_argument("--port", type=int, help="Bind an exact host-assigned port")
+    parser.add_argument("--no-open", action="store_true", help="Do not open a local browser")
+    parser.add_argument("--single-deck", action="store_true", help="Redirect / to the initial deck")
+    args = parser.parse_args(argv)
+    if args.port is None:
+        managed_port = os.getenv("CELHIVE_PREVIEW_PORT", "").strip()
+        if managed_port:
+            try:
+                args.port = int(managed_port)
+            except ValueError:
+                parser.error("CELHIVE_PREVIEW_PORT must be an integer")
+    if args.port is not None and not 1 <= args.port <= 65535:
+        parser.error("--port must be between 1 and 65535")
+    return args
 
 
 def is_port_open(port: int) -> bool:
@@ -284,6 +304,13 @@ def deck_url(deck: Deck, *, qa_overview: bool = False) -> str:
 
 def deck_open_url(deck: Deck) -> str:
     return deck_url(deck, qa_overview=has_pending_qa_confirmation(deck))
+
+
+def deck_open_path(deck: Deck) -> str:
+    path = deck.url_path().lstrip("/")
+    if has_pending_qa_confirmation(deck):
+        path = f"{path}?ms_qa=overview"
+    return f"{path}#ms_token={quote(deck.token)}"
 
 
 def inject_preview_token_bootstrap(data: bytes, deck: Deck) -> bytes:
@@ -432,17 +459,15 @@ def write_qa_issues(deck: Deck, data: dict) -> None:
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: python3 serve.py <file.html>", file=sys.stderr)
-        sys.exit(1)
+    args = parse_args()
 
     try:
-        html_path = validate_html_path(Path(sys.argv[1]))
+        html_path = validate_html_path(args.html_path)
     except (FileNotFoundError, ValueError) as ex:
         print(f"Invalid preview file: {ex}", file=sys.stderr)
         sys.exit(1)
 
-    existing_service = find_running_service()
+    existing_service = None if args.port is not None else find_running_service()
     if existing_service is not None:
         existing_port, _ = existing_service
         registered = register_with_running_service(existing_port, html_path)
@@ -451,7 +476,8 @@ def main():
             sys.exit(1)
         url = registered["url"]
         print(f"  Magic Slide service already running → {url}")
-        webbrowser.open(url)
+        if not args.no_open:
+            webbrowser.open(url)
         return
 
     registry: Dict[str, Deck] = {}
@@ -460,7 +486,10 @@ def main():
     registry[initial_deck.deck_id] = initial_deck
 
     global server_port
-    server_port = find_free_port()
+    server_port = args.port if args.port is not None else find_free_port()
+    if is_port_open(server_port):
+        print(f"Preview port {server_port} is already in use.", file=sys.stderr)
+        sys.exit(1)
     service_token = secrets.token_urlsafe(32)
     write_token_file(server_port, service_token)
 
@@ -645,6 +674,11 @@ def main():
                 return
 
             if path == "/":
+                if args.single_deck:
+                    self.send_response(302)
+                    self.send_header("Location", deck_open_path(initial_deck))
+                    self.end_headers()
+                    return
                 self.send_bytes(200, render_index(), "text/html; charset=utf-8")
                 return
 
@@ -866,7 +900,8 @@ def main():
     print(f"  Auto-stop:             {HEARTBEAT_TIMEOUT}s after the last preview tab stops sending heartbeats")
     print(f"  Press Ctrl+C to stop\n")
 
-    threading.Timer(0.4, lambda: webbrowser.open(initial_url)).start()
+    if not args.no_open:
+        threading.Timer(0.4, lambda: webbrowser.open(initial_url)).start()
     threading.Thread(target=watchdog, daemon=True).start()
 
     try:

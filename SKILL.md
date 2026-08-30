@@ -38,6 +38,12 @@ meaningful action and keep it updated until the turn stops.
 When invoked as `/magic-slide preview [topic]` in Claude Code or
 `$magic-slide preview [topic]` in Codex, run the preview fast path:
 
+In a CelHive hosted Skill run, use `$CELHIVE_SKILL_WORKSPACE/deck` as the deck
+directory and invoke the host's generic Preview tool after generation. The
+package-level `preview.json` owns the managed command, port, health route, and
+Artifact roots; do not start a second preview process manually. Outside a
+managed host, keep the local `serve.py` workflow below.
+
 1. Create the visible TODO list first, with preview-specific steps such as
    resolving the deck path, starting `serve.py`, and reporting the URL.
 2. Treat the argument after `preview` as the topic/deck directory. If omitted,

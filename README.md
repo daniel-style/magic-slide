@@ -270,6 +270,20 @@ in normal deck preview routes; if a browser blocks the popup, click the button
 again. Presenter note edits can only be saved through this server-backed preview
 path.
 
+Managed hosts can use the package-level `preview.json` instead of inventing a
+Magic Slide adapter. The descriptor starts the same `serve.py` with an exact
+host-assigned port, suppresses local browser opening, redirects `/` to the one
+managed deck, and declares `deck/` as both the editable source and static
+Artifact root. In CelHive hosted runs, generate the presentation at
+`$CELHIVE_SKILL_WORKSPACE/deck/index.html`; local and CLI workflows keep the
+ordinary topic-directory convention.
+
+The equivalent server flags are:
+
+```bash
+python3 scripts/serve.py ./deck/index.html --port 12345 --no-open --single-deck
+```
+
 ### Mark repaired QA notes
 
 ```bash

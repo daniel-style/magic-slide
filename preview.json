@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "celhive.preview/v1",
+  "title": "Magic Slide preview",
+  "command": [
+    "python3",
+    "{{skillRoot}}/scripts/serve.py",
+    "{{workspace}}/deck/index.html",
+    "--port",
+    "{{port}}",
+    "--no-open",
+    "--single-deck"
+  ],
+  "workingDirectory": ".",
+  "portPolicy": "platform",
+  "entryPath": "/",
+  "healthPath": "/__magic_slide_meta",
+  "readinessTimeoutSeconds": 20,
+  "sourceRoot": "deck",
+  "artifactKind": "html",
+  "distRoot": "deck",
+  "capabilities": ["fullscreen", "artifact.writeback"]
+}
