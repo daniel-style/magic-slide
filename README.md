@@ -281,7 +281,7 @@ ordinary topic-directory convention.
 The equivalent server flags are:
 
 ```bash
-python3 scripts/serve.py ./deck/index.html --port 12345 --no-open --single-deck
+python3 scripts/serve.py ./deck/index.html --port 12345 --no-open --single-deck --managed-lifecycle
 ```
 
 ### Mark repaired QA notes

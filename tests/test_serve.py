@@ -16,11 +16,26 @@ SPEC.loader.exec_module(serve)
 
 class ServeArgumentsTest(unittest.TestCase):
     def test_explicit_managed_flags(self) -> None:
-        args = serve.parse_args(["deck/index.html", "--port", "12345", "--no-open", "--single-deck"])
+        args = serve.parse_args(
+            [
+                "deck/index.html",
+                "--port",
+                "12345",
+                "--no-open",
+                "--single-deck",
+                "--managed-lifecycle",
+            ]
+        )
 
         self.assertEqual(args.port, 12345)
         self.assertTrue(args.no_open)
         self.assertTrue(args.single_deck)
+        self.assertTrue(args.managed_lifecycle)
+
+    def test_local_preview_keeps_idle_shutdown_enabled(self) -> None:
+        args = serve.parse_args(["deck/index.html"])
+
+        self.assertFalse(args.managed_lifecycle)
 
     def test_port_falls_back_to_managed_environment(self) -> None:
         with patch.dict(os.environ, {"CELHIVE_PREVIEW_PORT": "15432"}):

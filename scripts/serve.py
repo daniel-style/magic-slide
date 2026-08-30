@@ -152,6 +152,11 @@ def parse_args(argv=None):
     parser.add_argument("--port", type=int, help="Bind an exact host-assigned port")
     parser.add_argument("--no-open", action="store_true", help="Do not open a local browser")
     parser.add_argument("--single-deck", action="store_true", help="Redirect / to the initial deck")
+    parser.add_argument(
+        "--managed-lifecycle",
+        action="store_true",
+        help="Keep the service alive until the hosting runtime stops it",
+    )
     args = parser.parse_args(argv)
     if args.port is None:
         managed_port = os.getenv("CELHIVE_PREVIEW_PORT", "").strip()
@@ -877,6 +882,8 @@ def main():
     def watchdog():
         while True:
             time.sleep(5)
+            if args.managed_lifecycle:
+                continue
             stale = []
             now = time.time()
             with registry_lock:
@@ -897,7 +904,10 @@ def main():
     initial_url = deck_open_url(initial_deck)
     print(f"  Magic Slide service → http://{PREVIEW_HOST}:{server_port}")
     print(f"  Initial deck:          {initial_url}")
-    print(f"  Auto-stop:             {HEARTBEAT_TIMEOUT}s after the last preview tab stops sending heartbeats")
+    if args.managed_lifecycle:
+        print("  Lifecycle:             managed by the hosting runtime")
+    else:
+        print(f"  Auto-stop:             {HEARTBEAT_TIMEOUT}s after the last preview tab stops sending heartbeats")
     print(f"  Press Ctrl+C to stop\n")
 
     if not args.no_open:

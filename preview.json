@@ -8,7 +8,8 @@
     "--port",
     "{{port}}",
     "--no-open",
-    "--single-deck"
+    "--single-deck",
+    "--managed-lifecycle"
   ],
   "workingDirectory": ".",
   "portPolicy": "platform",
